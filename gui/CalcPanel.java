@@ -240,6 +240,8 @@ public class CalcPanel extends SubPanel {
 			terminal.append(">  " + eqtn + "\n");
 			try{
 				treeResult = parser.ParseExpression(eqtn);
+				Value result = treeResult.eval();
+				System.out.println(treeResult.toString());
 				treeResult = treeResult.eval();
 				if (treeResult instanceof Fraction){
 					//we need to decide where method call should go,

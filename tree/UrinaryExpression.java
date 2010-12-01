@@ -27,18 +27,18 @@ public class UrinaryExpression extends Expression {
 	public Value eval() throws EvalException{
 		if(child != null){
 			
-			child = child.eval();
+			Value childVal = child.eval();
 			
 			switch(op){
-				case SIN:		return child.sin();
-				case COS:		return child.cos();
-				case TAN:		return child.tan();
-				case INV_SIN:	return child.invSin();
-				case INV_COS:	return child.invCos();
-				case INV_TAN:	return child.invTan();
-				case NOTHING:	return child.eval();
-				case PAREN:		return child.eval();
-				case NEG:		return child.neg();
+				case SIN:		return childVal.sin();
+				case COS:		return childVal.cos();
+				case TAN:		return childVal.tan();
+				case INV_SIN:	return childVal.invSin();
+				case INV_COS:	return childVal.invCos();
+				case INV_TAN:	return childVal.invTan();
+				case NOTHING:	return childVal.eval();
+				case PAREN:		return childVal.eval();
+				case NEG:		return childVal.neg();
 				default:
 					throw new EvalException("unrecognized operation");
 			}

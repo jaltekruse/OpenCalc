@@ -637,8 +637,9 @@ public class Graph extends SubPanel {
 		double lastX, lastY, currX, currY;
 		g.setColor(color);
 		try{
+			Value expression = parser.ParseExpression(eqtn);
 			ind.setValue(new Decimal(X_MIN));
-			parser.ParseExpression(eqtn).eval();
+			expression.eval();
 			lastX = ind.getValue().toDec().getValue();
 			lastY = dep.getValue().toDec().getValue();
 			for (int i = 1; i < X_SIZE; i += 2) {
@@ -720,7 +721,8 @@ public class Graph extends SubPanel {
 		
 		try{
 			ind.setValue(new Decimal(THETA_MIN));
-			parser.ParseExpression(eqtn).eval();
+			Value expression = parser.ParseExpression(eqtn);
+			expression.eval();
 			currR = dep.getValue().toDec().getValue();
 			currT = ind.getValue().toDec().getValue();
 			
@@ -729,7 +731,7 @@ public class Graph extends SubPanel {
 			int numCalcs = (int)((THETA_MAX-THETA_MIN)/THETA_STEP);
 			for (int i = 1; i <= numCalcs; i++) {
 				ind.updateValue(THETA_STEP);
-				parser.ParseExpression(eqtn).eval();
+				expression.eval();
 				currR = dep.getValue().toDec().getValue();
 				currT = ind.getValue().toDec().getValue();
 				

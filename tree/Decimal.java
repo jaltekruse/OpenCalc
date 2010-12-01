@@ -197,7 +197,6 @@ public class Decimal extends Number{
 	 */
 	private double convertAngle2Rad(double angle) {
 		// TODO Auto-generated method stub
-		System.out.println("units in dec: " + parser.getAngleUnits());
 		if(parser.getAngleUnits()== 2){
 			angle *= (Math.PI/180);
 		}

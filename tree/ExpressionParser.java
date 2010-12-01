@@ -676,7 +676,6 @@ public class ExpressionParser {
 
 	public void setAngleUnits(int i) {
 		// TODO Auto-generated method stub
-		System.out.println("setting andgle units to: " + i);
 		angleUnits = i;
 	}
 	
