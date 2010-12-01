@@ -195,7 +195,14 @@ public class Fraction extends Number{
 	@Override
 	public Value power(Fraction f) {
 		// TODO Auto-generated method stub
-			return new Decimal(Math.pow(Frac2Dec(this).getValue(), Frac2Dec(f).getValue()));
+		if (f instanceof Fraction){
+			if (f.d == 1){
+				if (n < 100 && d < 100 && f.n < 5){
+					return new Fraction((int) Math.pow(n, f.n), (int) Math.pow(d, f.n));
+				}
+			}
+		}
+		return new Decimal(Math.pow(Frac2Dec(this).getValue(), Frac2Dec(f).getValue()));
 	}
 
 	@Override

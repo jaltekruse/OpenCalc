@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -91,7 +92,7 @@ public class NewCalc extends JApplet{
 	 */
 
 	public NewCalc() throws ParseException, ValueNotStoredException, EvalException {
-		
+
 		thisCalc = this;
 		parser = new ExpressionParser(this);
 		textWithFocus = new OCTextField();
@@ -99,7 +100,7 @@ public class NewCalc extends JApplet{
 		menuBar = new JMenuBar();
 		help = new JMenu("Help");
 		menuBar.add(help);
-		
+
 		JMenuItem tutorial = new JMenuItem("Tutorial");
 		tutorial.addActionListener(new ActionListener(){
 
@@ -108,19 +109,19 @@ public class NewCalc extends JApplet{
 				// TODO Auto-generated method stub
 				if(tutorialFrame == null){
 					tutorialFrame = new JFrame("Tutorial");
-					tutorialFrame.setPreferredSize(new Dimension(450, 400));
+					tutorialFrame.setPreferredSize(new Dimension(550, 400));
 					terminal = new JTextArea(14, 20);
-				    
+
 					Font terminalFont = new Font("newFont", 1, 12);
 					terminal.setFont(terminalFont);
 					terminal.setEditable(false);
 					final JScrollPane termScrollPane = new JScrollPane(terminal);
 					termScrollPane.setWheelScrollingEnabled(true);
 					terminal.append(readTextDoc("README.txt"));
-					
+
 					tutorialFrame.add(termScrollPane);
 					tutorialFrame.pack();
-					
+
 					tutorialFrame.setVisible(true);
 					JScrollBar tempScroll = termScrollPane.getVerticalScrollBar();
 					tempScroll.setValue(0);
@@ -130,7 +131,7 @@ public class NewCalc extends JApplet{
 				}
 			}
 		});
-		
+
 		JMenuItem license = new JMenuItem("License");
 		license.addActionListener(new ActionListener(){
 
@@ -139,18 +140,18 @@ public class NewCalc extends JApplet{
 				// TODO Auto-generated method stub
 				if(licenseFrame == null){
 					licenseFrame = new JFrame("License");
-					licenseFrame.setPreferredSize(new Dimension(450, 400));
+					licenseFrame.setPreferredSize(new Dimension(640, 400));
 					JTextArea terminal = new JTextArea(14, 20);
-				    
+
 					Font terminalFont = new Font("newFont", 1, 12);
 					terminal.setFont(terminalFont);
 					terminal.setEditable(false);
 					JScrollPane termScrollPane = new JScrollPane(terminal);
 					termScrollPane.setWheelScrollingEnabled(true);
-					
+
 					licenseFrame.add(termScrollPane);
 					licenseFrame.pack();
-					
+
 					licenseFrame.setVisible(true);
 					terminal.append(readTextDoc("COPYING.txt"));
 					termScrollPane.revalidate();
@@ -162,14 +163,14 @@ public class NewCalc extends JApplet{
 				}
 			}
 		});
-		
+
 		help.add(tutorial);
 		help.add(license);
-		
+
 		this.setJMenuBar(menuBar);
-		
+
 		graph = new JPanel();
-		
+
 		graphCalcDraw = new JTabbedPane(JTabbedPane.TOP);
 
 		NumsAndOppsPanel Nums = new NumsAndOppsPanel(this);
@@ -188,26 +189,26 @@ public class NewCalc extends JApplet{
 		mathFunc.add(constScrollPane, "Const");
 
 		text = new CalcPanel(this);
-		
+
 		graphCalcDraw.add("Calculator", text);
 		g = new Graph(360, 360, this);
 		graphCalcDraw.add("Graph", g);
-		
+
 		//Graph3D g3d = new Graph3D(360,360, this);
 		//graphCalcDraw.add("3DGraph", g3d);
 		//treePan = new TreeCalcPanel(this);
 		//graphCalcDraw.add("treeSolver", treePan);
-		
+
 		graphFunctions = new FunctionsPane(this);
 		graphCalcDraw.add("Func", graphFunctions);
 
 		gridProps = new GridPropsPanel(this);
 		graphCalcDraw.add("Grid", gridProps);
-		
+
 		graphCalcDraw.add(new DrawPad(500, 500, this), "Draw");
-		
+
 		graphCalcDraw.addChangeListener(new ChangeListener(){
-			
+
 			public void stateChanged(ChangeEvent arg0) {
 				// TODO Auto-generated method stub
 				int selected = 	graphCalcDraw.getSelectedIndex();
@@ -230,8 +231,8 @@ public class NewCalc extends JApplet{
 		});
 
 		GridBagConstraints pCon = new GridBagConstraints();
-		
-		
+
+
 		pCon.fill = GridBagConstraints.BOTH;
 		pCon.insets = new Insets(0, 0, 6, 0);
 		pCon.weightx = 1;
@@ -243,7 +244,7 @@ public class NewCalc extends JApplet{
 		pCon.gridx = 0;
 		pCon.gridy = 0;
 		this.add(graphCalcDraw, pCon);
-		
+
 		pCon.fill = GridBagConstraints.BOTH;
 		pCon.insets = new Insets(6, 0, 0, 0);
 		pCon.gridheight = 5;
@@ -253,7 +254,7 @@ public class NewCalc extends JApplet{
 		pCon.gridx = 0;
 		pCon.gridy = 5;
 		this.add(mathFunc, pCon);
-		
+
 		graphCalcDraw.setSelectedIndex(0);
 		this.repaint();
 	}
@@ -262,11 +263,11 @@ public class NewCalc extends JApplet{
 		int currPos = graphCalcDraw.getSelectedIndex();
 		return currPos;
 	}
-	
+
 	public ExpressionParser getParser(){
 		return parser;
 	}
-	
+
 	/**
 	 * This is not currently being used, but it is code to make an HTML request. So
 	 * we could scan in a database of constants, functions or other stuff from our
@@ -276,31 +277,31 @@ public class NewCalc extends JApplet{
 	 * @return
 	 */
 	public String getWebPage(String[] args){
-		
+
 		String page= "";
 		try {
-		    // Construct data
-		    String data = URLEncoder.encode("key1", "UTF-8") + "=" + URLEncoder.encode("value1", "UTF-8");
-		    data += "&" + URLEncoder.encode("key2", "UTF-8") + "=" + URLEncoder.encode("value2", "UTF-8");
-	
-		    // Send data
-		    URL url = new URL("http://paigeinvaders.sourceforge.net/index.html");
-		    URLConnection conn = url.openConnection();
-		    conn.setDoOutput(true);
-		    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-		    wr.write(data);
-		    wr.flush();
-	
-		    // Get the response
-		    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		    String line;
-		    while ((line = rd.readLine()) != null) {
-		        page += line;
-		    }
-		    wr.close();
-		    rd.close();
+			// Construct data
+			String data = URLEncoder.encode("key1", "UTF-8") + "=" + URLEncoder.encode("value1", "UTF-8");
+			data += "&" + URLEncoder.encode("key2", "UTF-8") + "=" + URLEncoder.encode("value2", "UTF-8");
+
+			// Send data
+			URL url = new URL("http://paigeinvaders.sourceforge.net/index.html");
+			URLConnection conn = url.openConnection();
+			conn.setDoOutput(true);
+			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+			wr.write(data);
+			wr.flush();
+
+			// Get the response
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String line;
+			while ((line = rd.readLine()) != null) {
+				page += line;
+			}
+			wr.close();
+			rd.close();
 		} catch (Exception e) {
-			
+
 		}
 		return page;
 	}
@@ -312,29 +313,24 @@ public class NewCalc extends JApplet{
 	 * @return a String representation of the document
 	 */
 	public String readTextDoc(String docName){
-	    String line;
-	    URL url = null;
-	    try{
-	      url = new URL(getCodeBase(), docName);
-	    }
-	    catch(MalformedURLException e){}
-	    
-	    try{
-	      InputStream in = url.openStream();
-	      BufferedReader bf = new BufferedReader(new InputStreamReader(in));
-	      StringBuffer strBuff = new StringBuffer();
-	      while((line = bf.readLine()) != null){
-	        strBuff.append(line + "\n");
-	      }
-	    return strBuff.toString();
-	    }
-	    catch(IOException e){
-	    	System.out.println("error");
-	      e.printStackTrace();
-	    }
+		String line;
+		try{
+			InputStream in = getClass().getClassLoader().getResourceAsStream("txt/" + docName);
+			BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+			StringBuffer strBuff = new StringBuffer();
+			while((line = bf.readLine()) != null){
+				strBuff.append(line + "\n");
+			}
+			getClass().getClassLoader().getResourceAsStream("/txt/" + docName);
+			return strBuff.toString();
+		}
+		catch(IOException e){
+			System.out.println("error");
+			e.printStackTrace();
+		}
 		return null;
 	}
-	
+
 	public void updateGraph() {
 		g.repaint();
 	}
@@ -346,7 +342,7 @@ public class NewCalc extends JApplet{
 	public OCTextField getCurrTextField() {
 		return textWithFocus;
 	}
-	
+
 	public ValStoragePanel getVarsPanel(){
 		return varPanel;
 	}
@@ -375,11 +371,11 @@ public class NewCalc extends JApplet{
 	public void updateCaretPos() {
 		textWithFocus.setCaretPosition(textWithFocusCaretPos);
 	}
-	
+
 	public Graph getGraphObj() {
 		return g;
 	}
-	
+
 	public GridPropsPanel getGridProps(){
 		return gridProps;
 	}
@@ -387,7 +383,7 @@ public class NewCalc extends JApplet{
 	public Value evalCalc(String eqtn) throws EvalException, ParseException {
 		return parser.ParseExpression(eqtn).eval();
 	}
-	
+
 	private static void createAndShowGUI() throws ParseException, ValueNotStoredException, EvalException {
 
 		frame = new JFrame("OpenCalc");

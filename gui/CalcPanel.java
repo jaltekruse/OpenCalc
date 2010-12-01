@@ -157,7 +157,7 @@ public class CalcPanel extends SubPanel {
 				OCTextField currField = calcObj.getCurrTextField();
 				String s = Character.toString(e.getKeyChar());
 				if (currField.getCaretPosition() == 0 && 
-						Operator.requiresPrevious(s)){
+						Operator.requiresPrevious(s) && currField.getText().equals("")){
 							currField.setText("ans" );
 							currField.requestFocus();
 							currField.setCaretPosition(3);
