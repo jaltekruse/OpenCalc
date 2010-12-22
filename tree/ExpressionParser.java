@@ -3,9 +3,11 @@ package tree;
 
 
 
-import gui.NewCalc;
+import gui.MainApplet;
 
 import java.util.ArrayList;
+
+import com.sun.org.apache.xalan.internal.xsltc.runtime.Operators;
 
 
 import tree.Operator;
@@ -39,11 +41,14 @@ public class ExpressionParser {
 	private int currCharNum, elementCount;
 	private char currChar;
 	private int matchedParens;
-	private NewCalc GUI;
+	private MainApplet GUI;
 	
-	//1-radians  2-degrees  3-Gradians
 	private int angleUnits;
-	private static final String dateModified = "11-23-2010";
+	public static final int RAD = 1;
+	public static final int DEG = 2;
+	public static final int GRAD = 3;
+	
+	private static final String dateModified = "12-17-2010";
 
 	//this value stores the number of characters in the string input that
 	//an element takes up, other elements that are automatically added by
@@ -65,21 +70,22 @@ public class ExpressionParser {
 		Decimal staticDec = new Decimal(this);
 	}
 
-	public ExpressionParser(NewCalc newCalc) {
+	public ExpressionParser(MainApplet mainApplet) {
 		// TODO Auto-generated constructor stub
 		lengthLast = 0;
 		vals = new ArrayList<Value>();
 		VARLIST = new VarStorage(this);
 		CONSTLIST = new ConstantStorage();
-		GUI = newCalc;
+		GUI = mainApplet;
 		angleUnits = 1;
 		
 		//associates this object with all of the Decimal objects, so they can
 		//find the current angleUnits
 		Decimal staticDec = new Decimal(this);
+		Var staticVar = new Var(this);
 	}
 	
-	public NewCalc getGUI(){
+	public MainApplet getGUI(){
 		return GUI;
 	}
 	
@@ -137,6 +143,9 @@ public class ExpressionParser {
 						((Var)vals.get(0)).getName() + "\" has not been given a value");
 			}
 			return vals.get(0);
+		}
+		if (e == null){
+			throw new ParseException("invalid expression");
 		}
 		while(e.hasParent()){
 			e = e.getParent();
@@ -399,9 +408,16 @@ public class ExpressionParser {
 	}
 	
 	public void addNewValue(Value v) throws ParseException{
+		if (v instanceof Var && ((Var)v).getValue() == null & e != null)
+		{//a new variable is being added to the tree, that has not been given a value (a tree has already
+			//been started because the current expression "e" is not null)
+			throw new ParseException("Variable \"" + ((Var)v).getName()
+					+ "\" has not been given a value");
+		}
 		if (vals.size() == 1 && e == null && vals.get(0) instanceof Var 
 				&& ((Var)vals.get(0)).getValue() == null)
-		{
+		{//A variable was found and before a subsequent operator was found, another 
+			//value was found the only use of an undeclared variable is  "varName = 8*9" etc.
 			throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
 					+ "\" has not been given a value");
 		}
@@ -411,14 +427,17 @@ public class ExpressionParser {
 				return;
 			}
 			else{
-				addBinOp(Operator.MULTIPLY);
-				addNewValue(v);
+				BinExpression newEx = new BinExpression(Operator.MULTIPLY);
+				newEx.setLeftChild(((BinExpression)e).getRightChild());
+				newEx.setRightChild(v);
+				((BinExpression)e).setRightChild(newEx);
+				e = newEx;
 				return;
 			}
 		}
 		else if(e instanceof UrinaryExpression){
 			if (vals.size() == 1 || ((UrinaryExpression)e).hasChild()){
-				if (vals.get(0) instanceof Var){
+				if (vals.size() > 0 && vals.get(0) instanceof Var){
 					if (((Var)vals.get(0)).getValue() == null){
 						throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
 								+ "\" has not been given a value");
@@ -451,6 +470,10 @@ public class ExpressionParser {
 	public void addBinOp(Operator o) throws ParseException{
 		BinExpression newEx;
 		
+//		if (o == Operator.SUBTRACT && vals.isEmpty()){
+//			addUrinaryOp(Operator.NEG);
+//			return;
+//		}
 		if (e instanceof BinExpression  && ((BinExpression)e).getRightChild() == null){
 			throw new ParseException("2 binary operators adjacent");
 		}
@@ -498,16 +521,12 @@ public class ExpressionParser {
 				}
 			}
 			if(e.getOp() == null){
-				if (o == Operator.SUBTRACT && vals.isEmpty()){
-					addUrinaryOp(Operator.NEG);
+				if (vals.size() == 1){
+					e = newEx;
+					newEx.setLeftChild(vals.get(0));
+					vals = new ArrayList<Value>();
 					return;
 				}
-				e = newEx;
-				if (vals.size() == 1){
-					newEx.setLeftChild(vals.get(0));
-				}
-				vals = new ArrayList<Value>();
-				return;
 			}
 			if (vals.size() == 1){
 				newEx.setLeftChild(vals.get(0));
@@ -541,7 +560,7 @@ public class ExpressionParser {
 						return;
 					}
 					else{
-						while(newEx.getOp().getPrec() < e.getOp().getPrec() && e.hasParent()
+						while(e.hasParent() && newEx.getOp().getPrec() < e.getOp().getPrec()
 								&& !(e.getParent().isContainerOp())){
 							e = e.getParent();
 						}

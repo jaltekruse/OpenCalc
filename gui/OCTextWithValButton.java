@@ -1,8 +1,10 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -12,19 +14,20 @@ import tree.ParseException;
 import tree.Value;
 import tree.Number;
 
-public class OCTextWithValButton extends JPanel {
+public class OCTextWithValButton extends OCTextField {
 
-	NewCalc calcObj;
+	MainApplet mainApp;
 	OCTextField field;
 	OCButton button;
 	String varName;
+	SubPanel box;
 
 	public OCTextWithValButton(String s, boolean editable, int length,
 			int gridWidth, int gridHeight, int gridx, int gridy,
-			JComponent comp, NewCalc currCalcObj) {
+			JComponent comp, MainApplet currmainApp) {
 
 		varName = s;
-		calcObj = currCalcObj;
+		mainApp = currmainApp;
 		super.setLayout(new GridBagLayout());
 		GridBagConstraints pCon = new GridBagConstraints();
 		pCon.fill = GridBagConstraints.BOTH;
@@ -34,19 +37,20 @@ public class OCTextWithValButton extends JPanel {
 		pCon.gridy = gridy;
 		pCon.weightx = 1;
 		pCon.weighty = 1;
+		box = new SubPanel();
+		
+		comp.add(box, pCon);
 
-		comp.add(this, pCon);
-
-		field = new OCTextField(editable, length, 2, gridHeight, 0, 0, this,
-				calcObj) {
+		field = new OCTextField(editable, length, 2, gridHeight, 0, 0, box,
+				mainApp) {
 			public void associatedAction() {
 				String currText = field.getText();
 				if (!currText.equals(null) && !currText.equals("")
-						&& calcObj != null) {
-					JTextField currField = calcObj.getCurrTextField();
+						&& mainApp != null) {
+					JTextField currField = mainApp.getCurrTextField().getField();
 					Value v = null;
 					try {
-						v = calcObj.evalCalc(currText);
+						v = mainApp.evalCalc(currText);
 					} catch (EvalException e) {
 						// TODO Auto-generated catch block
 						//do something, right now just skips reassignment,
@@ -59,13 +63,15 @@ public class OCTextWithValButton extends JPanel {
 						return;
 					}
 					currField.setText(v.toString());
-					calcObj.getParser().getVarList().setVarVal(varName,
+					mainApp.getParser().getVarList().setVarVal(varName,
 							(Number) v);
-					calcObj.updateGraph();
+					mainApp.updateGraph();
 				}
 			}
 		};
-		button = new OCButton(varName, 1, 1, 2, 0, this, currCalcObj);
+		field.setBorder(null);
+		box.setBorder(BorderFactory.createLineBorder(Color.gray));
+		button = new OCButton(varName, 1, 1, 2, 0, box, currmainApp);
 	}
 
 	public String getVarName() {
@@ -73,7 +79,7 @@ public class OCTextWithValButton extends JPanel {
 	}
 
 	public void setText(String s) {
-		field.setText(s);
+		field.getField().setText(s);
 	}
 
 	public OCTextField getTextField() {

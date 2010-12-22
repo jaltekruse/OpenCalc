@@ -26,15 +26,18 @@ public class OCButton extends JButton {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String s;
-	private NewCalc calcObj;
+	private MainApplet mainApp;
+	private GridBagConstraints bCon;
+	private JComponent comp;
 
 	public OCButton(String str, int gridwidth, int gridheight, int gridx,
-			int gridy, JComponent comp, final NewCalc currCalcObj) {
+			int gridy, JComponent comp, final MainApplet currmainApp) {
 
 		super(str);
+		this.comp = comp;
 		s = str;
-		calcObj = currCalcObj;
-		GridBagConstraints bCon = new GridBagConstraints();
+		mainApp = currmainApp;
+		bCon = new GridBagConstraints();
 		bCon.fill = GridBagConstraints.BOTH;
 		bCon.weightx = .1;
 		bCon.weighty = .2;
@@ -63,8 +66,90 @@ public class OCButton extends JButton {
 		comp.add(this, bCon);
 	}
 
+	public OCButton(boolean hasInsets, String str, int gridwidth, int gridheight, int gridx,
+			int gridy, JComponent comp, final MainApplet currmainApp) {
+
+		super(str);
+		this.comp = comp;
+		s = str;
+		mainApp = currmainApp;
+		bCon = new GridBagConstraints();
+		bCon.fill = GridBagConstraints.BOTH;
+		bCon.weightx = .1;
+		bCon.weighty = .2;
+		bCon.gridheight = gridheight;
+		bCon.gridwidth = gridwidth;
+		bCon.gridx = gridx;
+		bCon.gridy = gridy;
+		if (hasInsets)
+		{
+			bCon.insets = new Insets(2, 2, 2, 2);
+		}
+		this.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					associatedAction();
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ValueNotStoredException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (EvalException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+
+		comp.add(this, bCon);
+	}
+	
+	public OCButton(String str, String tip, int gridwidth, int gridheight, int gridx,
+			int gridy, JComponent comp, final MainApplet currmainApp) {
+		
+		super(str);
+		this.comp = comp;
+		s = str;
+		mainApp = currmainApp;
+		bCon = new GridBagConstraints();
+		bCon.fill = GridBagConstraints.BOTH;
+		bCon.weightx = .1;
+		bCon.weighty = .2;
+		bCon.gridheight = gridheight;
+		bCon.gridwidth = gridwidth;
+		bCon.gridx = gridx;
+		bCon.gridy = gridy;
+		bCon.insets = new Insets(2, 2, 2, 2);
+		this.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					associatedAction();
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ValueNotStoredException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (EvalException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		this.setToolTipText(tip);
+
+		comp.add(this, bCon);
+	}
+	
+	public void removeInsets(){
+		comp.remove(this);
+		bCon.insets = null;
+		comp.add(this, bCon);
+	}
 	public void associatedAction() throws ParseException, ValueNotStoredException, EvalException {
-		JTextField currField = calcObj.getCurrTextField();
+		JTextField currField = mainApp.getCurrTextField().getField();
 		int caretPos = 0;
 		if (currField != null) {
 			String currText = currField.getText();
@@ -76,7 +161,7 @@ public class OCButton extends JButton {
 			}
 			else if (currField.getSelectionStart() == currField.getSelectionEnd()) {
 				currText = currField.getText();
-				caretPos = calcObj.getCurrCaretPos();
+				caretPos = currField.getCaretPosition();
 				String tempText = currText.substring(0, caretPos);
 				tempText += s;
 				tempText += currText.substring(caretPos, currText.length());

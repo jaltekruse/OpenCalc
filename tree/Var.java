@@ -1,18 +1,19 @@
 package tree;
 
-public class Var extends NumberWithName implements ValueWithName {
+public class Var extends Value implements ValueWithName {
 
 	private String varString;
 	private Number num;
+	private static ExpressionParser parser;
+	
+	public Var(ExpressionParser p){
+		parser = p;
+	}
 	
 	public Var(String s, Number n) {
-		super(s);
+		varString = s;
 		num = n;
 		varString = s;
-	}
-
-	public String getVarString() {
-		return varString;
 	}
 
 	public Value setValue(Number n) {
@@ -221,12 +222,35 @@ public class Var extends NumberWithName implements ValueWithName {
 		}
 		else
 		{
-		return num = (Number) val;
+			//going through the VarStorage object to assign variables allows additional 
+			//actions to be triggered for all assignments, such as redrawing the graph 
+			//if the value of xMin, yStep, etc. was assigned in the terminal
+			//return parser.getVarList().setVarVal(varString, val);
+			
+			//correction, I would have used the above line to produce the result that I was
+			//describing, but this made graphing slow, we can find some way to make it check for
+			//regraphing only when the value was not assigned by the graphing algorithm itself
+			if (val instanceof Number){
+				return num = (Number) val;
+			}
+			throw new EvalException("A non-number value cannot be assigned to a variable");
 		}
 	}
 
 	public void updateValue(double d) {
 		// TODO Auto-generated method stub
 		num = (Number) num.add(new Decimal(d));
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return varString;
+	}
+
+	@Override
+	public Value squareRoot() throws EvalException {
+		// TODO Auto-generated method stub
+		return num.squareRoot();
 	}
 }

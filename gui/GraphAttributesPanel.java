@@ -20,14 +20,18 @@ package gui;
  along with OpenCalc  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -43,7 +47,7 @@ public class GraphAttributesPanel extends SubPanel {
 	private static final long serialVersionUID = 1L;
 	private OCTextField graphEntry;
 	private Graph graph;
-	private NewCalc calcObj;
+	private MainApplet mainApp;
 	private Color color;
 	private Function func;
 	private JComboBox graphType;
@@ -53,19 +57,18 @@ public class GraphAttributesPanel extends SubPanel {
 	private GraphAttributesPanel redundant;
 	private JPanel colorBox;
 	private JCheckBox graphing;
-	private JFrame funcDataFrame; 
 	private FuncCalcPanel funcCalcPanel;
 
-	public GraphAttributesPanel(NewCalc currCalcObj, FunctionsPane fp, Color c, Function f) {
+	public GraphAttributesPanel(MainApplet currmainApp, FunctionsPane fp, Color c, Function f) {
 		// TODO Auto-generated constructor stub
 		
 		func = f;
 		redundant = this;
-		calcObj = currCalcObj;
+		mainApp = currmainApp;
 		graphTypes = fp.getGraphTypes();
 		color = c;
-		graph = calcObj.getGraphObj();
-		funcCalcPanel = new FuncCalcPanel(calcObj, func, color);
+		graph = mainApp.getGraphObj();
+		funcCalcPanel = new FuncCalcPanel(mainApp, func, color);
 
 		colorBox = new JPanel() {
 			/**
@@ -91,7 +94,7 @@ public class GraphAttributesPanel extends SubPanel {
 					func.setGraphing(true);
 				else
 					func.setGraphing(false);
-				calcObj.getGraphObj().repaint();
+				mainApp.getGraphObj().repaint();
 			}
 			
 		});
@@ -125,12 +128,19 @@ public class GraphAttributesPanel extends SubPanel {
 			}
 		});
 		
+		graphEntry = new OCTextField(true, 10, 5, 1, 4, 0, this, mainApp) {
+			public void associatedAction() {
+				graph();
+			}
+		};
+		
 		this.paint();
 	}
 	
 	private void graph(){
-		if(!graphEntry.getText().equals("")){
-			func.setFuncEqtn(func.getDependentVar().getName() + "=" + graphEntry.getText());
+		if(!graphEntry.getField().getText().equals("")){
+			func.setFuncEqtn(func.getDependentVar().getName() + "=" 
+					+ graphEntry.getField().getText());
 			func.setColor(color);
 			func.setGraphing(true);
 			graph.repaint();
@@ -164,29 +174,36 @@ public class GraphAttributesPanel extends SubPanel {
 		this.add(graphType, pCon);
 		
 		depVar = new OCLabel(func.getDependentVar().getName() + " =", 1, 1, 3, 0, 
-				.1, .1, this, calcObj);
+				.1, .1, this, mainApp);
 		
-		graphEntry = new OCTextField(true, 10, 5, 1, 4, 0, this, calcObj) {
-				public void associatedAction() {
-					graph();
-				}
-		};
+		pCon.fill = GridBagConstraints.HORIZONTAL;
+		pCon.gridx = 4;
+		pCon.gridy = 0;
+		pCon.gridheight = 1;
+		pCon.gridwidth = 5;
+		pCon.ipadx = 0;
+		pCon.ipady = 0;
+		pCon.weightx = 1;
+		pCon.weighty = 1;
+		this.add(graphEntry, pCon);
 		
-		OCButton advanced = new OCButton("adv.", 1, 1, 10, 0, this, calcObj){
-			public void associatedAction() {
-				if(funcDataFrame == null){
-					funcDataFrame = new JFrame("Function Data");
-					funcDataFrame.setPreferredSize(new Dimension(550, 120));
-					
-					funcDataFrame.add(funcCalcPanel);
-					funcDataFrame.pack();
-					
-					funcDataFrame.setVisible(true);
-				}
-				else
-					funcDataFrame.setVisible(true);
-			}
-		};
+//		OCButton advanced = new OCButton("adv.", 1, 1, 10, 0, this, mainApp){
+//			public void associatedAction() {
+//				GridBagConstraints bCon = new GridBagConstraints();
+//								
+//				bCon.fill = GridBagConstraints.BOTH;
+//				bCon.gridx = 1;
+//				bCon.gridy = 1;
+//				bCon.weightx = 1;
+//				bCon.weighty = 1;
+//				bCon.gridheight = 1;
+//				bCon.gridwidth = 1;
+//				funcCalcPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+//				//mainApp.add(funcCalcPanel, bCon);
+//				//funcCalcPanel.setVisible(true);
+//				//mainApp.repaint();
+//			}
+//		};
 		
 		this.revalidate();
 		this.repaint();

@@ -20,6 +20,8 @@ package gui;
  along with OpenCalc  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -32,6 +34,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import tree.Decimal;
@@ -48,24 +51,22 @@ public class Graph extends SubPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	/**
-	 * 
-	 */
+
 	private double X_MAX, X_MIN, Y_MAX, Y_MIN, X_STEP, Y_STEP, X_PIXEL, Y_PIXEL,
 		THETA_STEP, THETA_MIN,THETA_MAX, POL_STEP, POL_AX_STEP;
 	public int X_SIZE, Y_SIZE, LINE_SIZE, LINE_SIZE_DEFAULT, NUM_FREQ, mouseX,
 		mouseY, mouseRefX, mouseRefY, NUM_GRAPHS;
 	private boolean refPoint;
-	private NewCalc calcObj;
+	private MainApplet mainApp;
 	private ExpressionParser parser;
 	private VarStorage varList;
 	private JPanel graph;
 	// stuff to put in separate graph class
 	private Function[] functions;
 
-	public Graph(int xSize, int ySize, NewCalc currCalcObj) {
-		calcObj = currCalcObj;
-		parser = calcObj.getParser();
+	public Graph(int xSize, int ySize, MainApplet currmainApp) {
+		mainApp = currmainApp;
+		parser = mainApp.getParser();
 		varList = parser.getVarList();
 		X_SIZE = xSize;
 		Y_SIZE = ySize;
@@ -109,7 +110,7 @@ public class Graph extends SubPanel {
 					THETA_MAX = varList.getVarVal("thetaMax").toDec().getValue();
 					THETA_STEP = varList.getVarVal("thetaStep").toDec().getValue();
 					
-	
+					//these four statements are for resizing the grid after zooming
 					if((X_MAX-X_MIN)/X_STEP >= 24){
 						varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
 						X_STEP = varList.getVarVal("xStep").toDec().getValue();
@@ -165,6 +166,8 @@ public class Graph extends SubPanel {
 
 			}
 		};
+		
+		graph.setBorder(BorderFactory.createTitledBorder(getBorder(), "graph"));
 		
 		graph.addMouseListener(new MouseListener(){
 			private int xStart, yStart;
@@ -255,7 +258,7 @@ public class Graph extends SubPanel {
 		this.setPreferredSize(new Dimension(xSize, ySize));
 		
 		SubPanel props = new SubPanel();
-		OCButton zoomPlus = new OCButton("Zoom+", 1, 1, 0, 0, props, calcObj){
+		OCButton zoomPlus = new OCButton("Zoom+", 1, 1, 0, 0, props, mainApp){
 			public void associatedAction(){
 				try {
 					zoom(120);
@@ -266,7 +269,7 @@ public class Graph extends SubPanel {
 			}
 		};
 		
-		OCButton zoomMinus = new OCButton("Zoom-", 1, 1, 1, 0, props, calcObj){
+		OCButton zoomMinus = new OCButton("Zoom-", 1, 1, 1, 0, props, mainApp){
 			public void associatedAction(){
 				try {
 					zoom(80);
@@ -285,7 +288,6 @@ public class Graph extends SubPanel {
 		bCon.gridx = 0;
 		bCon.gridy = 7;
 		this.add(props, bCon);
-		this.setPreferredSize(new Dimension(xSize, ySize));
 	}
 	 /**
 	  * 
@@ -644,7 +646,7 @@ public class Graph extends SubPanel {
 			lastY = dep.getValue().toDec().getValue();
 			for (int i = 1; i < X_SIZE; i += 2) {
 				ind.updateValue(2 * X_PIXEL);
-				parser.ParseExpression(eqtn).eval();
+				expression.eval();
 				currX = ind.getValue().toDec().getValue();
 				currY = dep.getValue().toDec().getValue();
 	

@@ -190,4 +190,10 @@ public class Functional extends Expression {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public Value squareRoot() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 }

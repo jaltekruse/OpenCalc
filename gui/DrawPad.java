@@ -18,10 +18,10 @@ public class DrawPad extends SubPanel {
 	private OCButton undo, clear;
 	private ArrayList<Stroke> strokes;
 	
-	NewCalc calcObj;
+	MainApplet mainApp;
 	
-	public DrawPad(int xSize, int ySize, NewCalc currCalcObj) {
-		calcObj = currCalcObj;
+	public DrawPad(int xSize, int ySize, MainApplet currmainApp) {
+		mainApp = currmainApp;
 		X_SIZE = xSize;
 		Y_SIZE = ySize;
 		
@@ -58,7 +58,7 @@ public class DrawPad extends SubPanel {
 		
 		
 		props = new SubPanel();
-		undo = new OCButton("Undo", 1, 1, 0, 0, props, calcObj){
+		undo = new OCButton("Undo", 1, 1, 0, 0, props, mainApp){
 			public void associatedAction(){
 				if(strokes.size() > 0)
 					strokes.remove(strokes.size() - 1);
@@ -66,7 +66,7 @@ public class DrawPad extends SubPanel {
 			}
 		};
 		
-		clear = new OCButton("Clear", 1, 1, 1, 0, props, calcObj){
+		clear = new OCButton("Clear", 1, 1, 1, 0, props, mainApp){
 			public void associatedAction(){
 				strokes = new ArrayList<Stroke>();
 				draw.repaint();

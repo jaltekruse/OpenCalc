@@ -206,4 +206,10 @@ public class ValueList extends Number {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public Value squareRoot() throws EvalException {
+			// TODO Auto-generated method stub
+			return null;
+		}
 }

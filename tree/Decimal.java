@@ -239,4 +239,10 @@ public class Decimal extends Number{
 		// TODO Auto-generated method stub
 		throw new EvalException("Cannot assign a value to a Decimal");
 	}
+
+	@Override
+	public Value squareRoot() {
+		// TODO Auto-generated method stub
+		return new Decimal(Math.sqrt(value));
+	}
 }

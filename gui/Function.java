@@ -54,7 +54,7 @@ public class Function {
 	 * The default constructor, set the equation equal to an empty string,
 	 * makes it not currently graphing, integral and tracing values are
 	 * false.
-	 * @param currCalcObj - the associated calc object
+	 * @param currmainApp - the associated calc object
 	 */
 	public Function(ExpressionParser ep) {
 		parser = ep;

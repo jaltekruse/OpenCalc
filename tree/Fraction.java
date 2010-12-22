@@ -273,4 +273,15 @@ public class Fraction extends Number{
 		// TODO Auto-generated method stub
 		throw new EvalException("Cannot assign a value to a Fraction");
 	}
+
+	@Override
+	public Value squareRoot() throws EvalException {
+		// TODO Auto-generated method stub
+		if (Math.sqrt(n)%1 == 0 && Math.sqrt(d)%1 == 0){
+			return new Fraction((int) Math.sqrt(n), (int) Math.sqrt(d));
+		}
+		else{
+			return new Decimal(Math.sqrt(toDec().getValue()));
+		}
+	}
 }

@@ -243,4 +243,10 @@ public class Constant extends NumberWithName {
 		// TODO Auto-generated method stub
 		throw new EvalException("cannot assign a value to a Constant");
 	}
+
+	@Override
+	public Value squareRoot() throws EvalException {
+		// TODO Auto-generated method stub
+		return v.squareRoot();
+	}
 }

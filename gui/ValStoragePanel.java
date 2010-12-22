@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 
+import tree.EvalException;
+import tree.ParseException;
 import tree.ValStorageGroup;
 import tree.Value;
+import tree.ValueNotStoredException;
 import tree.ValueStorage;
 import tree.Constant;
 import tree.Number;
@@ -25,7 +28,7 @@ public class ValStoragePanel extends SubPanel {
 	 */
 	private static final long serialVersionUID = 5863708616289679710L;
 	
-	private NewCalc calcObj;
+	private MainApplet mainApp;
 	private OCButton varButton, makeVar;
 	private ValueStorage elements;
 	private SubPanel groups, elmButtons, addElm;
@@ -35,8 +38,8 @@ public class ValStoragePanel extends SubPanel {
 	private int i;
 
 
-	public ValStoragePanel(NewCalc currCalcObj, ValueStorage e) {
-		calcObj = currCalcObj;
+	public ValStoragePanel(MainApplet currmainApp, ValueStorage e) {
+		mainApp = currmainApp;
 		elements = e;
 		this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		groups = new SubPanel();
@@ -45,39 +48,42 @@ public class ValStoragePanel extends SubPanel {
 		addElm = new SubPanel();
 		//addElm.setBorder(BorderFactory.createTitledBorder("Make/Set"));
 		
-		elmName = new OCLabel("Name:", 1, 1, 0, 0, addElm, calcObj);
-		name = new OCTextField(true, 9, 1, 1, 1, 0, addElm, calcObj){
+		elmName = new OCLabel("Name:", 1, 1, 0, 0, addElm, mainApp);
+		name = new OCTextField(true, 9, 1, 1, 1, 0, addElm, mainApp){
 			public void associatedAction(){
 				//do nothing, must hit button 
 			}
 		};
 		
-		val = new OCLabel("Val:", 1, 1, 2, 0, addElm, calcObj);
-		value = new OCTextField(true, 9, 1, 1, 3, 0, addElm, calcObj){
+		val = new OCLabel("Val:", 1, 1, 2, 0, addElm, mainApp);
+		value = new OCTextField(true, 9, 1, 1, 3, 0, addElm, mainApp){
 			public void associatedAction(){
 				//do nothing, must hit button
 			}
 		};
 		
-		group = new OCLabel("Group:", 1, 1, 0, 1, addElm, calcObj);
-		groupName = new OCTextField(true, 9, 1, 1, 1, 1, addElm, calcObj){
+		group = new OCLabel("Group:", 1, 1, 0, 1, addElm, mainApp);
+		groupName = new OCTextField(true, 9, 1, 1, 1, 1, addElm, mainApp){
 			public void associatedAction(){
 				//do nothing, must hit button
 			}
 		};
 		
-		makeVar = new OCButton("make/set", 1, 1, 3, 1, addElm, calcObj){
-			public void associatedAction(){
-				String elmStr = name.getText();
-				String valStr = value.getText();
-				String groupStr = groupName.getText();
+		makeVar = new OCButton("make/set", 1, 1, 3, 1, addElm, mainApp){
+			public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{
+				name.primaryAction();
+				value.primaryAction();
+				groupName.primaryAction();
+				String elmStr = name.getField().getText();
+				String valStr = value.getField().getText();
+				String groupStr = groupName.getField().getText();
 				Value newVarVal;
 				try{ //evaluate the value being given to the Var
-					newVarVal = calcObj.getParser().ParseExpression(valStr);
+					newVarVal = mainApp.getParser().ParseExpression(valStr);
 					newVarVal = newVarVal.eval();
 				}
 				catch(Exception e){
-					groupName.setText("error calculating");
+					groupName.getField().setText("error calculating");
 					return;
 				}
 				if(elmStr.equals(""))
@@ -96,46 +102,46 @@ public class ValStoragePanel extends SubPanel {
 				else
 				{
 					if(groupStr.equals("") || groupStr.equals("var exists") || 
-							groupStr.equals("const exists"))
+							groupStr.equals("const exists") || groupStr.equals("error calculating"))
 					{//no group given, or input matches one of the messages put in group box
 						groupStr = "user";//assume they want it group user
-						groupName.setText(groupStr);
+						groupName.getField().setText(groupStr);
 					}
 					if(elements.findGroupIndex(groupStr) == Integer.MAX_VALUE)
 					{//if the group given does not exist
 						elements.addGroup(new ValStorageGroup(groupStr));
 					}
 					
-					if(calcObj.getParser().CONSTLIST.findIfStored(elmStr) != null)
+					if(mainApp.getParser().CONSTLIST.findIfStored(elmStr) != null)
 					{//if the name given is already a constant
-						groupName.setText("constant exists");
-						value.setText("no reassignment");
+						groupName.getField().setText("constant exists");
+						value.getField().setText("no reassignment");
 						return;
 					}
-					if(calcObj.getParser().VARLIST.findIfStored(elmStr) != null)
+					if(mainApp.getParser().VARLIST.findIfStored(elmStr) != null)
 					{//if var exists, cannot be moved to another group
-						groupName.setText("var exists");
-							value.setText(newVarVal.toString());
-							calcObj.getParser().VARLIST.setVarVal(elmStr, (Number) newVarVal);
-							calcObj.getGraphObj().repaint();
-							calcObj.getGridProps().refreshAttributes();
+						groupName.getField().setText("var exists");
+							value.getField().setText(newVarVal.toString());
+							mainApp.getParser().VARLIST.setVarVal(elmStr, (Number) newVarVal);
+							mainApp.getGraphObj().repaint();
+							mainApp.getGridProps().refreshAttributes();
 						return;
 					}
 					
 					if(elements.getTypeStorage() == 1)
 					{//if this panel is for Variables
-						value.setText(newVarVal.toString());
+						value.getField().setText(newVarVal.toString());
 						elements.storeInGroup(groupStr, new Var(elmStr, (Number) newVarVal));
-						calcObj.getGraphObj().repaint();
-						calcObj.getGridProps().refreshAttributes();
+						mainApp.getGraphObj().repaint();
+						mainApp.getGridProps().refreshAttributes();
 					}
 					else if(elements.getTypeStorage() == 2)
 					{//if this panel is for Constants
-							value.setText(newVarVal.toString());
+							value.getField().setText(newVarVal.toString());
 							elements.storeInGroup(groupStr, new Constant(elmStr, (Number) newVarVal));
 						}
 						else{
-							value.setText("needs val");
+							value.getField().setText("needs val");
 						}
 					}
 				refreshButtons();
@@ -234,7 +240,7 @@ public class ValStoragePanel extends SubPanel {
 		elmButtons.removeAll();
 		String last = elements.getFirstStored();
 		for (i = 0; last != null; i++){
-			new OCButton(last, 1, 1, i%3, i/3, elmButtons, calcObj);
+			new OCButton(last, 1, 1, i%3, i/3, elmButtons, mainApp);
 			last = elements.getNextStored();
 		}
 		

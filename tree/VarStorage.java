@@ -76,7 +76,7 @@ public class VarStorage extends ValueStorage {
 		return null;
 	}
 	
-	public void setVarVal(String s, Value v){
+	public Value setVarVal(String s, Value v){
 		ValueWithName tempElm = findIfStored(s);
 		if (tempElm instanceof Var){
 			if (v instanceof Var){
@@ -90,7 +90,9 @@ public class VarStorage extends ValueStorage {
 		if(isInGroup("graph", s) && parser.getGUI() != null 
 				&& parser.getGUI().getGridProps() != null){
 			parser.getGUI().getGridProps().refreshAttributes();
+			parser.getGUI().getGraphObj().repaint();
 		}
+		return v;
 	}
 	
 	public void updateVarVal(String s, double val){

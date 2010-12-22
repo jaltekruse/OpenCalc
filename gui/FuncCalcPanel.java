@@ -1,5 +1,7 @@
 package gui;
 
+
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -8,8 +10,11 @@ import java.awt.GridBagConstraints;
 import javax.swing.JPanel;
 
 import tree.Decimal;
+import tree.EvalException;
+import tree.ParseException;
 import tree.Value;
 import tree.Number;
+import tree.ValueNotStoredException;
 
 public class FuncCalcPanel extends SubPanel {
 
@@ -17,17 +22,18 @@ public class FuncCalcPanel extends SubPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private NewCalc calcObj;
+	private MainApplet mainApp;
 	private Function func;
 	private Graph graph;
 	private OCButton trace, integrate, graphButton, derive;
 	private OCTextField pt2Trace, tracePtVal, startInt, endInt, intVal, slopeVal, indVarVal;
 	private OCLabel indVar, depVar, start, end, intApprox, slopeApprox, spacer;
 	private Color color;
+	private SubPanel  traceBox, intBox, deriveBox;
 	
-	public FuncCalcPanel(NewCalc currCalcObj, Function f, Color c){
-		calcObj = currCalcObj;
-		graph = calcObj.getGraphObj();
+	public FuncCalcPanel(MainApplet currmainApp, Function f, Color c){
+		mainApp = currmainApp;
+		graph = mainApp.getGraphObj();
 		func = f;
 		color = c;
 		
@@ -39,21 +45,21 @@ public class FuncCalcPanel extends SubPanel {
 	 */
 	public void integrate(){
 		if ("".equals(func.getFuncEqtn())) {
-			intVal.setText("no eqtn");
+			intVal.getField().setText("no eqtn");
 		}
-		else if (!startInt.getText().equals("") && !endInt.getText().equals("")){
-			double a = Double.parseDouble(startInt.getText());
-			double b = Double.parseDouble(endInt.getText());
+		else if (!startInt.getField().getText().equals("") && !endInt.getField().getText().equals("")){
+			double a = Double.parseDouble(startInt.getField().getText());
+			double b = Double.parseDouble(endInt.getField().getText());
 			func.setIntegral(a, b);
 			graph.repaint();
-			//calcObj.getBasicCalcObj().parse(func.getFuncEqtn());
+			//mainApp.getBasicmainApp().parse(func.getFuncEqtn());
 			String integral = new String();
-			//integral += (float) calcObj.getBasicCalcObj().integrate(a, b);
-			intVal.setText(integral);
+			//integral += (float) mainApp.getBasicmainApp().integrate(a, b);
+			intVal.getField().setText(integral);
 		}
 		else{
 			func.setIsTakingIntegral(false);
-			intVal.setText("");
+			intVal.getField().setText("");
 			graph.repaint();
 		}
 	}
@@ -63,50 +69,51 @@ public class FuncCalcPanel extends SubPanel {
 	 */
 	public void derive(){
 		if ("".equals(func.getFuncEqtn())) {
-			slopeVal.setText("no eqtn");
+			slopeVal.getField().setText("no eqtn");
 		}
-		else if (!indVarVal.getText().equals("")){
-			double x = Double.parseDouble(indVarVal.getText());
+		else if (!indVarVal.getField().getText().equals("")){
+			double x = Double.parseDouble(indVarVal.getField().getText());
 			func.setDerivative(x);
 			func.setDeriving(true);
 			graph.repaint();
-			//calcObj.getBasicCalcObj().parse(func.getFuncEqtn());
+			//mainApp.getBasicmainApp().parse(func.getFuncEqtn());
 			String derivative = new String();
-			//derivative += (float) calcObj.getBasicCalcObj().deriveAtPoint(x);
-			slopeVal.setText(derivative);
+			//derivative += (float) mainApp.getBasicmainApp().deriveAtPoint(x);
+			slopeVal.getField().setText(derivative);
 		}
 		else{
 			func.setDeriving(false);
-			indVarVal.setText("");
+			indVarVal.getField().setText("");
 			graph.repaint();
 		}
 	}
 
 	public void tracePt(){
-		if (pt2Trace.getText().equals("")) {
+		if (pt2Trace.getField().getText().equals("")) {
 			func.setTracingPt(false);
-			tracePtVal.setText("");
+			tracePtVal.getField().setText("");
 		}
 		else {
 			if ("".equals(func.getFuncEqtn())) {
-				pt2Trace.setText("no eqtn");
-				tracePtVal.setText("error");
+				pt2Trace.getField().setText("no eqtn");
+				tracePtVal.getField().setText("error");
 			}
 			else {
 				try{
-					Value xAns = calcObj.evalCalc(pt2Trace.getText());
+					Value xAns = mainApp.evalCalc(pt2Trace.getField().getText());
 					if (!"error".equals(xAns)) {
 						double xVal = xAns.toDec().getValue();
 						func.setTrace(xVal);
-						pt2Trace.setText(xAns.toString());
+						pt2Trace.getField().setText(xAns.toString());
 						func.getIndependentVar().setValue(new Decimal(xVal));
-						Value yVal = calcObj.getParser().ParseExpression(func.getFuncEqtn());
+						Value yVal = mainApp.getParser().ParseExpression(func.getFuncEqtn()).eval();
 						func.getDependentVar().setValue((Number) yVal);
-						tracePtVal.setText(yVal.toString());
+						tracePtVal.getField().setText(yVal.toString());
 					}
 				}
 				catch (Exception e) {
-					pt2Trace.setText("error");
+					pt2Trace.getField().setText("error");
+					System.out.println(e.getMessage());
 				}
 			}
 		}
@@ -115,8 +122,28 @@ public class FuncCalcPanel extends SubPanel {
 	
 	public void refreshFields(){
 		
-		this.removeAll();		
+		this.removeAll();
 		GridBagConstraints pCon = new GridBagConstraints();
+		traceBox = new SubPanel();
+		intBox = new SubPanel();
+		deriveBox = new SubPanel();
+		
+		GridBagConstraints bCon = new GridBagConstraints();
+		
+		bCon.fill = GridBagConstraints.BOTH;
+		bCon.gridx = 0;
+		bCon.gridy = 0;
+		bCon.gridheight = 1;
+		bCon.gridwidth = 10;
+		bCon.weightx = 1;
+		bCon.weighty = 1;
+		this.add(traceBox, bCon);
+		
+		bCon.gridy = 1;
+		this.add(intBox, bCon);
+		
+		bCon.gridy = 2;
+		this.add(deriveBox, bCon);
 		
 		JPanel colorBox = new JPanel() {
 			/**
@@ -137,85 +164,90 @@ public class FuncCalcPanel extends SubPanel {
 		pCon.gridwidth = 1;
 		pCon.ipadx = 3;
 		pCon.ipady = 3;
-		this.add(colorBox, pCon);
+		traceBox.add(colorBox, pCon);
 		
-		indVar = new OCLabel(func.getIndependentVar().getName() + ":", 1, 1, 1, 0, this, calcObj);
-		pt2Trace = new OCTextField(true, 9, 3, 1, 2, 0, this, calcObj) {
+		indVar = new OCLabel(func.getIndependentVar().getName() + ":", 1, 1, 1, 0, traceBox, mainApp);
+		pt2Trace = new OCTextField(true, 9, 1, 1, 2, 0, traceBox, mainApp) {
 			public void associatedAction() {
 				tracePt();
 			}
 		};
 		
-		trace = new OCButton("Trace", 1, 1, 5, 0, this, calcObj){
-			public void associatedAction() {
-				tracePt();
+		trace = new OCButton("Trace", 1, 1, 3, 0, traceBox, mainApp){
+			public void associatedAction() throws ParseException, ValueNotStoredException, EvalException {
+				pt2Trace.primaryAction();
 			}
 		};
 		
-		depVar = new OCLabel(func.getDependentVar().getName() + ":", 1, 1, 6, 0, this, calcObj);
-		tracePtVal = new OCTextField(false, 9, 2, 1, 7, 0, this, calcObj);
+		depVar = new OCLabel(func.getDependentVar().getName() + ":", 1, 1, 4, 0, traceBox, mainApp);
+		tracePtVal = new OCTextField(false, 9, 1, 1, 5, 0, traceBox, mainApp);
 		
 		if(func.getGraphType() == 1){
-			start = new OCLabel("start:", 1, 1, 0, 1, this, calcObj);
-			startInt = new OCTextField(true, 4, 3, 1, 1, 1, this, calcObj){
+			start = new OCLabel("start:", 1, 1, 0, 0, intBox, mainApp);
+			startInt = new OCTextField(true, 4, 1, 1, 1, 0, intBox, mainApp){
 				public void associatedAction(){
 				}
 			};
-			end = new OCLabel("end:", 1, 1, 4, 1, this, calcObj);
-			endInt = new OCTextField(true, 4, 3, 1, 5, 1, this, calcObj){
+			end = new OCLabel("end:", 1, 1, 2, 0, intBox, mainApp);
+			endInt = new OCTextField(true, 4, 1, 1, 3, 0, intBox, mainApp){
 				public void associatedAction(){
 				}
 			};
 			
-			integrate = new OCButton("Integrate", 1, 1, 8, 1, this, calcObj){
-				public void associatedAction(){
+			integrate = new OCButton("Integrate", 1, 1, 4, 0, intBox, mainApp){
+				public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{
+					startInt.primaryAction();
+					endInt.primaryAction();
 					integrate();
 				}
 			};
 			
-			intApprox = new OCLabel("IntApprox:", 1, 1, 9, 1, this, calcObj);
-			intVal = new OCTextField(false, 9, 3, 1, 10, 1, this, calcObj);
+			intApprox = new OCLabel("Int:", 1, 1, 5, 0, intBox, mainApp);
+			intVal = new OCTextField(false, 9, 1, 1, 6, 0, intBox, mainApp);
 			
 			
-			indVar = new OCLabel(func.getIndependentVar().getName() + ":", 1, 1, 0, 2, this, calcObj);
-			indVarVal = new OCTextField(true, 4, 3, 1, 1, 2, this, calcObj){
+			indVar = new OCLabel(func.getIndependentVar().getName() + ":", 1, 1, 0, 0, deriveBox, mainApp);
+			indVarVal = new OCTextField(true, 4, 1, 1, 1, 0, deriveBox, mainApp){
 				public void associatedAction(){
 					derive();
 				}
 			};
 			
-			derive = new OCButton("derive", 1, 1, 4, 2, this, calcObj){
-				public void associatedAction(){
-					derive();
+			derive = new OCButton("Derive", 1, 1, 2, 0, deriveBox, mainApp){
+				public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{
+					indVarVal.primaryAction();
 				}
 			};
 			
-			slopeApprox = new OCLabel("SlopeApprox:", 1, 1, 5, 2, this, calcObj);
-			slopeVal = new OCTextField(false, 9, 3, 1, 6, 2, this, calcObj);
+			slopeApprox = new OCLabel("Slope:", 1, 1, 3, 0, deriveBox, mainApp);
+			slopeVal = new OCTextField(false, 9, 1, 1, 4, 0, deriveBox, mainApp);
 			
 			if(func.isTakingIntegral()){
-				startInt.setText("" + func.getStartIntegral());
-				endInt.setText("" + func.getEndIntegral());
+				startInt.getField().setText("" + func.getStartIntegral());
+				endInt.getField().setText("" + func.getEndIntegral());
 				integrate();
 			}
 			
 			if(func.isDeriving()){
-				indVarVal.setText("" + func.getDerivative());
+				indVarVal.getField().setText("" + func.getDerivative());
 				derive();
 			}
 			
 			if(func.isTracingPt()){
-				pt2Trace.setText("" + func.getTraceVal());
+				pt2Trace.getField().setText("" + func.getTraceVal());
 				tracePt();
 			}
 		}
 		else if(func.getGraphType() == 2){
-			spacer = new OCLabel("Integrate", 1, 1, 5, 0, this, calcObj);
+			spacer = new OCLabel("Integrate", 1, 1, 5, 0, deriveBox, mainApp);
 		}
-		else
+		else{
 			;//do nothing, will add when more graph types supported
+		}
+		
 		this.revalidate();
 		this.repaint();
 	}
 
 }
+

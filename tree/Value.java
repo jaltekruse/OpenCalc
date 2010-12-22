@@ -73,6 +73,8 @@ public abstract class Value {
 	
 	public abstract Value power(Irrational i);
 	
+	public abstract Value squareRoot() throws EvalException;
+	
 	public abstract Value sin() throws EvalException;
 	
 	public abstract Value cos() throws EvalException;

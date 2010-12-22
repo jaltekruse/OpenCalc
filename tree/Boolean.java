@@ -182,5 +182,9 @@ public class Boolean extends Number {
 		return null;
 	}
 
-
+	@Override
+	public Value squareRoot() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

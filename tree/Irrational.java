@@ -181,5 +181,11 @@ public class Irrational extends Number {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Value squareRoot() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -33,7 +33,7 @@ import tree.Number;
 
 public class GridPropsPanel extends SubPanel {
 
-	private NewCalc calcObj;
+	private MainApplet mainApp;
 	private OCTextWithValButton xMin, xMax, yMin, yMax, xStep, yStep, thetaMin, thetaMax, thetaStep;
 	private OCButton defaultGrid, zoom, zoomTrig;
 	private OCTextField zoomRate;
@@ -41,12 +41,12 @@ public class GridPropsPanel extends SubPanel {
 	private JScrollPane scroll;
 	private ExpressionParser parser;
 
-	public GridPropsPanel(NewCalc currCalcObj) throws ParseException, ValueNotStoredException, EvalException {
+	public GridPropsPanel(MainApplet currmainApp) throws ParseException, ValueNotStoredException, EvalException {
 
 		this.setLayout(new GridBagLayout());
 		this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		calcObj = currCalcObj;
-		parser = calcObj.getParser();
+		mainApp = currmainApp;
+		parser = mainApp.getParser();
 		fields = new SubPanel();
 		fields.setPreferredSize(new Dimension(320, 300));
 		scroll = new JScrollPane(fields);
@@ -62,85 +62,85 @@ public class GridPropsPanel extends SubPanel {
 
 		/* OCTextWithValButton(String s, boolean editable, int length,
 		 * 		int gridWidth, int gridHeight, int gridx, int gridy,
-		 * 		JComponent comp, final NewCalc currCalcObj)
+		 * 		JComponent comp, final NewCalc currmainApp)
 		 */
 
-		xMin = new OCTextWithValButton("xMin", true, 15, 3, 1, 0, 0, fields, calcObj) {
+		xMin = new OCTextWithValButton("xMin", true, 15, 3, 1, 0, 0, fields, mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		xMax = new OCTextWithValButton("xMax", true, 15, 3, 1, 0, 1, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		yMin = new OCTextWithValButton("yMin", true, 15, 3, 1, 0, 2, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		yMax = new OCTextWithValButton("yMax", true, 15, 3, 1, 0, 3, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
 		xStep = new OCTextWithValButton("xStep", true, 15, 3, 1, 0, 4, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
 		yStep = new OCTextWithValButton("yStep", true, 15, 3, 1, 0, 5, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
 		thetaMin = new OCTextWithValButton("thetaMin", true, 15, 3, 1, 0, 6, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
 		thetaMax = new OCTextWithValButton("thetaMax", true, 15, 3, 1, 0, 7, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
 		thetaStep = new OCTextWithValButton("thetaStep", true, 15, 3, 1, 0, 8, fields,
-				calcObj) {
+				mainApp) {
 			public void associatedAction() {
-				String currText = field.getText();
-				if (!currText.equals(null) && !currText.equals("") && calcObj != null)
+				String currText = field.getField().getText();
+				if (!currText.equals(null) && !currText.equals("") && mainApp != null)
 				{
 					try
 					{
-						Value v = calcObj.evalCalc(currText);
+						Value v = mainApp.evalCalc(currText);
 						//check here to make sure value isn't too small, will cause crashes
 						//Permanent solution will be multi-threading, and handling graphing better
-						field.setText(v.toString());
-						calcObj.getParser().getVarList().setVarVal(varName, (Number) v);
-						calcObj.updateGraph();
+						field.getField().setText(v.toString());
+						mainApp.getParser().getVarList().setVarVal(varName, (Number) v);
+						mainApp.updateGraph();
 					}
 					catch(Exception e)
 					{
-						field.setText("error");
+						field.getField().setText("error");
 					}
 				}
 			}
 		};
 		
-		zoomRate = new OCTextField(true, 5, 2, 1, 0, 9, fields, calcObj){
+		zoomRate = new OCTextField(true, 5, 2, 1, 0, 9, fields, mainApp){
 			/**
 			 * 
 			 */
@@ -151,96 +151,96 @@ public class GridPropsPanel extends SubPanel {
 			
 		};
 		
-		zoom = new OCButton("Zoom", 1, 1, 2, 9, fields, calcObj){
+		zoom = new OCButton("Zoom", 1, 1, 2, 9, fields, mainApp){
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			public void associatedAction(){
-				zoom();
+			public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{
+				zoomRate.primaryAction();
 			}
 		};
 		
-		defaultGrid = new OCButton("default", 1, 2, 2, 10, fields, calcObj) {
+		defaultGrid = new OCButton("default", 1, 2, 2, 10, fields, mainApp) {
 			public void associatedAction() {
-				calcObj.getParser().getVarList().setVarVal("xMin", new Fraction(-10,1));
+				mainApp.getParser().getVarList().setVarVal("xMin", new Fraction(-10,1));
 				xMin.setText("-10");
-				calcObj.getParser().getVarList().setVarVal("xMax", new Fraction(10,1));
+				mainApp.getParser().getVarList().setVarVal("xMax", new Fraction(10,1));
 				xMax.setText("10");
-				calcObj.getParser().getVarList().setVarVal("yMin", new Fraction(-10,1));
+				mainApp.getParser().getVarList().setVarVal("yMin", new Fraction(-10,1));
 				yMin.setText("-10");
-				calcObj.getParser().getVarList().setVarVal("yMax", new Fraction(10,1));
+				mainApp.getParser().getVarList().setVarVal("yMax", new Fraction(10,1));
 				yMax.setText("10");
-				calcObj.getParser().getVarList().setVarVal("xStep", new Fraction(1,1));
+				mainApp.getParser().getVarList().setVarVal("xStep", new Fraction(1,1));
 				yMax.setText("1");
-				calcObj.getParser().getVarList().setVarVal("yStep", new Fraction(1,1));
+				mainApp.getParser().getVarList().setVarVal("yStep", new Fraction(1,1));
 				yMax.setText("1");
-				calcObj.getParser().getVarList().setVarVal("thetaMin", new Fraction(0,1));
+				mainApp.getParser().getVarList().setVarVal("thetaMin", new Fraction(0,1));
 				thetaMin.setText("0");
 				
-				if(calcObj.getParser().getAngleUnits() == 1){
-					calcObj.getParser().getVarList().setVarVal("thetaMax", new Decimal(2*Math.PI));
+				if(mainApp.getParser().getAngleUnits() == 1){
+					mainApp.getParser().getVarList().setVarVal("thetaMax", new Decimal(2*Math.PI));
 					thetaMax.setText("2pi");
-					calcObj.getParser().getVarList().setVarVal("thetaStep", new Decimal(Math.PI/360));
+					mainApp.getParser().getVarList().setVarVal("thetaStep", new Decimal(Math.PI/360));
 					thetaStep.setText("2pi/360");
 				}
-				else if(calcObj.getParser().getAngleUnits() == 2){
-					calcObj.getParser().getVarList().setVarVal("thetaMax", new Fraction(360,1));
+				else if(mainApp.getParser().getAngleUnits() == 2){
+					mainApp.getParser().getVarList().setVarVal("thetaMax", new Fraction(360,1));
 					thetaMax.setText("360");
-					calcObj.getParser().getVarList().setVarVal("thetaStep", new Fraction(3,1));
+					mainApp.getParser().getVarList().setVarVal("thetaStep", new Fraction(3,1));
 					thetaStep.setText("3");
 				}
 				
-				else if(calcObj.getParser().getAngleUnits() == 3){
-					calcObj.getParser().getVarList().setVarVal("thetaMax", new Fraction(400,1));
+				else if(mainApp.getParser().getAngleUnits() == 3){
+					mainApp.getParser().getVarList().setVarVal("thetaMax", new Fraction(400,1));
 					thetaMax.setText("400");
-					calcObj.getParser().getVarList().setVarVal("thetaStep", new Fraction(4,1));
+					mainApp.getParser().getVarList().setVarVal("thetaStep", new Fraction(4,1));
 					thetaStep.setText("4");
 				}
 				
-				calcObj.updateGraph();
+				mainApp.updateGraph();
 			}
 		};
 		
-		zoomTrig = new OCButton("zoomTrig", 1, 2, 1, 10, fields, calcObj) {
+		zoomTrig = new OCButton("zoomTrig", 1, 2, 1, 10, fields, mainApp) {
 			public void associatedAction() {
-				calcObj.getParser().getVarList().setVarVal("xMin", new Decimal(-2*Math.PI));
+				mainApp.getParser().getVarList().setVarVal("xMin", new Decimal(-2*Math.PI));
 				xMin.setText("-2pi");
-				calcObj.getParser().getVarList().setVarVal("xMax", new Decimal(2*Math.PI));
+				mainApp.getParser().getVarList().setVarVal("xMax", new Decimal(2*Math.PI));
 				xMax.setText("2pi");
-				calcObj.getParser().getVarList().setVarVal("yMin", new Fraction(-2, 1));
+				mainApp.getParser().getVarList().setVarVal("yMin", new Fraction(-2, 1));
 				yMin.setText("-2");
-				calcObj.getParser().getVarList().setVarVal("yMax", new Fraction(2,1));
+				mainApp.getParser().getVarList().setVarVal("yMax", new Fraction(2,1));
 				yMax.setText("2");
-				calcObj.getParser().getVarList().setVarVal("xStep", new Fraction(1,1));
+				mainApp.getParser().getVarList().setVarVal("xStep", new Fraction(1,1));
 				yMax.setText("1");
-				calcObj.getParser().getVarList().setVarVal("yStep", new Fraction(1,1));
+				mainApp.getParser().getVarList().setVarVal("yStep", new Fraction(1,1));
 				yMax.setText("1");
-				calcObj.getParser().getVarList().setVarVal("thetaMin", new Fraction(0,1));
+				mainApp.getParser().getVarList().setVarVal("thetaMin", new Fraction(0,1));
 				thetaMin.setText("0");
-				if(calcObj.getParser().getAngleUnits() == 1){
-					calcObj.getParser().getVarList().setVarVal("thetaMax", new Decimal(2*Math.PI));
+				if(mainApp.getParser().getAngleUnits() == 1){
+					mainApp.getParser().getVarList().setVarVal("thetaMax", new Decimal(2*Math.PI));
 					thetaMax.setText("2pi");
-					calcObj.getParser().getVarList().setVarVal("thetaStep", new Decimal(Math.PI/360));
+					mainApp.getParser().getVarList().setVarVal("thetaStep", new Decimal(Math.PI/360));
 					thetaStep.setText("2pi/360");
 				}
-				else if(calcObj.getParser().getAngleUnits() == 2){
-					calcObj.getParser().getVarList().setVarVal("thetaMax", new Fraction(360,1));
+				else if(mainApp.getParser().getAngleUnits() == 2){
+					mainApp.getParser().getVarList().setVarVal("thetaMax", new Fraction(360,1));
 					thetaMax.setText("360");
-					calcObj.getParser().getVarList().setVarVal("thetaStep", new Fraction(3,1));
+					mainApp.getParser().getVarList().setVarVal("thetaStep", new Fraction(3,1));
 					thetaStep.setText("3");
 				}
 				
-				else if(calcObj.getParser().getAngleUnits() == 3){
-					calcObj.getParser().getVarList().setVarVal("thetaMax", new Fraction(400,1));
+				else if(mainApp.getParser().getAngleUnits() == 3){
+					mainApp.getParser().getVarList().setVarVal("thetaMax", new Fraction(400,1));
 					thetaMax.setText("400");
-					calcObj.getParser().getVarList().setVarVal("thetaStep", new Fraction(4,1));
+					mainApp.getParser().getVarList().setVarVal("thetaStep", new Fraction(4,1));
 					thetaStep.setText("4");
 				}
 				
 				
 				
-				calcObj.updateGraph();
+				mainApp.updateGraph();
 			}
 		};
 		
@@ -251,16 +251,16 @@ public class GridPropsPanel extends SubPanel {
 	}
 	
 	public void zoom(){
-		String currText = zoomRate.getText();
+		String currText = zoomRate.getField().getText();
 		String ansText = new String();
 		if (!currText.equals(null) && !currText.equals("")
-				&& calcObj != null)
+				&& mainApp != null)
 		{
-			JTextField currField = calcObj.getCurrTextField();
+			JTextField currField = mainApp.getCurrTextField().getField();
 			currField.setText("");
 			try
 			{
-				calcObj.getGraphObj().zoom(calcObj.evalCalc(currText).toDec().getValue());
+				mainApp.getGraphObj().zoom(mainApp.evalCalc(currText).toDec().getValue());
 			} catch (EvalException e) {
 				// TODO Auto-generated catch block
 				//do something
@@ -274,34 +274,34 @@ public class GridPropsPanel extends SubPanel {
 	
 	public void graphAttributeAction(String s, OCTextField field)
 	{
-		String currText = field.getText();
-		if (!currText.equals(null) && !currText.equals("") && calcObj != null)
+		String currText = field.getField().getText();
+		if (!currText.equals(null) && !currText.equals("") && mainApp != null)
 		{
 			try
 			{
-				Value v = calcObj.evalCalc(currText);
-				field.setText(v.toString());
-				calcObj.getParser().getVarList().setVarVal(s, (Number) v);
-				calcObj.updateGraph();
+				Value v = mainApp.evalCalc(currText);
+				field.getField().setText(v.toString());
+				mainApp.getParser().getVarList().setVarVal(s, (Number) v);
+				mainApp.updateGraph();
 			}
 			catch(Exception e)
 			{
-					field.setText("error");
+					field.getField().setText("error");
 			}
 		}
 	}
 	
 	public void refreshAttributes(){
 		try{
-			xMin.setText(calcObj.getParser().getVarList().getVarVal("xMin").toString());
-			xMax.setText(calcObj.getParser().getVarList().getVarVal("xMax").toString());
-			yMin.setText(calcObj.getParser().getVarList().getVarVal("yMin").toString());
-			yMax.setText(calcObj.getParser().getVarList().getVarVal("yMax").toString());
-			xStep.setText(calcObj.getParser().getVarList().getVarVal("xStep").toString());
-			yStep.setText(calcObj.getParser().getVarList().getVarVal("yStep").toString());
-			thetaMin.setText(calcObj.getParser().getVarList().getVarVal("thetaMin").toString());
-			thetaMax.setText(calcObj.getParser().getVarList().getVarVal("thetaMax").toString());
-			thetaStep.setText(calcObj.getParser().getVarList().getVarVal("thetaStep").toString());
+			xMin.setText(mainApp.getParser().getVarList().getVarVal("xMin").toString());
+			xMax.setText(mainApp.getParser().getVarList().getVarVal("xMax").toString());
+			yMin.setText(mainApp.getParser().getVarList().getVarVal("yMin").toString());
+			yMax.setText(mainApp.getParser().getVarList().getVarVal("yMax").toString());
+			xStep.setText(mainApp.getParser().getVarList().getVarVal("xStep").toString());
+			yStep.setText(mainApp.getParser().getVarList().getVarVal("yStep").toString());
+			thetaMin.setText(mainApp.getParser().getVarList().getVarVal("thetaMin").toString());
+			thetaMax.setText(mainApp.getParser().getVarList().getVarVal("thetaMax").toString());
+			thetaStep.setText(mainApp.getParser().getVarList().getVarVal("thetaStep").toString());
 		}
 		catch(Exception e){
 			System.out.println("error with refreshing graphProps panel");

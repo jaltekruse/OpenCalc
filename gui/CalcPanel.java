@@ -28,47 +28,31 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import tree.*;
-import tree.Number;
 
 public class CalcPanel extends SubPanel {
 
 	private static final long serialVersionUID = 1L;
 	private final JTextArea terminal;
-	private NewCalc calcObj;
+	private MainApplet mainApp;
 	private OCTextField entryLine;
+	private JTextField entryLineField;
 	private OCButton solve;
 	private JScrollPane termScrollPane;
-	private ArrayList<String> entryHistory;
-	private int currHistoryVal;
 	private Value treeResult;
 	private ExpressionParser parser;
 	private static final String startMessage = "Type an expression.";
 	
-	private double listResult, treeDouble;
 	private String eqtn;
-	private File logFile;
-    private FileOutputStream out;
-    private PrintStream p;
-    private Scanner docScanner;
     private JRadioButton exact, dec;
     private ButtonGroup answersInSelect;
     private SubPanel answersInPanel;
@@ -76,23 +60,21 @@ public class CalcPanel extends SubPanel {
     //tells the current selection for output, 1 = exact, 2 = decimal
     private int answersIn;
 
-	public CalcPanel(final NewCalc currCalcObj) {
+	public CalcPanel(final MainApplet currmainApp) {
 
-		calcObj = currCalcObj;
-		entryHistory = new ArrayList<String>();
-		terminal = new JTextArea(14, 20);
+		mainApp = currmainApp;
+		terminal = new JTextArea(10, 20);
 		Font terminalFont = new Font("newFont", 1, 14);
-		parser = calcObj.getParser();
-		
+		parser = mainApp.getParser();
 		
 		terminal.setFont(terminalFont);
+		terminal.setEditable(false);
 		termScrollPane = new JScrollPane(terminal);
 		termScrollPane.setWheelScrollingEnabled(true);
-		currHistoryVal = -1;
-
+		
 		GridBagConstraints tCon = new GridBagConstraints();
 
-		entryLine = new OCTextField(true, 16, 1, 1, 0, 10, this, calcObj) {
+		entryLine = new OCTextField(true, 16, 1, 1, 0, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
 					solverAction();
@@ -105,44 +87,31 @@ public class CalcPanel extends SubPanel {
 			}
 		};
 		
-		entryLine.setText(startMessage);
-		entryLine.addFocusListener(new FocusListener(){
+		entryLineField = entryLine.getField();
+		entryLineField.setText(startMessage);
+		entryLineField.addFocusListener(new FocusListener(){
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				// TODO Auto-generated method stub
-				if (entryLine.getText().equals(startMessage)){
-					entryLine.setSelectionStart(0);
-					entryLine.setSelectionEnd(startMessage.length());
+				if (entryLineField.getText().equals(startMessage)){
+					entryLineField.setSelectionStart(0);
+					entryLineField.setSelectionEnd(startMessage.length());
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				// TODO Auto-generated method stub
 				
-			}
+			}// TODO Auto-generated method stub
+				
 			
 		});
 		
-		entryLine.addKeyListener(new KeyListener(){
+		entryLineField.addKeyListener(new KeyListener(){
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
-				OCTextField currField = calcObj.getCurrTextField();
-				if (e.getKeyCode() == KeyEvent.VK_UP){
-					if(currHistoryVal < entryHistory.size() - 1){
-						currHistoryVal++;
-						currField.setText(entryHistory.get(entryHistory.size()- 1 - currHistoryVal));
-					}
-				}
-				if (e.getKeyCode() == KeyEvent.VK_DOWN){
-					if(currHistoryVal > 0){
-						currHistoryVal--;
-						currField.setText(entryHistory.get(entryHistory.size()- 1 - currHistoryVal));
-					}
-				}
 			}
 
 			@Override
@@ -154,7 +123,7 @@ public class CalcPanel extends SubPanel {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				// TODO Auto-generated method stub
-				OCTextField currField = calcObj.getCurrTextField();
+				JTextField currField = mainApp.getCurrTextField().getField();
 				String s = Character.toString(e.getKeyChar());
 				if (currField.getCaretPosition() == 0 && 
 						Operator.requiresPrevious(s) && currField.getText().equals("")){
@@ -166,10 +135,10 @@ public class CalcPanel extends SubPanel {
 			
 		});
 
-		solve = new OCButton("solve", 1, 1, 5, 10, this, calcObj) {
+		solve = new OCButton("solve", "Evaluate the current expression.", 1, 1, 5, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
-					solverAction();
+					entryLine.primaryAction();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -202,7 +171,6 @@ public class CalcPanel extends SubPanel {
 		answersInSelect = new ButtonGroup();
 		answersInSelect.add(exact);
 		answersInSelect.add(dec);
-
 		
 		exact.setSelected(true);
 		
@@ -228,20 +196,18 @@ public class CalcPanel extends SubPanel {
 		this.add(answersInPanel, tCon);
 	}
 
-	public OCTextField getTextTerminal() {
+	public OCTextField getEntryLine() {
 		return entryLine;
 	}
 
 	public void solverAction() throws Exception{
 		//System.out.println(getErrorLog());
-		eqtn = entryLine.getText();
-		if (!eqtn.equals(null) && !eqtn.equals("")) {
-			entryHistory.add(eqtn);
+		eqtn = entryLineField.getText();
+		if (!eqtn.equals(null) && !eqtn.equals("") && !eqtn.equals(startMessage)) {
 			terminal.append(">  " + eqtn + "\n");
 			try{
 				treeResult = parser.ParseExpression(eqtn);
-				Value result = treeResult.eval();
-				System.out.println(treeResult.toString());
+				treeResult = treeResult.eval();
 				treeResult = treeResult.eval();
 				if (treeResult instanceof Fraction){
 					//we need to decide where method call should go,
@@ -260,16 +226,16 @@ public class CalcPanel extends SubPanel {
 			}
 			catch (ParseException e){
 				terminal.append("Parsing exception\n");
-				terminal.append("message: " + e.getMessage()+ "\n");
+				terminal.append(e.getMessage()+ "\n");
 			}
 			catch (EvalException e){
 				terminal.append("Evaluating exception\n");
-				terminal.append("message: " + e.getMessage() + "\n");
+				terminal.append(e.getMessage() + "\n");
 			}
-			entryLine.setText("");
+			entryLineField.setText("");
 			JScrollBar tempScroll = termScrollPane.getVerticalScrollBar();
 			tempScroll.setValue(tempScroll.getMaximum());
-			currHistoryVal = -1;
+			mainApp.setCurrTextField(entryLine);
 		}
 	}
 

@@ -46,7 +46,7 @@ public class BinExpression extends Expression {
 		Value leftVal = leftChild.eval();
 
 		Value rightVal = rightChild.eval();
-		
+		//System.out.println(leftVal.toString() + "  " + op.name() + "  " + rightVal.toString());
 		switch(op){
 			case ADD:		return leftVal.add(rightVal);
 			case SUBTRACT:	return leftVal.subtract(rightVal);
@@ -261,6 +261,12 @@ public class BinExpression extends Expression {
 
 	@Override
 	public Value assign(Value v) throws EvalException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Value squareRoot() {
 		// TODO Auto-generated method stub
 		return null;
 	}

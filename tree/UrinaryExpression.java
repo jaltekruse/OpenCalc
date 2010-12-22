@@ -39,6 +39,7 @@ public class UrinaryExpression extends Expression {
 				case NOTHING:	return childVal.eval();
 				case PAREN:		return childVal.eval();
 				case NEG:		return childVal.neg();
+				case SQRT:		return childVal.squareRoot();
 				default:
 					throw new EvalException("unrecognized operation");
 			}
@@ -234,6 +235,12 @@ public class UrinaryExpression extends Expression {
 
 	@Override
 	public Value assign(Value v) throws EvalException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Value squareRoot() throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
