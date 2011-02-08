@@ -33,9 +33,9 @@ public class DivisionGraphic extends BinExpressionGraphic {
 					symbolX1, symbolY2);
 		}
 		else if (style == Style.HORIZONTAL){
-			super.getCompExGraphic().getGraphics().setColor(Color.gray);
-			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
-			super.getCompExGraphic().getGraphics().setColor(Color.black);
+//			super.getCompExGraphic().getGraphics().setColor(Color.gray);
+//			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
+//			super.getCompExGraphic().getGraphics().setColor(Color.black);
 			super.getCompExGraphic().getGraphics().drawLine(symbolX1, symbolY1 + 3, symbolX2, symbolY1 + 3);
 		}
 	}
