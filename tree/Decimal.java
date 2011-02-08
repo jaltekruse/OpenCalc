@@ -3,10 +3,9 @@ package tree;
 public class Decimal extends Number{
 	
 	private double value;
-	private static ExpressionParser parser;
 	
 	public Decimal(ExpressionParser p){
-		parser = p;
+		super(p);
 	}
 	
 	public Decimal(double num){
@@ -38,7 +37,7 @@ public class Decimal extends Number{
 	@Override
 	public Value multiply(Fraction f) {
 		// TODO Auto-generated method stub
-		return new Decimal(value * Fraction.Frac2Dec(f).value);
+		return new Decimal(value * Fraction.frac2Dec(f).value);
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public class Decimal extends Number{
 	@Override
 	public Value add(Fraction f) {
 		// TODO Auto-generated method stub
-		return new Decimal(value + Fraction.Frac2Dec(f).value);
+		return new Decimal(value + Fraction.frac2Dec(f).value);
 	}
 
 	@Override
@@ -86,7 +85,7 @@ public class Decimal extends Number{
 	@Override
 	public Value subtract(Fraction f) {
 		// TODO Auto-generated method stub
-		return new Decimal(value - Fraction.Frac2Dec(f).value);
+		return new Decimal(value - Fraction.frac2Dec(f).value);
 	}
 
 	@Override
@@ -110,7 +109,7 @@ public class Decimal extends Number{
 	@Override
 	public Value divide(Fraction f) {
 		// TODO Auto-generated method stub
-		return new Decimal(value / Fraction.Frac2Dec(f).value);
+		return new Decimal(value / Fraction.frac2Dec(f).value);
 	}
 
 	@Override
@@ -134,7 +133,7 @@ public class Decimal extends Number{
 	@Override
 	public Value power(Fraction f) {
 		// TODO Auto-generated method stub
-		return new Decimal(Math.pow(value, Fraction.Frac2Dec(f).value));
+		return new Decimal(Math.pow(value, Fraction.frac2Dec(f).value));
 	}
 
 	@Override
@@ -197,10 +196,10 @@ public class Decimal extends Number{
 	 */
 	private double convertAngle2Rad(double angle) {
 		// TODO Auto-generated method stub
-		if(parser.getAngleUnits()== 2){
+		if(getParser().getAngleUnits()== 2){
 			angle *= (Math.PI/180);
 		}
-		else if(parser.getAngleUnits() == 3){
+		else if(getParser().getAngleUnits() == 3){
 			angle *= (Math.PI/200);
 		}
 		return angle;
@@ -213,10 +212,10 @@ public class Decimal extends Number{
 	 */
 	private double convertAngleFromRad(double angle) {
 		// TODO Auto-generated method stub
-		if(parser.getAngleUnits() == 2){
+		if(getParser().getAngleUnits() == 2){
 			angle *= (180/Math.PI);
 		}
-		else if(parser.getAngleUnits() == 3){
+		else if(getParser().getAngleUnits() == 3){
 			angle *= (200/Math.PI);
 		}
 		return angle;
@@ -244,5 +243,17 @@ public class Decimal extends Number{
 	public Value squareRoot() {
 		// TODO Auto-generated method stub
 		return new Decimal(Math.sqrt(value));
+	}
+
+	@Override
+	public Decimal log() throws EvalException {
+		// TODO Auto-generated method stub
+		return new Decimal(Math.log10(value));
+	}
+
+	@Override
+	public Decimal natLog() throws EvalException {
+		// TODO Auto-generated method stub
+		return new Decimal(Math.log(value));
 	}
 }

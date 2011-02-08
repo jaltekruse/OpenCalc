@@ -23,15 +23,24 @@ public class FunctionsPane extends SubPanel {
 	private Color[] graphColors = { Color.GREEN.darker(), Color.BLUE.darker(),
 			Color.MAGENTA.darker(), Color.ORANGE.darker(), Color.cyan.darker(),
 			Color.RED.darker()};
+	
+//	private Color[] graphColors = { makeTransparent(Color.GREEN.darker()), 
+//			makeTransparent(Color.BLUE.darker()), makeTransparent(Color.MAGENTA.darker())
+//			, makeTransparent(Color.ORANGE.darker()), makeTransparent(Color.cyan.darker()),
+//			makeTransparent(Color.RED.darker())};
+	
 	private String[] graphTypes = {"cart", "pol"};
-	private Graph graph;
+	private GraphOld graphOld;
 	private Function[] functions;
 	private MainApplet mainApp;
 	
 	public FunctionsPane(MainApplet currmainApp){
 		mainApp = currmainApp;
-		graph = mainApp.getGraphObj();
-		functions = graph.getFunctions();
+		graphOld = mainApp.getGraphObj();
+		
+		//function objects(with data about equations, colors, trace values, etc.) are stored
+		//in the graph itself, this list is grabbed from the graph here
+		functions = graphOld.getFunctions();
 		
 		GridBagConstraints pCon = new GridBagConstraints();
 		pCon.gridx = 0;
@@ -63,4 +72,9 @@ public class FunctionsPane extends SubPanel {
 	public String[] getGraphTypes(){
 		return graphTypes;
 	}
+	
+//	private Color makeTransparent(Color c){
+//		System.out.println("make tans");
+//		return new Color(c.getRed(), c.getGreen(), c.getBlue(), 150);
+//	}
 }

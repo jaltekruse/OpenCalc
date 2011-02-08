@@ -40,6 +40,8 @@ public class UrinaryExpression extends Expression {
 				case PAREN:		return childVal.eval();
 				case NEG:		return childVal.neg();
 				case SQRT:		return childVal.squareRoot();
+				case LOG:		return childVal.log();
+				case LN:		return childVal.natLog();
 				default:
 					throw new EvalException("unrecognized operation");
 			}
@@ -241,6 +243,18 @@ public class UrinaryExpression extends Expression {
 
 	@Override
 	public Value squareRoot() throws EvalException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Value log() throws EvalException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Value natLog() throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}

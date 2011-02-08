@@ -188,4 +188,16 @@ public class Matrix extends Number {
 		return null;
 	}
 
+	@Override
+	public Value log() throws EvalException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Value natLog() throws EvalException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

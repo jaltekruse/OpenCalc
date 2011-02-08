@@ -1,0 +1,597 @@
+changing var names in graph class to make them graph.ATTRIBUTE
+
+					//these four statements are for resizing the grid after zooming
+					if((graph.X_MAX-graph.X_MIN)/graph.X_STEP >= 24){
+						varList.setVarVal("xStep", new Decimal((int)(graph.X_MAX-graph.X_MIN)/20));
+						graph.X_STEP = varList.getVarVal("xStep").toDec().getValue();
+					}
+					
+					else if((graph.X_MAX-graph.X_MIN)/graph.X_STEP <= 16 && graph.X_STEP >= 2){
+						varList.setVarVal("xStep", new Decimal((int)(graph.X_MAX-graph.X_MIN)/20));
+						graph.X_STEP = varList.getVarVal("xStep").toDec().getValue();
+					}
+					
+					if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP >= 24){
+						varList.setVarVal("yStep", new Decimal((int)(graph.Y_MAX-graph.Y_MIN)/20));
+						graph.Y_STEP = varList.getVarVal("yStep").toDec().getValue();
+					}
+					
+					else if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP <= 16 && graph.Y_STEP >= 2){ 
+						varList.setVarVal("yStep", new Decimal((int)(graph.Y_MAX-graph.Y_MIN)/20));
+						graph.Y_STEP = varList.getVarVal("yStep").toDec().getValue();
+					}
+				}
+				catch (EvalException e)
+				{
+					// TODO Auto-generated catch block
+					//do something to show there was an error
+				}
+				
+				graph.X_PIXEL = (graph.X_MAX - graph.X_MIN) / graph.X_SIZE;
+				graph.Y_PIXEL = (graph.Y_MAX - graph.Y_MIN) / graph.Y_SIZE;
+
+				drawAxis(g);
+				//drawPolarAxis(g);
+				
+				Function f = null;
+				for (int i = 0; i < NUM_GRAPHS; i++){
+					f = functions[i];
+					if (f != null){
+						if (f.isGraphing()){
+							if(f.getGraphType() == 1){
+								graphCart(f, g);
+							}
+							else if(f.getGraphType() == 2){
+								graphPolar(f, g);
+							}
+							else if(f.getGraphType() == 4){
+								graphCart(f, g);
+							}
+						}
+							
+					}
+				}
+				if(refPoint)
+					drawMousePlacement(g);
+
+			}
+		};
+
+		graph.setBorder(BorderFactory.createTitledBorder(getBorder(), "graph"));
+		
+		graph.addMouseListener(new MouseListener(){
+			private int xStart, yStart;
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				refPoint = true;
+				mouseRefX = e.getX();
+				mouseRefY= e.getY();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				refPoint = false;
+				repaint();
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				mouseX = e.getX();
+				mouseY = e.getY();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		graph.addMouseMotionListener(new MouseMotionListener(){
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+				varList.updateVarVal("xMin", (mouseX - e.getX())*graph.X_PIXEL);
+				varList.updateVarVal("xMax", (mouseX - e.getX())*graph.X_PIXEL);
+				varList.updateVarVal("yMin", (e.getY()- mouseY)*graph.Y_PIXEL);
+				varList.updateVarVal("yMax", (e.getY()- mouseY)*graph.Y_PIXEL);
+				repaint();
+				mouseX = e.getX();
+				mouseY = e.getY();
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				// TODO Auto-generated method stub
+				mouseRefX = e.getX();
+				mouseRefY= e.getY();
+				repaint();
+			}
+			
+		});
+		
+		this.addMouseWheelListener(new MouseWheelListener(){
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					zoom(100 - e.getWheelRotation() * 5);
+				} catch (EvalException e1) {
+					// TODO Auto-generated catch block
+					//need to do something for errors
+				}
+			}
+			
+		});
+		GridBagConstraints bCon = new GridBagConstraints();
+		bCon.fill = GridBagConstraints.BOTH;
+		bCon.weightx = 1;
+		bCon.weighty = 1;
+		bCon.gridheight = 7;
+		bCon.gridwidth = 1;
+		bCon.gridx = 0;
+		bCon.gridy = 0;
+		this.add(graph, bCon);
+		this.setPreferredSize(new Dimension(xSize, ySize));
+		
+		SubPanel props = new SubPanel();
+		OCButton zoomPlus = new OCButton("Zoom+", 1, 1, 0, 0, props, mainApp){
+			public void associatedAction(){
+				try {
+					zoom(120);
+				} catch (EvalException e) {
+					// TODO Auto-generated catch block
+					//think of something to do here
+				}
+			}
+		};
+		
+		OCButton zoomMinus = new OCButton("Zoom-", 1, 1, 1, 0, props, mainApp){
+			public void associatedAction(){
+				try {
+					zoom(80);
+				} catch (EvalException e) {
+					// TODO Auto-generated catch block
+					//need something here too
+				}
+			}
+		};
+		
+		bCon.fill = GridBagConstraints.BOTH;
+		bCon.weightx = .1;
+		bCon.weighty = .1;
+		bCon.gridheight = 1;
+		bCon.gridwidth = 1;
+		bCon.gridx = 0;
+		bCon.gridy = 7;
+		this.add(props, bCon);
+	}
+	 /**
+	  * 
+	  * @param rate
+	 * @throws EvalException 
+	  */
+	public void zoom(double rate) throws EvalException{
+		graph.X_MIN = varList.getVarVal("xMin").toDec().getValue();
+		graph.X_MAX = varList.getVarVal("xMax").toDec().getValue();
+		graph.Y_MIN = varList.getVarVal("yMin").toDec().getValue();
+		graph.Y_MAX = varList.getVarVal("yMax").toDec().getValue();
+		
+		//hacked solution to prevent graphing, the auto-rescaling of the 
+		//grid stops working after the numbers get too big
+		if (graph.X_MIN < -7E8 || graph.X_MAX > 7E8 || graph.Y_MIN < -7E8 || graph.Y_MAX > 7E8){
+			if (rate < 100)
+			{//if the user is trying to zoom out farther, do nothing
+				return;
+			}
+		}
+		
+		varList.updateVarVal("xMin", -1 * (graph.X_MAX-graph.X_MIN)*(100-rate)/100);
+		varList.updateVarVal("xMax", (graph.X_MAX-graph.X_MIN)*(100-rate)/100);
+		varList.updateVarVal("yMin", -1 * (graph.Y_MAX-graph.Y_MIN)*(100-rate)/100);
+		varList.updateVarVal("yMax", (graph.Y_MAX-graph.Y_MIN)*(100-rate)/100);
+		
+		repaint();
+	}
+	
+	public Function[] getFunctions(){
+		return functions;
+	}
+
+	public void setLineSize(int sizeInPixels) {
+		graph.LINE_SIZE = sizeInPixels;
+	}
+
+	private void drawMousePlacement(Graphics g){
+		float currX = (float) ((mouseRefX * graph.X_PIXEL) + graph.X_MIN);
+		float currY = (float) (graph.Y_MAX - (mouseRefY * graph.Y_PIXEL));
+		String ptText = "(" + currX + ", " + currY + ")";
+		int width = g.getFontMetrics().stringWidth(ptText);
+		g.setColor(Color.white);
+		g.fillRect( graph.X_SIZE - width - 5, graph.Y_SIZE - 20, width, 12);
+		g.setColor(Color.black);
+		g.drawString(ptText, graph.X_SIZE - width - 5, graph.Y_SIZE - 10);
+	}
+	
+	private void ptOn(double a, double b, Graphics g) {
+		if (a <= graph.X_MAX && a >= graph.X_MIN && b <= graph.Y_MAX && b >= graph.Y_MIN) {
+			g.fillRect(roundDouble((a - graph.X_MIN) / graph.X_PIXEL - graph.LINE_SIZE/2.0),
+					roundDouble((graph.Y_SIZE - graph.LINE_SIZE/2.0) - (b - graph.Y_MIN) / graph.Y_PIXEL),
+					graph.LINE_SIZE, graph.LINE_SIZE);
+			// g.fillOval(roundDouble((a - graph.X_MIN)/graph.X_PIXEL), graph.Y_SIZE -
+			// roundDouble((b - graph.Y_MIN)/graph.Y_PIXEL),
+			// 2*graph.LINE_SIZE, 2*graph.LINE_SIZE);
+			// System.out.println("(" + a + "," + b + ")");
+			// System.out.println("(" + roundDouble(a/graph.X_PIXEL) + "," +
+			// roundDouble(b/graph.Y_PIXEL) + ")" + "\n");
+		}
+	}
+	
+	private int gridXPtToScreen(double x){
+		return roundDouble((x - graph.X_MIN) / graph.X_PIXEL);
+	}
+	
+	private int gridYPtToScreen(double y){
+		return (graph.Y_SIZE - graph.LINE_SIZE) - roundDouble((y - graph.Y_MIN) / graph.Y_PIXEL);
+	}
+	
+	private void polPtOn(double r, double theta, Graphics g){
+		ptOn(r*Math.cos(theta), r*Math.sin(theta), g);
+	}
+
+	private void drawPolarAxis(Graphics g){
+		
+		setLineSize(1);
+		int numCircles = 0; 
+		if (graph.X_MAX > graph.Y_MAX || graph.X_MAX > Math.abs(graph.Y_MIN))
+			numCircles = (int) Math.abs(graph.X_MAX - graph.X_MIN);
+		else if (graph.Y_MAX > graph.X_MAX || graph.Y_MAX > Math.abs(graph.X_MIN)){
+			numCircles = (int) Math.abs(graph.Y_MAX - graph.Y_MIN);
+		}
+		else
+			numCircles = (int) graph.X_MAX;
+		int i = roundDouble(graph.Y_MIN);
+		for ( ; i <= numCircles; i++){
+			double currT = 0;
+			double lastX = i * POL_Agraph.X_STEP;
+			double lastY = 0, currX, currY;
+			for(int j = 1; j < 240; j++){
+				currT += POL_STEP * 2;
+				currX = i * Math.cos(currT);
+				currY = i * Math.sin(currT);
+				drawLineSeg(lastX, lastY, currX, currY, Color.gray, g);
+				lastX = currX;
+				lastY = currY;
+			}
+		}
+	}
+
+	private void drawAxis(Graphics g) {
+
+		// finds the fist factor of the graph.Y_STEP on the screen
+		// used to draw the first dash mark on the y-axis
+		double tempY = (int) (graph.Y_MIN / graph.Y_STEP);
+		tempY *= graph.Y_STEP;
+		int width;
+		int height;
+
+		if (graph.X_MIN <= 0 && graph.X_MAX >= 0) {
+			while (tempY < graph.Y_MAX) {
+				setLineSize(1);
+				drawLineSeg(graph.X_MIN, tempY, graph.X_MAX, tempY, Color.GRAY, g);
+				setLineSize(graph.LINE_SIZE_DEFAULT);
+				drawLineSeg(2 * graph.LINE_SIZE * graph.X_PIXEL, tempY, -1 * graph.LINE_SIZE
+						* graph.X_PIXEL, tempY, Color.BLACK, g);
+				if(tempY%(NUM_FREQ * graph.Y_STEP) == 0 && tempY != 0){
+					String ptText = Double.toString(tempY);
+					width = g.getFontMetrics().stringWidth(ptText);
+					height = g.getFontMetrics().getHeight();
+					g.setColor(Color.white);
+					g.fillRect(gridXPtToScreen(0) - width - 2*graph.LINE_SIZE, gridYPtToScreen(tempY)- 2*graph.LINE_SIZE, width, 11);
+					g.setColor(Color.black);
+					g.drawString(ptText, gridXPtToScreen(0) - width - 2*graph.LINE_SIZE, gridYPtToScreen(tempY)+ 2*graph.LINE_SIZE);
+				} 
+				tempY += graph.Y_STEP;
+			}
+		} else {
+			if(graph.X_MIN >= 0){
+				while (tempY < graph.Y_MAX) {
+					setLineSize(1);
+					drawLineSeg(graph.X_MIN, tempY, graph.X_MAX, tempY, Color.GRAY, g);
+					setLineSize(graph.LINE_SIZE_DEFAULT);
+					g.setColor(Color.BLACK);
+					ptOn(graph.X_MIN + 2 * graph.X_PIXEL, tempY, g);
+					if(tempY%(NUM_FREQ* graph.Y_STEP) == 0 && tempY != 0){
+						String ptText = Double.toString(tempY);
+						width = g.getFontMetrics().stringWidth(ptText);
+						height = g.getFontMetrics().getHeight();
+						g.setColor(Color.white);
+						g.fillRect(gridXPtToScreen(graph.X_MIN) + 8, gridYPtToScreen(tempY)- 4, width, 11);
+						g.setColor(Color.black);
+						g.drawString(ptText, gridXPtToScreen(graph.X_MIN) + 8, gridYPtToScreen(tempY)+ 6);
+					} 
+					tempY += graph.Y_STEP;
+				}
+			}
+			else if(graph.X_MAX <= 0){
+				while (tempY < graph.Y_MAX) {
+					setLineSize(1);
+					drawLineSeg(graph.X_MIN, tempY, graph.X_MAX, tempY, Color.GRAY, g);
+					setLineSize(graph.LINE_SIZE_DEFAULT);
+					g.setColor(Color.BLACK);
+					ptOn(graph.X_MAX - 1 * graph.X_PIXEL, tempY, g);
+					if(tempY%(NUM_FREQ* graph.Y_STEP) == 0 && tempY != 0){
+						String ptText = Double.toString(tempY);
+						width = g.getFontMetrics().stringWidth(ptText);
+						height = g.getFontMetrics().getHeight();
+						g.setColor(Color.white);
+						g.fillRect(gridXPtToScreen(graph.X_MAX) - width - 4, gridYPtToScreen(tempY)- 4, width, 11);
+						g.setColor(Color.black);
+						g.drawString(ptText, gridXPtToScreen(graph.X_MAX)- width - 4, gridYPtToScreen(tempY)+ 6);
+					}
+					tempY += graph.Y_STEP;
+					}
+			}
+		}
+		
+		// finds the fist factor of the graph.X_STEP on the screen
+		// used to draw the first dash mark on the x-axis
+		double tempX = (int) (graph.X_MIN / graph.X_STEP);
+		tempX *= graph.X_STEP;
+		height = g.getFontMetrics().getHeight();
+
+		int tempWidth = g.getFontMetrics().stringWidth(Double.toString(tempX)) + 20;
+		if(tempWidth > (int) ((graph.X_MAX-graph.X_MIN)/(graph.X_STEP * NUM_FREQ))){
+			NUM_FREQ = (int) (((graph.X_MAX-graph.X_MIN)/(graph.X_STEP))/((graph.X_SIZE)/tempWidth)) + 1;
+		}
+		if (graph.Y_MIN <= 0 && graph.Y_MAX >= 0) {
+			while (tempX < graph.X_MAX) {
+				setLineSize(1);
+				drawLineSeg(tempX, graph.Y_MIN, tempX, graph.Y_MAX, Color.GRAY, g);
+				setLineSize(graph.LINE_SIZE_DEFAULT);
+				drawLineSeg(tempX, 2 * graph.LINE_SIZE * graph.Y_PIXEL, tempX, -1
+						* graph.LINE_SIZE * graph.Y_PIXEL, Color.BLACK, g);
+				
+				if(tempX%(NUM_FREQ * graph.X_STEP) == 0 && tempX != 0){
+					String ptText = Double.toString(tempX);
+					width = g.getFontMetrics().stringWidth(ptText);
+					height = g.getFontMetrics().getHeight();
+					g.setColor(Color.white);
+					g.fillRect(gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(0) - 18, width + 2, height - 4);
+					g.setColor(Color.black);
+					g.drawString(ptText, gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(0) - 8);
+				} 
+				tempX += graph.X_STEP;
+			}
+		} else {
+			if( graph.Y_MIN >= 0){
+				while (tempX < graph.X_MAX) {
+					setLineSize(1);
+					drawLineSeg(tempX, graph.Y_MIN, tempX, graph.Y_MAX, Color.GRAY, g);
+					setLineSize(graph.LINE_SIZE_DEFAULT);
+					g.setColor(Color.BLACK);
+					ptOn(tempX, graph.Y_MIN, g);
+					if(tempX%(NUM_FREQ * graph.X_STEP) == 0 && tempX != 0){
+						String ptText = Double.toString(tempX);
+						width = g.getFontMetrics().stringWidth(ptText);
+						height = g.getFontMetrics().getHeight();
+						g.setColor(Color.white);
+						g.fillRect(gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MIN) - 18, width + 2, height - 4);
+						g.setColor(Color.black);
+						g.drawString(ptText, gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MIN) - 8);
+					} 
+					tempX += graph.X_STEP;
+				}
+			}
+			if( graph.Y_MAX <= 0){
+				while (tempX < graph.X_MAX) {
+					setLineSize(1);
+					drawLineSeg(tempX, graph.Y_MIN, tempX, graph.Y_MAX, Color.GRAY, g);
+					setLineSize(graph.LINE_SIZE_DEFAULT);
+					g.setColor(Color.BLACK);
+					ptOn(tempX, graph.Y_MAX - 1 * graph.LINE_SIZE * graph.Y_PIXEL, g);
+					if(tempX%(NUM_FREQ * graph.X_STEP) == 0 && tempX != 0){
+						String ptText = Double.toString(tempX);
+						width = g.getFontMetrics().stringWidth(ptText);
+						height = g.getFontMetrics().getHeight();
+						g.setColor(Color.white);
+						g.fillRect(gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MAX) + 12, width + 2, height - 4);
+						g.setColor(Color.black);
+						g.drawString(ptText, gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MAX) + 22);
+					} 
+					tempX += graph.X_STEP;
+				}
+			}
+		}
+
+		if (graph.X_MIN <= 0 && graph.X_MAX >= 0)
+			drawLineSeg(0, graph.Y_MIN, 0, graph.Y_MAX, Color.BLACK, g);
+
+		if (graph.Y_MIN <= 0 && graph.Y_MAX >= 0)
+			drawLineSeg(graph.X_MIN, 0, graph.X_MAX, 0, Color.BLACK, g);
+	}
+
+	protected void drawLineSeg(double x1, double y1, double x2, double y2,
+			Color color, Graphics g) {
+		
+		//right now this ignores the graph.LINE_SIZE currently set, but it draws much faster than before
+		//I'll modify it to handle line thickness soon
+		g.setColor(color);
+		g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1), gridXPtToScreen(x2), gridYPtToScreen(y2));
+		if (graph.LINE_SIZE == 2){
+			g.drawLine(gridXPtToScreen(x1)+1, gridYPtToScreen(y1)+1, gridXPtToScreen(x2)+1, gridYPtToScreen(y2));
+		}
+
+	}
+
+	public int roundDouble(double a) {
+		if (a % 1 >= .5)
+			return (int) a + 1;
+		else
+			return (int) a;
+	}
+
+	public void graphCart(Function f, Graphics g) {
+		String eqtn = f.getFuncEqtn();
+		Var ind = f.getIndependentVar();
+		Var dep = f.getDependentVar();
+		
+		//used to temporarily store the value stored in the independent and dependent vars,
+		//this will allow it to be restored after graphing, so that if in the terminal a
+		//value was assingned to x, it will not be overriden by the action of graphing
+		
+		Number xVal = ind.getValue();
+		Number yVal = dep.getValue();
+		Color color = f.getColor();
+		boolean tracing = f.isTracingPt();
+		double tracePt = f.getTraceVal();
+		boolean isConnected = f.isConneted();
+		boolean takeIntegral = f.isTakingIntegral();
+		double a = f.getStartIntegral();
+		double b = f.getEndIntegral();
+		double derivative = f.getDerivative();
+		boolean deriving = f.isDeriving();
+		
+		double lastX, lastY, currX, currY;
+		g.setColor(color);
+		try{
+			Value expression = parser.ParseExpression(eqtn);
+			ind.setValue(new Decimal(graph.X_MIN));
+			expression.eval();
+			lastX = ind.getValue().toDec().getValue();
+			lastY = dep.getValue().toDec().getValue();
+			for (int i = 1; i < graph.X_SIZE; i += 2) {
+				ind.updateValue(2 * graph.X_PIXEL);
+				expression.eval();
+				currX = ind.getValue().toDec().getValue();
+				currY = dep.getValue().toDec().getValue();
+	
+				if (isConnected){
+					drawLineSeg(lastX, lastY, currX, currY, color, g);
+				}
+	
+				if (takeIntegral) {
+					if (currX >= a && currX <= b) {
+						color = color.brighter();
+						if (currY < graph.Y_MAX && currY > graph.Y_MAX)
+							drawLineSeg(currX, 0, currX, graph.Y_MAX, color, g);
+						else if (currY < graph.Y_MAX && currY > graph.Y_MIN)
+							drawLineSeg(currX, 0, currX, currY, color, g);
+						else if (currY <= graph.Y_MIN)
+							drawLineSeg(currX, 0, currX, graph.Y_MIN, color, g);
+						else if (currY >= graph.Y_MAX)
+							drawLineSeg(currX, 0, currX, graph.Y_MAX, color, g);
+						else
+							;// do nothing
+						color = color.darker();
+					}
+				}
+				lastX = ind.getValue().toDec().getValue();
+				lastY = dep.getValue().toDec().getValue();
+			}
+			if (tracing) {
+				g.setColor(Color.black);
+				ind.setValue(new Decimal(tracePt));
+				
+				drawTracer(tracePt, expression.eval().toDec().getValue(), g);
+			}
+			//draws a line that is always 20 pixels in length, this is broken, will fix later
+			if (deriving)
+			{//this will be redone later
+				/*
+				CURRCALC.parse(eqtn);
+				double slope = CURRCALC.deriveAtPoint(derivative);
+				ind.setValue(derivative);
+				double depVal = CURRCALC.solve();
+				double xChange = Math.sin(Math.atan(slope))*20;
+				double yChange = 20 - xChange;
+				if(slope > 1)
+					yChange = -1*yChange;
+				drawLineSeg(derivative - xChange*graph.X_PIXEL, depVal - yChange*graph.Y_PIXEL, 
+						derivative + xChange*graph.X_PIXEL, depVal + yChange*graph.Y_PIXEL, new Color(255, 69, 0), g);
+				*/
+			}
+			
+			//restore the previous values of x and y
+			ind.setValue(xVal);
+			dep.setValue(yVal);
+			
+		}
+		catch(Exception e)
+		{
+			System.out.println("error while drawing graph");
+		}
+		
+	}
+	
+	public void graphPolar(Function f, Graphics g) {
+		String eqtn = f.getFuncEqtn();
+		Var ind = f.getIndependentVar();
+		Var dep = f.getDependentVar();
+		Color color = f.getColor();
+		boolean tracing = f.isTracingPt();
+		double tracePt = f.getTraceVal();
+		boolean isConnected = f.isConneted();
+		boolean takeIntegral = f.isTakingIntegral();
+		double a = f.getStartIntegral();
+		double b = f.getEndIntegral();
+		int angleUnits = parser.getAngleUnits();
+		setLineSize(LINE_SIZE_DEFAULT);
+		
+		double currR, currT, lastX, lastY, currX, currY;
+		g.setColor(color);
+		
+		try{
+			ind.setValue(new Decimal(THETA_MIN));
+			Value expression = parser.ParseExpression(eqtn);
+			expression.eval();
+			currR = dep.getValue().toDec().getValue();
+			currT = ind.getValue().toDec().getValue();
+			
+			lastX = currR * Math.cos(currT);
+			lastY = currR * Math.sin(currT);
+			int numCalcs = (int)((THETA_MAX-THETA_MIN)/THETA_STEP);
+			for (int i = 1; i <= numCalcs; i++) {
+				ind.updateValue(THETA_STEP);
+				expression.eval();
+				currR = dep.getValue().toDec().getValue();
+				currT = ind.getValue().toDec().getValue();
+				
+				if(angleUnits == 2)
+					currT *= (Math.PI/180);
+				if(angleUnits == 3)
+					currT *= (Math.PI/200);
+				currX = currR * Math.cos(currT);
+				currY = currR * Math.sin(currT);
+				//polPtOn(currT, currR, g);
+				drawLineSeg(lastX, lastY, currX, currY, color, g);
+				lastX = currX;
+				lastY = currY;
+			}
+		}
+		catch (Exception e){
+			//do something
+		}
+	}
+
+	public void drawTracer(double x, double y, Graphics g) {
+		ptOn(x, y, g);
+		ptOn(x + graph.LINE_SIZE * graph.X_PIXEL, y + graph.LINE_SIZE * graph.Y_PIXEL, g);
+		ptOn(x + graph.LINE_SIZE * graph.X_PIXEL, y - graph.LINE_SIZE * graph.Y_PIXEL, g);
+		ptOn(x - graph.LINE_SIZE * graph.X_PIXEL, y + graph.LINE_SIZE * graph.Y_PIXEL, g);
+		ptOn(x - graph.LINE_SIZE * graph.X_PIXEL, y - graph.LINE_SIZE * graph.Y_PIXEL, g);
+	}
+}

@@ -42,10 +42,21 @@ public class BinExpression extends Expression {
 	
 	@Override
 	public Value eval() throws EvalException{
-		
-		Value leftVal = leftChild.eval();
-
-		Value rightVal = rightChild.eval();
+		Value leftVal = null;
+		if (leftChild != null){
+			leftVal = leftChild.eval();
+		}
+		else{
+			throw new EvalException("binary operator without a left child");
+		}
+		Value rightVal = null;
+		if (rightChild != null){
+			rightVal = rightChild.eval();
+		}
+		else
+		{
+			throw new EvalException("binary operator without a right child");
+		}
 		//System.out.println(leftVal.toString() + "  " + op.name() + "  " + rightVal.toString());
 		switch(op){
 			case ADD:		return leftVal.add(rightVal);
@@ -267,6 +278,18 @@ public class BinExpression extends Expression {
 
 	@Override
 	public Value squareRoot() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Value log() throws EvalException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Value natLog() throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}

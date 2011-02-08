@@ -90,11 +90,9 @@ public abstract class ValueStorage {
 		ValueWithName val = null;
 		if (index != Integer.MAX_VALUE){
 			val =  groups.get(index).storeElm(n);
-			try{
+			if (getStorageGUI() != null)
+			{
 				getStorageGUI().refreshButtons();
-			}
-			catch(Exception e){
-				System.out.println("error");
 			}
 		}
 		return val;
@@ -170,7 +168,7 @@ public abstract class ValueStorage {
 				continue;
 			}
 			
-			if (currFirst.compareTo(groups.get(i).getFirst().getName()) > 0){
+			if (currFirst.compareToIgnoreCase(groups.get(i).getFirst().getName()) > 0){
 				currFirst = groups.get(i).getLastReturned().getName();
 				index = i;
 			}
@@ -199,7 +197,7 @@ public abstract class ValueStorage {
 				nextIndex = i;
 				continue;
 			}
-			if (currFirst.compareTo(groups.get(i).getLastReturned().getName()) > 0){
+			if (currFirst.compareToIgnoreCase(groups.get(i).getLastReturned().getName()) > 0){
 				currFirst = groups.get(i).getLastReturned().getName();
 				nextIndex = i;
 			}

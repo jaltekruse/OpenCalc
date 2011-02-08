@@ -4,6 +4,11 @@ public abstract class Value {
 	
 
 	private Expression parent;
+	private static ExpressionParser parser;
+	
+	public Value(ExpressionParser p){
+		parser = p;
+	}
 	
 	public Value(){
 	}
@@ -19,6 +24,10 @@ public abstract class Value {
 			return true;
 		}
 		else return false;
+	}
+	
+	public ExpressionParser getParser(){
+		return parser;
 	}
 	
 	public Expression getParent(){
@@ -73,6 +82,7 @@ public abstract class Value {
 	
 	public abstract Value power(Irrational i);
 	
+	
 	public abstract Value squareRoot() throws EvalException;
 	
 	public abstract Value sin() throws EvalException;
@@ -87,7 +97,11 @@ public abstract class Value {
 	
 	public abstract Value invTan() throws EvalException;
 
-	public abstract Value neg();
+	public abstract Value neg() throws EvalException;
+	
+	public abstract Value log() throws EvalException;
+	
+	public abstract Value natLog() throws EvalException;
 
 	public Value add(Value v){
 		if (v instanceof Decimal){

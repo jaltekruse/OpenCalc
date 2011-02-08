@@ -3,18 +3,18 @@ package tree;
 public enum Operator {
 	
 	
-	NOTHING(0),
-	ASSIGN(1),	GT(1),		LT(1),		EQ(1),		NOT(1),
-	AND(1),		OR(1),		NE(1),		GTE(1),		LTE(1),
-	ADD(2),		SUBTRACT(2),
-	MULTIPLY(3),DIVIDE(3), 
-	POWER(4),	SQUARE(4),	CUBE(4),	SQRT(4),
-	SIN(5),		COS(5),
-	TAN(5),		INV_COS(5),	INV_SIN(5),	INV_TAN(5),	LN(5),
-	LOG(5),		ABS(5),		FLOOR(5),	CEILING(5),	INT(5),
-	ROUND(5),	NEG(5),		FACT(5),
-	PAREN(6),	BRACKET(6),	CURL_BRAC(6),
-	SOLVE(7)
+	NOTHING(0, null),
+	ASSIGN(1, "="),		GT(1, null),		LT(1, null),		EQ(1, null),		NOT(1, null),
+	AND(1, null),		OR(1, null),		NE(1, null),		GTE(1, null),		LTE(1, null),
+	ADD(2, "+"),		SUBTRACT(2, "-"),
+	MULTIPLY(3, "*"), 	DIVIDE(3, "/"), 
+	POWER(4, "^"),		SQUARE(4, null),	CUBE(4, null),		SQRT(4, "sqrt"),
+	SIN(5, "sin"),		COS(5, "cos"),
+	TAN(5, "tan"),		INV_COS(5, "cos-1"),	INV_SIN(5, "sin-1"),	INV_TAN(5, "tan-1"),	LN(5, "ln"),
+	LOG(5, null),		ABS(5, null),		FLOOR(5, null),	CEILING(5, null),	INT(5, null),
+	ROUND(5, null),	NEG(5, null),		FACT(5, null),
+	PAREN(6, null),	BRACKET(6, null),	CURL_BRAC(6, null),
+	SOLVE(7, "solve")
 	;
 	
 	//these are not in any particular order
@@ -22,9 +22,11 @@ public enum Operator {
 	
 	
 	private final int prec;
+	private final String symbol;
 	
-	Operator(int precedence){
+	Operator(int precedence, String s){
 		prec = precedence;
+		symbol = s;
 	}
 
 	public int getPrec() {
@@ -50,5 +52,9 @@ public enum Operator {
 			}
 		}
 		return false;
+	}
+
+	public String getSymbol() {
+		return symbol;
 	}
 }

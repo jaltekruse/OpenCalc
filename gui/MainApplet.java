@@ -22,13 +22,21 @@ package gui;
 
 
 
+import gui.graph.GraphWindow;
+
+import imagegen.CompleteExpressionGraphic;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
@@ -40,6 +48,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -82,17 +91,18 @@ public class MainApplet extends JApplet{
 	private JTabbedPane calcTabs, mathFunc, graphTabs;
 	private FunctionsPane graphFunctions;
 	private GridPropsPanel gridProps;
-	private Graph g;
+	private GraphOld g;
 	private KeyListener keys;
 	private static int textWithFocusCaretPos;
 	private static JFrame frame;
 	private JMenuBar menuBar;
-	private JMenu help;
+	private JMenuItem help;
 	private MainApplet thisCalc;
 	private JFrame tutorialFrame, licenseFrame;
 	private JTextArea terminal;
 	static GlassPane glassPane;
 	private Container contentPane;
+	private GraphWindow graphWindow;
 	
 	/**
 	 * @throws ValueNotStoredException 
@@ -167,7 +177,7 @@ public class MainApplet extends JApplet{
 
 		text = new CalcPanel(this);
 
-		g = new Graph(360, 360, this);
+		g = new GraphOld(360, 360, this);
 		graphTabs.add("Graph", g);
 
 		graphFunctions = new FunctionsPane(this);
@@ -177,6 +187,13 @@ public class MainApplet extends JApplet{
 		graphTabs.add("Grid", gridProps);
 
 		graphTabs.add(new DrawPad(500, 500, this), "Draw");
+		
+		graphWindow = new GraphWindow(200, 200, this);
+		graphTabs.add(graphWindow, "newGraph");
+		
+		graphTabs.add(new Graph3DPanel(200, 200, this), "3Dgraph");
+		
+		graphTabs.add(new RenderPanel(this), "render");
 
 		graphTabs.addChangeListener(graphTabsListener());
 		
@@ -207,6 +224,7 @@ public class MainApplet extends JApplet{
 		contentPane.add(graphTabs, pCon);
 
 		pCon.fill = GridBagConstraints.HORIZONTAL;
+
 		pCon.insets = new Insets(2, 2, 2, 2);
 		pCon.gridheight = 1;
 		pCon.gridwidth = 1;
@@ -216,9 +234,43 @@ public class MainApplet extends JApplet{
 		pCon.gridy = 1;
 		contentPane.add(mathFunc, pCon);
 		
-//		contentPane.add(text);
+//		I was thinking that we should prevent the larger containers on the interface from
+//		changing their size, right now the best example of why is when the "Inv" button(used to make the
+//		trig buttons into their inverse operations) is pressed, the whole interface is resized,
+//		including making the graph smaller
+//		however the panel containing the number and operation buttons has enough space to
+//		accommodate the larger buttons. I think it would make the most sense to enforce exact bounds
+//		for any major panels. Inside those panels things will have to be automatically resized to make
+//		all of the elements fit, and we will have to be smart about how much we allow to be in each panel
+//		based on the absolute size constraint we gave it when adding it to the largest mainApplet panel.
+		
+//		JInternalFrame termFrame = new JInternalFrame();
+//		termFrame.setBounds(0,10, 400, 250);
+//		termFrame.setLayout(new FlowLayout());
+//		termFrame.getContentPane().add(text);
+//		
+//		
+//		JInternalFrame mathFrame = new JInternalFrame();
+//		mathFrame.setBounds(0, 265, 400, 300);
+//		termFrame.setLayout(new FlowLayout());
+//		mathFrame.getContentPane().add(mathFunc);
+//		
+//		JInternalFrame graphFrame = new JInternalFrame();
+//		graphFrame.setBounds(0,10, 400, 250);
+//		termFrame.setLayout(new FlowLayout());
+//		graphFrame.getContentPane().add(graphTabs);
+//		
+//		
+//		contentPane.add(termFrame, 0);
+//		contentPane.add(mathFrame, 0);
+//		contentPane.add(graphFrame, 0);
+		
+//		Second attempt to make the major panels have exact sizes.
+//		contentPane.add(text);package gui;
+
 //		contentPane.add(mathFunc);
 //		contentPane.add(graphTabs);
+//		//contentPane.add(new JButton("a"));
 //
 //		text.setBounds(0,10, 400, 250);
 //		
@@ -278,7 +330,10 @@ public class MainApplet extends JApplet{
 				if (nameSelected.equals("Graph"))
 				{//hack to make the graph update when you hit the tab, this should be done better
 					try {
-						getCurrTextField().primaryAction();
+						if (! getCurrTextField().equals(text.getEntryLine()))
+						{
+							getCurrTextField().primaryAction();
+						}
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -289,6 +344,9 @@ public class MainApplet extends JApplet{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+				if (nameSelected.equals("newGraph")){
+					graphWindow.repaint();
 				}
 			}
 		};
@@ -303,7 +361,7 @@ public class MainApplet extends JApplet{
 		return parser;
 	}
 	
-	public JMenuBar getMenuBar(){
+	public JMenuBar getJMenuBar(){
 		return menuBar;
 	}
 
@@ -403,12 +461,16 @@ public class MainApplet extends JApplet{
 		textWithFocusCaretPos += i;
 		updateCaretPos();
 	}
+	
+	public CalcPanel getCalcPanel(){
+		return text;
+	}
 
 	public void updateCaretPos() {
 		textWithFocus.getField().setCaretPosition(textWithFocusCaretPos);
 	}
 
-	public Graph getGraphObj() {
+	public GraphOld getGraphObj() {
 		return g;
 	}
 
@@ -423,9 +485,8 @@ public class MainApplet extends JApplet{
 	private static void createAndShowGUI() throws ParseException, ValueNotStoredException, EvalException {
 
 		frame = new JFrame("OpenCalc");
-		Dimension frameDim = new Dimension(950, 650);
+		Dimension frameDim = new Dimension(950, 700);
 		frame.setPreferredSize(frameDim);
-		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		MainApplet currCalc = new MainApplet();

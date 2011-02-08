@@ -51,7 +51,7 @@ public class Fraction extends Number{
 				(int) Math.round((Math.pow(10, -1* counter))));
 	}
 	
-	public static Decimal Frac2Dec(Fraction f){
+	public static Decimal frac2Dec(Fraction f){
 		return new Decimal(((double)f.n) / f.d);
 	}
 	
@@ -94,7 +94,7 @@ public class Fraction extends Number{
 		// Compare this to the add method below, this is a shorter line of code, but
 		// this logic can only be used with commutative operators, should we
 		//write them all like add(Decimal d) for clarity?
-		return d.multiply(Frac2Dec(this));
+		return d.multiply(frac2Dec(this));
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class Fraction extends Number{
 	@Override
 	public Value add(Decimal d) {
 		// TODO Auto-generated method stub
-		return new Decimal(Frac2Dec(this).getValue() + d.getValue());
+		return new Decimal(frac2Dec(this).getValue() + d.getValue());
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class Fraction extends Number{
 	@Override
 	public Value subtract(Decimal d) {
 		// TODO Auto-generated method stub
-		return new Decimal(Frac2Dec(this).getValue() - d.getValue());
+		return new Decimal(frac2Dec(this).getValue() - d.getValue());
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class Fraction extends Number{
 	@Override
 	public Value divide(Decimal d) {
 		// TODO Auto-generated method stub
-		return new Decimal(Frac2Dec(this).getValue() / d.getValue());
+		return new Decimal(frac2Dec(this).getValue() / d.getValue());
 	}
 
 	@Override
@@ -189,7 +189,7 @@ public class Fraction extends Number{
 
 	@Override
 	public Value power(Decimal d) {
-		return new Decimal(Math.pow(Frac2Dec(this).getValue(), d.getValue()));
+		return new Decimal(Math.pow(frac2Dec(this).getValue(), d.getValue()));
 	}
 
 	@Override
@@ -197,12 +197,15 @@ public class Fraction extends Number{
 		// TODO Auto-generated method stub
 		if (f instanceof Fraction){
 			if (f.d == 1){
-				if (n < 100 && d < 100 && f.n < 5){
+				if (n < 100 && d < 100 && f.n < 5 && f.n > -1){
 					return new Fraction((int) Math.pow(n, f.n), (int) Math.pow(d, f.n));
+				}
+				else if (n < 100 && d < 100 && f.n > -5 && f.n < 0){
+					return new Fraction(1, (int) Math.pow(n, -1 * f.n));
 				}
 			}
 		}
-		return new Decimal(Math.pow(Frac2Dec(this).getValue(), Frac2Dec(f).getValue()));
+		return new Decimal(Math.pow(frac2Dec(this).getValue(), frac2Dec(f).getValue()));
 	}
 
 	@Override
@@ -265,7 +268,7 @@ public class Fraction extends Number{
 	@Override
 	public Decimal toDec() throws EvalException {
 		// TODO Auto-generated method stub
-		return Frac2Dec(this);
+		return frac2Dec(this);
 	}
 
 	@Override
@@ -283,5 +286,17 @@ public class Fraction extends Number{
 		else{
 			return new Decimal(Math.sqrt(toDec().getValue()));
 		}
+	}
+
+	@Override
+	public Value log() throws EvalException {
+		// TODO Auto-generated method stub
+		return new Decimal(frac2Dec(this).log().getValue());
+	}
+
+	@Override
+	public Value natLog() throws EvalException {
+		// TODO Auto-generated method stub
+		return new Decimal(frac2Dec(this).natLog().getValue());
 	}
 }

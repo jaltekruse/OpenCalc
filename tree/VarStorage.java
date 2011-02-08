@@ -1,7 +1,5 @@
 package tree;
 
-import gui.ValStoragePanel;
-
 
 public class VarStorage extends ValueStorage {
 
@@ -87,11 +85,13 @@ public class VarStorage extends ValueStorage {
 				((Var) tempElm).setValue((Number) v);
 			}
 		}
-		if(isInGroup("graph", s) && parser.getGUI() != null 
-				&& parser.getGUI().getGridProps() != null){
-			parser.getGUI().getGridProps().refreshAttributes();
-			parser.getGUI().getGraphObj().repaint();
-		}
+		//DONT DO THIS, CAUSES INFINATE LOOPS WHEN THE GRAPH REASSIGNS VALLUES
+		//CONTINUOUSLY REDRAWS ITSELF!!!!!!
+//		if(isInGroup("graph", s) && parser.getGUI() != null 
+//				&& parser.getGUI().getGridProps() != null){
+//			parser.getGUI().getGridProps().refreshAttributes();
+//			parser.getGUI().getGraphObj().repaint();
+//		}
 		return v;
 	}
 	

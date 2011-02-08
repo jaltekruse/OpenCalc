@@ -32,7 +32,9 @@ import java.util.ArrayList;
 public class ValStorageGroup {
 	
 	private int NUM_CHARS_TO_SCAN = 2;
-	private int NUM_POSSIBLE_CHARS = 36;
+	
+	//letters
+	private int NUM_POSSIBLE_CHARS = 37;
 	private final int NUM_BUCKETS = NUM_POSSIBLE_CHARS * NUM_POSSIBLE_CHARS;
 	private ArrayList<ValueWithName>[] elmTable;
 	private String groupName;
@@ -82,9 +84,9 @@ public class ValStorageGroup {
 			Character.toLowerCase(currChar);
 			if(Character.isLetter(currChar))
 				hashVal += Math.pow(36, 1-i) * (currChar - 'a');
-			if(Character.isDigit(currChar))
+			else if(Character.isDigit(currChar))
 				hashVal += Math.pow(36, 1-i) * (currChar - '0' + 25);
-			if(currChar == '_')
+			else if(currChar == '_')
 				hashVal += Math.pow(36, 1-i) * 36;
 		}
 		return hashVal;

@@ -20,7 +20,11 @@ package gui;
  along with OpenCalc  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import imagegen.CompleteExpressionGraphic;
+import imagegen.ImageGenerator;
+
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +35,8 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -43,6 +49,7 @@ public class CalcPanel extends SubPanel {
 
 	private static final long serialVersionUID = 1L;
 	private final JTextArea terminal;
+	private JComponent comp;
 	private MainApplet mainApp;
 	private OCTextField entryLine;
 	private JTextField entryLineField;
@@ -56,6 +63,9 @@ public class CalcPanel extends SubPanel {
     private JRadioButton exact, dec;
     private ButtonGroup answersInSelect;
     private SubPanel answersInPanel;
+    private ImageGenerator img;
+    private BinExpression binEx;
+    private SubPanel thisPanel;
     
     //tells the current selection for output, 1 = exact, 2 = decimal
     private int answersIn;
@@ -63,7 +73,13 @@ public class CalcPanel extends SubPanel {
 	public CalcPanel(final MainApplet currmainApp) {
 
 		mainApp = currmainApp;
-		terminal = new JTextArea(10, 20);
+		thisPanel = this;
+		img = new ImageGenerator(mainApp);
+		binEx = new BinExpression(Operator.ADD);
+		binEx.setLeftChild(new Decimal(3));
+		binEx.setRightChild(new Fraction(3,1));
+		terminal = new JTextArea(16,20);
+		
 		Font terminalFont = new Font("newFont", 1, 14);
 		parser = mainApp.getParser();
 		
@@ -138,6 +154,7 @@ public class CalcPanel extends SubPanel {
 		solve = new OCButton("solve", "Evaluate the current expression.", 1, 1, 5, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
+					
 					entryLine.primaryAction();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -153,6 +170,7 @@ public class CalcPanel extends SubPanel {
 		tCon.gridheight = 10;
 		tCon.gridwidth = 7;
 		this.add(termScrollPane, tCon);
+		//this.add(comp, tCon);
 		
 		exact = new JRadioButton("Exact");
 		exact.addActionListener(new ActionListener(){
@@ -207,7 +225,6 @@ public class CalcPanel extends SubPanel {
 			terminal.append(">  " + eqtn + "\n");
 			try{
 				treeResult = parser.ParseExpression(eqtn);
-				treeResult = treeResult.eval();
 				treeResult = treeResult.eval();
 				if (treeResult instanceof Fraction){
 					//we need to decide where method call should go,

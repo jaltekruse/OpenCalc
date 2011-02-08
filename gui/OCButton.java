@@ -142,7 +142,7 @@ public class OCButton extends JButton {
 
 		comp.add(this, bCon);
 	}
-	
+
 	public void removeInsets(){
 		comp.remove(this);
 		bCon.insets = null;

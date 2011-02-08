@@ -134,13 +134,29 @@ public class OCTextField extends SubPanel {
 		if (editable){
 			OCButton dropDown = new OCButton(false,"v", 1, 1, 1, 0, this, mainApp){
 				public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{
-					mainApp.setCurrTextField(thisField);
 					if (mainApp.getGlassPanel().historyIsVisible()){
-						System.out.println("vistible hist");
 						mainApp.getGlassPanel().setHistoryVisible(false);
+						if (!mainApp.getCurrTextField().equals(thisField)){
+							mainApp.setCurrTextField(thisField);
+							if (!field.getText().equals("")){
+								addToHistory(field.getText());
+								field.setText("");
+							}
+							MainApplet.getGlassPanel().addFieldHistory();
+							MainApplet.getGlassPanel().refresh();
+							MainApplet.getGlassPanel().setHistoryVisible(true);
+						}
 					}
 					else{
-						mainApp.getGlassPanel().addFieldHistory();
+						mainApp.setCurrTextField(thisField);
+						//dont know why this doesn't work, have to fix it sometime
+						if (!field.getText().equals("")){
+							addToHistory(field.getText());
+							field.setText("");
+						}
+						MainApplet.getGlassPanel().addFieldHistory();
+						MainApplet.getGlassPanel().refresh();
+						MainApplet.getGlassPanel().setHistoryVisible(true);
 					}
 				}
 			};

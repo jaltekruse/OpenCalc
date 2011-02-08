@@ -227,7 +227,7 @@ public class Constant extends NumberWithName {
 	}
 
 	@Override
-	public Value neg() {
+	public Value neg() throws EvalException {
 		// TODO Auto-generated method stub
 		return v.neg();
 	}
@@ -248,5 +248,17 @@ public class Constant extends NumberWithName {
 	public Value squareRoot() throws EvalException {
 		// TODO Auto-generated method stub
 		return v.squareRoot();
+	}
+
+	@Override
+	public Value log() throws EvalException {
+		// TODO Auto-generated method stub
+		return v.log();
+	}
+
+	@Override
+	public Value natLog() throws EvalException {
+		// TODO Auto-generated method stub
+		return v.natLog();
 	}
 }

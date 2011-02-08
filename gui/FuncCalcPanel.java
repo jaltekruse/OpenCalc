@@ -24,7 +24,7 @@ public class FuncCalcPanel extends SubPanel {
 	private static final long serialVersionUID = 1L;
 	private MainApplet mainApp;
 	private Function func;
-	private Graph graph;
+	private GraphOld graphOld;
 	private OCButton trace, integrate, graphButton, derive;
 	private OCTextField pt2Trace, tracePtVal, startInt, endInt, intVal, slopeVal, indVarVal;
 	private OCLabel indVar, depVar, start, end, intApprox, slopeApprox, spacer;
@@ -33,7 +33,7 @@ public class FuncCalcPanel extends SubPanel {
 	
 	public FuncCalcPanel(MainApplet currmainApp, Function f, Color c){
 		mainApp = currmainApp;
-		graph = mainApp.getGraphObj();
+		graphOld = mainApp.getGraphObj();
 		func = f;
 		color = c;
 		
@@ -51,7 +51,7 @@ public class FuncCalcPanel extends SubPanel {
 			double a = Double.parseDouble(startInt.getField().getText());
 			double b = Double.parseDouble(endInt.getField().getText());
 			func.setIntegral(a, b);
-			graph.repaint();
+			graphOld.repaint();
 			//mainApp.getBasicmainApp().parse(func.getFuncEqtn());
 			String integral = new String();
 			//integral += (float) mainApp.getBasicmainApp().integrate(a, b);
@@ -60,7 +60,7 @@ public class FuncCalcPanel extends SubPanel {
 		else{
 			func.setIsTakingIntegral(false);
 			intVal.getField().setText("");
-			graph.repaint();
+			graphOld.repaint();
 		}
 	}
 	
@@ -75,7 +75,7 @@ public class FuncCalcPanel extends SubPanel {
 			double x = Double.parseDouble(indVarVal.getField().getText());
 			func.setDerivative(x);
 			func.setDeriving(true);
-			graph.repaint();
+			graphOld.repaint();
 			//mainApp.getBasicmainApp().parse(func.getFuncEqtn());
 			String derivative = new String();
 			//derivative += (float) mainApp.getBasicmainApp().deriveAtPoint(x);
@@ -84,7 +84,7 @@ public class FuncCalcPanel extends SubPanel {
 		else{
 			func.setDeriving(false);
 			indVarVal.getField().setText("");
-			graph.repaint();
+			graphOld.repaint();
 		}
 	}
 
@@ -117,7 +117,7 @@ public class FuncCalcPanel extends SubPanel {
 				}
 			}
 		}
-		graph.repaint();
+		graphOld.repaint();
 	}
 	
 	public void refreshFields(){
@@ -239,7 +239,7 @@ public class FuncCalcPanel extends SubPanel {
 			}
 		}
 		else if(func.getGraphType() == 2){
-			spacer = new OCLabel("Integrate", 1, 1, 5, 0, deriveBox, mainApp);
+			//spacer = new OCLabel("Integrate", 1, 1, 5, 0, deriveBox, mainApp);
 		}
 		else{
 			;//do nothing, will add when more graph types supported

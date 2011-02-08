@@ -10,5 +10,13 @@ package tree;
  *
  */
 public abstract class Number extends Value{
+	
+	public Number(ExpressionParser p){
+		super(p);
+	}
+	
+	public Number(){
+		
+	}
 
 }

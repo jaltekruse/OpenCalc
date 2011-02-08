@@ -212,4 +212,16 @@ public class ValueList extends Number {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public Value log() throws EvalException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Value natLog() throws EvalException {
+			// TODO Auto-generated method stub
+			return null;
+		}
 }

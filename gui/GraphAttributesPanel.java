@@ -46,7 +46,7 @@ public class GraphAttributesPanel extends SubPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private OCTextField graphEntry;
-	private Graph graph;
+	private GraphOld graphOld;
 	private MainApplet mainApp;
 	private Color color;
 	private Function func;
@@ -67,7 +67,7 @@ public class GraphAttributesPanel extends SubPanel {
 		mainApp = currmainApp;
 		graphTypes = fp.getGraphTypes();
 		color = c;
-		graph = mainApp.getGraphObj();
+		graphOld = mainApp.getGraphObj();
 		funcCalcPanel = new FuncCalcPanel(mainApp, func, color);
 
 		colorBox = new JPanel() {
@@ -124,7 +124,7 @@ public class GraphAttributesPanel extends SubPanel {
 					func.setIndependentVar("n");
 					func.setGraphType(4);
 				}
-				redundant.paint();
+				redundant.paintComponent();
 			}
 		});
 		
@@ -134,7 +134,7 @@ public class GraphAttributesPanel extends SubPanel {
 			}
 		};
 		
-		this.paint();
+		this.paintComponent();
 	}
 	
 	private void graph(){
@@ -143,17 +143,18 @@ public class GraphAttributesPanel extends SubPanel {
 					+ graphEntry.getField().getText());
 			func.setColor(color);
 			func.setGraphing(true);
-			graph.repaint();
+			graphOld.repaint();
 			funcCalcPanel.refreshFields();
 		}
 		else{
 			func.setGraphing(false);
 			func.setFuncEqtn("");
-			graph.repaint();
+			graphOld.repaint();
 		}
 			
 	}
-	public void paint(){
+	
+	public void paintComponent(){
 		this.removeAll();
 		this.revalidate();
 		
@@ -187,23 +188,17 @@ public class GraphAttributesPanel extends SubPanel {
 		pCon.weighty = 1;
 		this.add(graphEntry, pCon);
 		
-//		OCButton advanced = new OCButton("adv.", 1, 1, 10, 0, this, mainApp){
-//			public void associatedAction() {
-//				GridBagConstraints bCon = new GridBagConstraints();
-//								
-//				bCon.fill = GridBagConstraints.BOTH;
-//				bCon.gridx = 1;
-//				bCon.gridy = 1;
-//				bCon.weightx = 1;
-//				bCon.weighty = 1;
-//				bCon.gridheight = 1;
-//				bCon.gridwidth = 1;
-//				funcCalcPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
-//				//mainApp.add(funcCalcPanel, bCon);
-//				//funcCalcPanel.setVisible(true);
-//				//mainApp.repaint();
-//			}
-//		};
+		OCButton advanced = new OCButton("adv.", 1, 1, 10, 0, this, mainApp){
+			public void associatedAction() {
+				GridBagConstraints bCon = new GridBagConstraints();
+				
+				JFrame calcs = new JFrame("Calc");
+				calcs.getContentPane().add(funcCalcPanel);
+				calcs.setPreferredSize(new Dimension(600, 160));
+				calcs.pack();
+				calcs.setVisible(true);
+			}
+		};
 		
 		this.revalidate();
 		this.repaint();

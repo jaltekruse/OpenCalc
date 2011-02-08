@@ -82,7 +82,6 @@ public class ExpressionParser {
 		//associates this object with all of the Decimal objects, so they can
 		//find the current angleUnits
 		Decimal staticDec = new Decimal(this);
-		Var staticVar = new Var(this);
 	}
 	
 	public MainApplet getGUI(){
@@ -150,6 +149,7 @@ public class ExpressionParser {
 		while(e.hasParent()){
 			e = e.getParent();
 		}
+		//System.out.println(e.toString());
 		return e;
 	}
 	
@@ -387,6 +387,9 @@ public class ExpressionParser {
 			addUrinaryOp(Operator.SQRT);
 			return;
 		}
+		else if(varElm.equals("frac")){
+			//think of how to add things like this
+		}
 		else if(varElm.equals("solve")){
 			
 		}
@@ -417,7 +420,8 @@ public class ExpressionParser {
 		if (vals.size() == 1 && e == null && vals.get(0) instanceof Var 
 				&& ((Var)vals.get(0)).getValue() == null)
 		{//A variable was found and before a subsequent operator was found, another 
-			//value was found the only use of an undeclared variable is  "varName = 8*9" etc.
+			//value was found, system would add implied multiplication, but the only use of 
+			//an undeclared variable is "varName = 8*9" etc.
 			throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
 					+ "\" has not been given a value");
 		}
@@ -427,11 +431,8 @@ public class ExpressionParser {
 				return;
 			}
 			else{
-				BinExpression newEx = new BinExpression(Operator.MULTIPLY);
-				newEx.setLeftChild(((BinExpression)e).getRightChild());
-				newEx.setRightChild(v);
-				((BinExpression)e).setRightChild(newEx);
-				e = newEx;
+				addBinOp(Operator.MULTIPLY);
+				addNewValue(v);
 				return;
 			}
 		}
@@ -470,12 +471,14 @@ public class ExpressionParser {
 	public void addBinOp(Operator o) throws ParseException{
 		BinExpression newEx;
 		
-//		if (o == Operator.SUBTRACT && vals.isEmpty()){
-//			addUrinaryOp(Operator.NEG);
-//			return;
-//		}
 		if (e instanceof BinExpression  && ((BinExpression)e).getRightChild() == null){
-			throw new ParseException("2 binary operators adjacent");
+			if (o == Operator.SUBTRACT && vals.isEmpty()){
+				addUrinaryOp(Operator.NEG);
+				return;
+			}
+			else{
+				throw new ParseException("2 binary operators adjacent");
+			}
 		}
 		else if (e instanceof UrinaryExpression && ((UrinaryExpression)e).getChild() == null){
 			if (vals.size() == 1 && e.isContainerOp()){
@@ -594,6 +597,7 @@ public class ExpressionParser {
 		//this is wrong, need to modify for urinaryOp, just copied from Bin
 		UrinaryExpression newEx = new UrinaryExpression(o);
 		if (e instanceof BinExpression  && ((BinExpression)e).getRightChild() == null){
+			//System.out.println("right child null");
 			((BinExpression)e).setRightChild(newEx);
 			e = newEx;
 			return;

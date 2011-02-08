@@ -22,10 +22,13 @@ package gui;
 
 
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -33,19 +36,15 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Line2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import tree.Decimal;
-import tree.EvalException;
-import tree.Value;
-import tree.ValueNotStoredException;
-import tree.VarStorage;
-import tree.ExpressionParser;
-import tree.Var;
+import tree.*;
+import tree.Number;
 
-public class Graph extends SubPanel {
+public class GraphOld extends SubPanel {
 
 	/**
 	 * 
@@ -64,7 +63,7 @@ public class Graph extends SubPanel {
 	// stuff to put in separate graph class
 	private Function[] functions;
 
-	public Graph(int xSize, int ySize, MainApplet currmainApp) {
+	public GraphOld(int xSize, int ySize, MainApplet currmainApp) {
 		mainApp = currmainApp;
 		parser = mainApp.getParser();
 		varList = parser.getVarList();
@@ -94,7 +93,8 @@ public class Graph extends SubPanel {
 		graph = new SubPanel(){
 			
 			public void paint(Graphics g) {
-				g.setColor(Color.WHITE);
+				System.out.println("repaint graph");
+				g.setColor(Color.white);
 				X_SIZE = graph.getSize().width;
 				Y_SIZE = graph.getSize().height;
 				g.fillRect(0, 0, X_SIZE, Y_SIZE);
@@ -104,32 +104,10 @@ public class Graph extends SubPanel {
 					X_MAX = varList.getVarVal("xMax").toDec().getValue();
 					Y_MIN = varList.getVarVal("yMin").toDec().getValue();
 					Y_MAX = varList.getVarVal("yMax").toDec().getValue();
-					X_STEP = varList.getVarVal("xStep").toDec().getValue();
-					Y_STEP = varList.getVarVal("yStep").toDec().getValue();
 					THETA_MIN = varList.getVarVal("thetaMin").toDec().getValue();
 					THETA_MAX = varList.getVarVal("thetaMax").toDec().getValue();
 					THETA_STEP = varList.getVarVal("thetaStep").toDec().getValue();
 					
-					//these four statements are for resizing the grid after zooming
-					if((X_MAX-X_MIN)/X_STEP >= 24){
-						varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
-						X_STEP = varList.getVarVal("xStep").toDec().getValue();
-					}
-					
-					else if((X_MAX-X_MIN)/X_STEP <= 16 && X_STEP >= 2){
-						varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
-						X_STEP = varList.getVarVal("xStep").toDec().getValue();
-					}
-					
-					if((Y_MAX-Y_MIN)/Y_STEP >= 24){
-						varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
-						Y_STEP = varList.getVarVal("yStep").toDec().getValue();
-					}
-					
-					else if((Y_MAX-Y_MIN)/Y_STEP <= 16 && Y_STEP >= 2){
-						varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
-						Y_STEP = varList.getVarVal("yStep").toDec().getValue();
-					}
 				}
 				catch (EvalException e)
 				{
@@ -140,7 +118,12 @@ public class Graph extends SubPanel {
 				X_PIXEL = (X_MAX - X_MIN) / X_SIZE;
 				Y_PIXEL = (Y_MAX - Y_MIN) / Y_SIZE;
 
-				drawAxis(g);
+				try {
+					drawAxis(g);
+				} catch (EvalException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				//drawPolarAxis(g);
 				
 				Function f = null;
@@ -163,10 +146,10 @@ public class Graph extends SubPanel {
 				}
 				if(refPoint)
 					drawMousePlacement(g);
-
+				mainApp.getGridProps().refreshAttributes();
 			}
 		};
-		
+
 		graph.setBorder(BorderFactory.createTitledBorder(getBorder(), "graph"));
 		
 		graph.addMouseListener(new MouseListener(){
@@ -315,6 +298,7 @@ public class Graph extends SubPanel {
 		varList.updateVarVal("yMax", (Y_MAX-Y_MIN)*(100-rate)/100);
 		
 		repaint();
+		System.out.println("finished zoom");
 	}
 	
 	public Function[] getFunctions(){
@@ -323,7 +307,6 @@ public class Graph extends SubPanel {
 
 	public void setLineSize(int sizeInPixels) {
 		LINE_SIZE = sizeInPixels;
-		return;
 	}
 
 	private void drawMousePlacement(Graphics g){
@@ -339,8 +322,8 @@ public class Graph extends SubPanel {
 	
 	private void ptOn(double a, double b, Graphics g) {
 		if (a <= X_MAX && a >= X_MIN && b <= Y_MAX && b >= Y_MIN) {
-			g.fillRect(roundDouble((a - X_MIN) / X_PIXEL) - LINE_SIZE,
-					(Y_SIZE - LINE_SIZE) - roundDouble((b - Y_MIN) / Y_PIXEL),
+			g.fillRect(roundDouble((a - X_MIN) / X_PIXEL - LINE_SIZE/2.0),
+					roundDouble((Y_SIZE - LINE_SIZE/2.0) - (b - Y_MIN) / Y_PIXEL),
 					LINE_SIZE, LINE_SIZE);
 			// g.fillOval(roundDouble((a - X_MIN)/X_PIXEL), Y_SIZE -
 			// roundDouble((b - Y_MIN)/Y_PIXEL),
@@ -352,7 +335,7 @@ public class Graph extends SubPanel {
 	}
 	
 	private int gridXPtToScreen(double x){
-		return roundDouble((x - X_MIN) / X_PIXEL) - LINE_SIZE;
+		return roundDouble((x - X_MIN) / X_PIXEL);
 	}
 	
 	private int gridYPtToScreen(double y){
@@ -367,31 +350,141 @@ public class Graph extends SubPanel {
 		
 		setLineSize(1);
 		int numCircles = 0; 
+		int startNum = 0;
+		
+		if (X_MIN < Y_MIN)
+		{
+			startNum = (int) (((X_MIN % X_STEP) + 1) * X_STEP);
+		}
+		POL_AX_STEP = X_STEP;
 		if (X_MAX > Y_MAX || X_MAX > Math.abs(Y_MIN))
-			numCircles = (int) Math.abs(X_MAX - X_MIN);
+			numCircles = (int) (Math.abs(X_MAX - X_MIN)/POL_AX_STEP);
 		else if (Y_MAX > X_MAX || Y_MAX > Math.abs(X_MIN)){
-			numCircles = (int) Math.abs(Y_MAX - Y_MIN);
+			numCircles = (int) (Math.abs(Y_MAX - Y_MIN)/POL_AX_STEP);
 		}
 		else
-			numCircles = (int) X_MAX;
-		int i = roundDouble(Y_MIN);
-		for ( ; i <= numCircles; i++){
+			numCircles = (int) (X_MAX/POL_AX_STEP);
+//		int i = roundDouble(Y_MIN);
+		for (int i = 0 ; i <= numCircles; i++){
 			double currT = 0;
 			double lastX = i * POL_AX_STEP;
 			double lastY = 0, currX, currY;
-			for(int j = 1; j < 240; j++){
+			for(int j = 1; j < 360; j++){
 				currT += POL_STEP * 2;
-				currX = i * Math.cos(currT);
-				currY = i * Math.sin(currT);
+				currX = i * POL_AX_STEP * Math.cos(currT);
+				currY = i * POL_AX_STEP * Math.sin(currT);
 				drawLineSeg(lastX, lastY, currX, currY, Color.gray, g);
 				lastX = currX;
 				lastY = currY;
 			}
 		}
 	}
-	
-	private void drawAxis(Graphics g) {
 
+	private void drawAxis(Graphics g) throws EvalException {
+
+		System.out.println("axis");
+		
+		try {
+			//these four statements are for resizing the grid after zooming
+			if((X_MAX-X_MIN)/X_STEP >= 24)
+			{
+				System.out.println("too many x");
+				if ((X_MAX-X_MIN)/20 > 1)
+				{
+					System.out.println("greater than 1");
+					varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
+					X_STEP = varList.getVarVal("xStep").toDec().getValue();
+					
+	//				varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
+	//				Y_STEP = varList.getVarVal("yStep").toDec().getValue();
+				}
+				else
+				{
+					for (int i = 0; i < 25; i ++){
+						if ((X_MAX-X_MIN)/20/Math.pow(.5, i) < .7){
+							varList.setVarVal("xStep", new Decimal(Math.pow(.5, i)));
+							X_STEP = varList.getVarVal("xStep").toDec().getValue();
+						}
+					}
+				}
+			}
+			
+			else if((X_MAX-X_MIN)/X_STEP <= 16){
+				System.out.println("too few x");
+				if ((X_MAX-X_MIN)/20 > 1)
+				{
+					System.out.println("greater than 1");
+					varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
+					X_STEP = varList.getVarVal("xStep").toDec().getValue();
+					
+	//				varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
+	//				Y_STEP = varList.getVarVal("yStep").toDec().getValue();
+				}
+				else
+				{
+					System.out.println("do loop to find dec");
+					for (int i = 0; i < 25; i ++){
+						if ((X_MAX-X_MIN)/20 < Math.pow(.5, i)){
+							varList.setVarVal("xStep", new Decimal(Math.pow(.5, i)));
+							X_STEP = varList.getVarVal("xStep").toDec().getValue();
+						}
+					}
+				}
+			}
+			
+			if((Y_MAX-Y_MIN)/Y_STEP >= 24){
+				System.out.println("too many y");
+				varList.setVarVal("yStep", new Decimal((Y_MAX-Y_MIN)/20));
+				if ((Y_MAX-Y_MIN)/20 > 1)
+				{
+	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
+	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
+					
+					System.out.println("greater than 1");
+					varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
+					Y_STEP = varList.getVarVal("yStep").toDec().getValue();
+				}
+				else
+				{
+					for (int i = 0; i < 25; i ++){
+						if ((Y_MAX-Y_MIN)/20/Math.pow(.5, i) < .7){
+							varList.setVarVal("yStep", new Decimal(Math.pow(.5, i)));
+							Y_STEP = varList.getVarVal("xStep").toDec().getValue();
+						}
+					}
+				}
+			}
+			
+			else if((Y_MAX-Y_MIN)/Y_STEP <= 16){
+				System.out.println("too few y");
+				if ((Y_MAX-Y_MIN)/20 > 1)
+				{
+	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
+	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
+					System.out.println("greater than 1");
+					varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
+					Y_STEP = varList.getVarVal("yStep").toDec().getValue();
+				}
+				else
+				{
+					System.out.println("do loop to find dec");
+					for (int i = 0; i < 25
+					; i ++){
+						if ((Y_MAX-Y_MIN)/20 < Math.pow(.5, i)){
+							varList.setVarVal("yStep", new Decimal(Math.pow(.5, i)));
+							Y_STEP = varList.getVarVal("xStep").toDec().getValue();
+						}
+					}
+				}
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		
+		X_STEP = varList.getVarVal("xStep").toDec().getValue();
+		Y_STEP = varList.getVarVal("yStep").toDec().getValue();
+		
+		
 		// finds the fist factor of the Y_STEP on the screen
 		// used to draw the first dash mark on the y-axis
 		double tempY = (int) (Y_MIN / Y_STEP);
@@ -404,16 +497,16 @@ public class Graph extends SubPanel {
 				setLineSize(1);
 				drawLineSeg(X_MIN, tempY, X_MAX, tempY, Color.GRAY, g);
 				setLineSize(LINE_SIZE_DEFAULT);
-				drawLineSeg(2 * LINE_SIZE * X_PIXEL, tempY, -1 * LINE_SIZE
+				drawLineSeg(2 * LINE_SIZE * X_PIXEL, tempY, -2 * LINE_SIZE		
 						* X_PIXEL, tempY, Color.BLACK, g);
-				if(tempY%(NUM_FREQ * Y_STEP) == 0 && tempY != 0){
+				if(tempY%(2 * Y_STEP) == 0 && tempY != 0){
 					String ptText = Double.toString(tempY);
 					width = g.getFontMetrics().stringWidth(ptText);
 					height = g.getFontMetrics().getHeight();
 					g.setColor(Color.white);
-					g.fillRect(gridXPtToScreen(0) - width - 4, gridYPtToScreen(tempY)- 4, width, 11);
+					g.fillRect(gridXPtToScreen(0) - width - 2*LINE_SIZE, gridYPtToScreen(tempY)- 2*LINE_SIZE, width, 11);
 					g.setColor(Color.black);
-					g.drawString(ptText, gridXPtToScreen(0) - width - 4, gridYPtToScreen(tempY)+ 6);
+					g.drawString(ptText, gridXPtToScreen(0) - width - 2*LINE_SIZE, gridYPtToScreen(tempY)+ 2*LINE_SIZE);
 				} 
 				tempY += Y_STEP;
 			}
@@ -425,7 +518,7 @@ public class Graph extends SubPanel {
 					setLineSize(LINE_SIZE_DEFAULT);
 					g.setColor(Color.BLACK);
 					ptOn(X_MIN + 2 * X_PIXEL, tempY, g);
-					if(tempY%(NUM_FREQ* Y_STEP) == 0 && tempY != 0){
+					if(tempY%(2* Y_STEP) == 0 && tempY != 0){
 						String ptText = Double.toString(tempY);
 						width = g.getFontMetrics().stringWidth(ptText);
 						height = g.getFontMetrics().getHeight();
@@ -444,7 +537,7 @@ public class Graph extends SubPanel {
 					setLineSize(LINE_SIZE_DEFAULT);
 					g.setColor(Color.BLACK);
 					ptOn(X_MAX - 1 * X_PIXEL, tempY, g);
-					if(tempY%(NUM_FREQ* Y_STEP) == 0 && tempY != 0){
+					if(tempY%(2* Y_STEP) == 0 && tempY != 0){
 						String ptText = Double.toString(tempY);
 						width = g.getFontMetrics().stringWidth(ptText);
 						height = g.getFontMetrics().getHeight();
@@ -464,7 +557,8 @@ public class Graph extends SubPanel {
 		tempX *= X_STEP;
 		height = g.getFontMetrics().getHeight();
 
-		int tempWidth = g.getFontMetrics().stringWidth(Double.toString(tempX)) + 20;
+		//make sure that the strings for the numbers on the axis will fit
+		int tempWidth = g.getFontMetrics().stringWidth(Double.toString(tempX)) + 10;
 		if(tempWidth > (int) ((X_MAX-X_MIN)/(X_STEP * NUM_FREQ))){
 			NUM_FREQ = (int) (((X_MAX-X_MIN)/(X_STEP))/((X_SIZE)/tempWidth)) + 1;
 		}
@@ -473,7 +567,7 @@ public class Graph extends SubPanel {
 				setLineSize(1);
 				drawLineSeg(tempX, Y_MIN, tempX, Y_MAX, Color.GRAY, g);
 				setLineSize(LINE_SIZE_DEFAULT);
-				drawLineSeg(tempX, 2 * LINE_SIZE * Y_PIXEL, tempX, -1
+				drawLineSeg(tempX, 2 * LINE_SIZE * Y_PIXEL, tempX, -2
 						* LINE_SIZE * Y_PIXEL, Color.BLACK, g);
 				
 				if(tempX%(NUM_FREQ * X_STEP) == 0 && tempX != 0){
@@ -535,93 +629,59 @@ public class Graph extends SubPanel {
 			drawLineSeg(X_MIN, 0, X_MAX, 0, Color.BLACK, g);
 	}
 
-	private void drawLineSeg(double x1, double y1, double x2, double y2,
+	protected void drawLineSeg(double x1, double y1, double x2, double y2,
 			Color color, Graphics g) {
-		// System.out.println(x1 + "  " + y1 + "  " + x2 + "  " + y2);
+		
+		//right now this ignores the LINE_SIZE currently set, but it draws much faster than before
+		//I'll modify it to handle line thickness soon
+//		g.setColor(color);
+//		g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1), gridXPtToScreen(x2), gridYPtToScreen(y2));
+//		if (LINE_SIZE == 2){
+//			g.drawLine(gridXPtToScreen(x1)+1, gridYPtToScreen(y1)+1, gridXPtToScreen(x2)+1, gridYPtToScreen(y2));
+//		}
+		if (Double.isNaN(y2) || Double.isNaN(y1)){
+			return;
+		}
+		if (x1 > X_MAX && x2 > X_MAX){
+			return;
+		}
+		if (x1 < X_MIN && x2 < X_MIN){
+			return;
+		}
+		if (y1 > Y_MAX && y2 > Y_MAX){
+			return;
+		}
+		if (y1 < Y_MIN && y2 < Y_MIN){
+			return;
+		}
+		
 		g.setColor(color);
-		double smallX = 0, bigX = 0, smallY = 0, bigY = 0;
-
-		if (x1 == x2) {
-
-			if (y1 > y2) {
-				bigY = y1;
-				smallY = y2;
-			} else {
-				bigY = y2;
-				smallY = y1;
+		if (LINE_SIZE == 2){
+			if (color.equals(Color.black)){
+				g.setColor(Color.gray.brighter());
 			}
-
-			while (smallY <= bigY - LINE_SIZE * Y_PIXEL) {
-				ptOn(x1, smallY, g);
-				smallY += Y_PIXEL;
+			else{
+				g.setColor(color.brighter());
 			}
-		}
-
-		else if (y1 == y2) {
-
-			if (x1 > x2) {
-				bigX = x1;
-				smallX = x2;
-			} else {
-				bigX = x2;
-				smallX = x1;
-			}
-
-			while (smallX <= bigX - LINE_SIZE * X_PIXEL) {
-				ptOn(smallX, y1, g);
-				smallX += X_PIXEL;
-			}
-		}
-		else {
-			double slope = (y2 - y1) / (x2 - x1);
-			double b = y1-(x1*slope);
 			
-			// System.out.println("slope: " + slope);
-				if (Math.abs(slope) > 1) {
-					if (y1 > y2) {
-						bigX = x1;
-						bigY = y1;
-						smallX = x2;
-						smallY = y2;
-					}
-					else {
-						bigX = x2;
-						bigY = y2;
-						smallX = x1;
-						smallY = y1;
-					}
-					if(smallY < Y_MIN)
-						smallY = Y_MIN;
-					smallX = (smallY - b)/slope;
-					while (smallY <= Y_MAX && smallY <= bigY) {
-						ptOn(smallX, smallY, g);
-						smallX += Y_PIXEL / slope;
-						smallY += Y_PIXEL;
-					}
-				}
-				else { // absolute value of slope is less than 1
-					if (x1 > x2) {
-						bigX = x1;
-						bigY = y1;
-						smallX = x2;
-						smallY = y2;
-					}
-					else {
-						bigX = x2;
-						bigY = y2;
-						smallX = x1;
-						smallY = y1;
-					}
-					if(smallX < X_MIN)
-						smallX = X_MIN;
-					smallY = smallX * slope  + b;
-					while (smallX <= X_MAX && smallX <= bigX) {
-						ptOn(smallX, smallY, g);
-						smallX += X_PIXEL;
-						smallY += X_PIXEL * slope;
-					}
-				}
+			if (x1 == x2){//the line is horizontal
+				g.drawLine(gridXPtToScreen(x1) - 1, gridYPtToScreen(y1), gridXPtToScreen(x2) - 1, gridYPtToScreen(y2));
+				g.drawLine(gridXPtToScreen(x1) + 1, gridYPtToScreen(y1), gridXPtToScreen(x2) + 1, gridYPtToScreen(y2));
+			}
+			else if (y1 == y2){
+				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1) - 1, gridXPtToScreen(x2), gridYPtToScreen(y2) - 1);
+				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1) + 1, gridXPtToScreen(x2), gridYPtToScreen(y2) + 1);
+			}
+			else{
+				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1)-1, gridXPtToScreen(x2), gridYPtToScreen(y2)-1);
+				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1)+1, gridXPtToScreen(x2), gridYPtToScreen(y2)+1);
+				
+				g.drawLine(gridXPtToScreen(x1) - 1, gridYPtToScreen(y1), gridXPtToScreen(x2) - 1, gridYPtToScreen(y2));
+				g.drawLine(gridXPtToScreen(x1) + 1, gridYPtToScreen(y1), gridXPtToScreen(x2) + 1, gridYPtToScreen(y2));
+			}
 		}
+		g.setColor(color);
+		g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1), gridXPtToScreen(x2), gridYPtToScreen(y2));
 	}
 
 	public int roundDouble(double a) {
@@ -632,9 +692,17 @@ public class Graph extends SubPanel {
 	}
 
 	public void graphCart(Function f, Graphics g) {
+		System.out.println("graphcart");
 		String eqtn = f.getFuncEqtn();
 		Var ind = f.getIndependentVar();
 		Var dep = f.getDependentVar();
+		
+		//used to temporarily store the value stored in the independent and dependent vars,
+		//this will allow it to be restored after graphing, so that if in the terminal a
+		//value was assingned to x, it will not be overriden by the action of graphing
+		
+		Number xVal = ind.getValue();
+		Number yVal = dep.getValue();
 		Color color = f.getColor();
 		boolean tracing = f.isTracingPt();
 		double tracePt = f.getTraceVal();
@@ -659,8 +727,8 @@ public class Graph extends SubPanel {
 				currX = ind.getValue().toDec().getValue();
 				currY = dep.getValue().toDec().getValue();
 	
-				ptOn(currX, currY, g);
 				if (isConnected){
+					setLineSize(LINE_SIZE_DEFAULT);
 					drawLineSeg(lastX, lastY, currX, currY, color, g);
 				}
 	
@@ -687,9 +755,10 @@ public class Graph extends SubPanel {
 				g.setColor(Color.black);
 				ind.setValue(new Decimal(tracePt));
 				
-				drawTracer(tracePt, parser.ParseExpression(eqtn).eval().toDec().getValue(), g);
+				drawTracer(tracePt, expression.eval().toDec().getValue(), g);
 			}
-			//draws a line that is always 20 pixels in length, this is broken, will fix later
+			
+			//draws a tangent line that is always 20 pixels in length, this is broken, will fix later
 			if (deriving)
 			{//this will be redone later
 				/*
@@ -705,6 +774,11 @@ public class Graph extends SubPanel {
 						derivative + xChange*X_PIXEL, depVal + yChange*Y_PIXEL, new Color(255, 69, 0), g);
 				*/
 			}
+			
+			//restore the previous values of x and y
+			ind.setValue(xVal);
+			dep.setValue(yVal);
+			
 		}
 		catch(Exception e)
 		{

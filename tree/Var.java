@@ -4,10 +4,8 @@ public class Var extends Value implements ValueWithName {
 
 	private String varString;
 	private Number num;
-	private static ExpressionParser parser;
 	
-	public Var(ExpressionParser p){
-		parser = p;
+	public Var(){
 	}
 	
 	public Var(String s, Number n) {
@@ -203,7 +201,7 @@ public class Var extends Value implements ValueWithName {
 	}
 
 	@Override
-	public Value neg() {
+	public Value neg() throws EvalException {
 		// TODO Auto-generated method stub
 		return num.neg();
 	}
@@ -252,5 +250,17 @@ public class Var extends Value implements ValueWithName {
 	public Value squareRoot() throws EvalException {
 		// TODO Auto-generated method stub
 		return num.squareRoot();
+	}
+
+	@Override
+	public Value log() throws EvalException {
+		// TODO Auto-generated method stub
+		return num.log();
+	}
+
+	@Override
+	public Value natLog() throws EvalException {
+		// TODO Auto-generated method stub
+		return num.natLog();
 	}
 }
