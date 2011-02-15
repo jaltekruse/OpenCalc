@@ -58,11 +58,12 @@ public class Constant extends NumberWithName {
 	 */
 	public String toString() {
 		String varInfo = new String();
-		varInfo += "[";
 		varInfo += getName();
-		varInfo += ": ";
-		varInfo += getValue();
-		varInfo += "]";
+//		varInfo += "[";
+//		varInfo += getName();
+//		varInfo += ": ";
+//		varInfo += getValue();
+//		varInfo += "]";
 		return varInfo;
 	}
 	

@@ -8,5 +8,11 @@ public class DefaultConfiguration {
 	 * to a horizontal bar when a division is translated, or using a dot when there is a
 	 * a multiplication.
 	 */
+	
+	DivisionGraphic.Style divsionState;
+	
+	FractionGraphic.Style fractionState;
+	
+	
 
 }

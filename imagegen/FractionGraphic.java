@@ -1,5 +1,6 @@
 package imagegen;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -9,15 +10,19 @@ import tree.Fraction;
 
 public class FractionGraphic extends ValueGraphic<Fraction>{
 	
-	public enum Style{
+	public static enum Style{
 		SLASH, DIAGONAL, HORIZONTAL
 	}
 	
 	private Style style;
+	private int spaceAroundBar;
+	private int sizeOverHang;
 	
 	public FractionGraphic(Fraction f, CompleteExpressionGraphic gr) {
 		super(f, gr);
 		style = Style.HORIZONTAL;
+		spaceAroundBar = 2;
+		sizeOverHang = 2;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -27,15 +32,17 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 		Graphics g = super.getCompExGraphic().getGraphics();
 		FontMetrics fm = g.getFontMetrics();
 		if (style == Style.SLASH || (style == Style.HORIZONTAL && getValue().getDenominator() == 1)){
-			g.drawString(getValue().toString(),
-					getX1(), getY2());
+//			super.getCompExGraphic().getGraphics().setColor(Color.gray);
+//			super.getCompExGraphic().getGraphics().fillRect(getX1(), getY1(), getX2() - getX1(), getY2() - getY1());
+//			super.getCompExGraphic().getGraphics().setColor(Color.black);
+			g.drawString(getValue().toString(), getX1(), getY2());
 		}
 		else if (style == Style.HORIZONTAL){
 			g.drawString("" + getValue().getDenominator(),
-					(int)Math.round(((getX2() - getX1()) - fm.stringWidth("" + getValue().getDenominator()))/2.0)
-					+ getX1(), getY2());
-			int heightDenom = (int) Math.round((getY2() - getY1() - 7)/2.0);
-			int lineY = heightDenom + 2 + getY1();
+					(int)Math.round(((getX2() - getX1()) - getCompExGraphic().getStringWidth("" 
+							+ getValue().getDenominator(), getFont()))/2.0) + getX1(), getY2());
+			int heightDenom = (int) Math.round((getY2() - getY1() - (2 * spaceAroundBar + 1))/2.0);
+			int lineY = heightDenom + spaceAroundBar + getY1();
 			g.drawLine(getX1(), lineY, getX2(), lineY);
 			
 			g.drawString("" + getValue().getNumerator(),
@@ -48,12 +55,15 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 	public int[] requestSize(Graphics g, Font f, int x1, int y1) throws Exception {
 		// TODO right now prints toString representation, need to make horizonal, and slash representations soon
 		g.setFont(f);
+		setFont(f);
 		FontMetrics fm = g.getFontMetrics();
 		if (style == Style.SLASH){
 			String s = getValue().toString();
 			int[] size = new int[2];
-			size[0] = fm.stringWidth(s);
-			size[1] = fm.getHeight() - 9;
+			size[0] = getCompExGraphic().getStringWidth(s, f);
+			size[1] = getCompExGraphic().getFontHeight(f);
+			setUpperHeight((int) Math.round(size[1]/2.0));
+			setLowerHeight(getUpperHeight());
 			super.setX1(x1);
 			super.setY1(y1);
 			super.setX2(x1 + size[0]);
@@ -66,16 +76,19 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 			
 			if (denominator != 1){
 				int[] size = new int[2];
-				int numWidth = fm.stringWidth("" + numerator);
-				int denomWidth = fm.stringWidth("" + denominator);
-				if (numWidth > denomWidth){
-					size[0] = numWidth;
+				int numerWidth = getCompExGraphic().getStringWidth("" + numerator, f);
+				
+				int denomWidth = getCompExGraphic().getStringWidth("" + denominator, f);
+				if (numerWidth > denomWidth){
+					size[0] = numerWidth + 2 * sizeOverHang;
 				}
 				else
 				{
-					size[0] = denomWidth;
+					size[0] = denomWidth + 2 * sizeOverHang;
 				}
-				size[1] = (fm.getHeight() - 9) * 2 + 7;
+				size[1] = getCompExGraphic().getFontHeight(f) * 2 + 2 * spaceAroundBar + 1;
+				setUpperHeight((int) Math.round(size[1]/2.0));
+				setLowerHeight(getUpperHeight());
 				super.setX1(x1);
 				super.setY1(y1);
 				super.setX2(x1 + size[0]);
@@ -83,11 +96,12 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 				return size;
 			}
 			else{
-				System.out.println("print int");
 				String s = getValue().toString();
 				int[] size = new int[2];
-				size[0] = fm.stringWidth(s);
-				size[1] = fm.getHeight() - 9;
+				size[0] = getCompExGraphic().getStringWidth(s, f);
+				size[1] = getCompExGraphic().getFontHeight(f);
+				setUpperHeight((int) Math.round(size[1]/2.0));
+				setLowerHeight(getUpperHeight());
 				super.setX1(x1);
 				super.setY1(y1);
 				super.setX2(x1 + size[0]);

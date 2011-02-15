@@ -105,7 +105,7 @@ public class NumsAndOppsPanel extends SubPanel {
 				JTextField currField = mainApp.getCurrTextField().getField();
 				if (currField != null) {
 					String currText = currField.getText();
-					int caretPos = mainApp.getCurrCaretPos();
+					int caretPos = currField.getCaretPosition();
 
 					if (currText.equals("")) {
 						// do nothing
@@ -114,6 +114,7 @@ public class NumsAndOppsPanel extends SubPanel {
 					if (caretPos > 0) {
 						if (currField.getSelectionStart() == currField
 								.getSelectionEnd()) {
+							System.out.println("backspace");
 							currText = currField.getText();
 							String tempText = currText.substring(0,
 									caretPos - 1);

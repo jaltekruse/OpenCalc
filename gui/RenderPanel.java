@@ -25,8 +25,10 @@ import imagegen.ImageGenerator;
 import imagegen.ValueGraphic;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -114,7 +116,7 @@ public class RenderPanel extends SubPanel {
 				try {
 					if (!entryLine.getField().getText().equals(""))
 					{
-						render(g);
+						render((Graphics2D)g);
 					}
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -125,6 +127,7 @@ public class RenderPanel extends SubPanel {
 				}
 			}
 		};
+		render.setPreferredSize(new Dimension(400, 300));
 		tCon.fill = GridBagConstraints.BOTH;
 		tCon.weightx = 1;
 		tCon.weighty = 1;
@@ -141,7 +144,7 @@ public class RenderPanel extends SubPanel {
 		tCon.gridx = 0;
 		tCon.gridy = 13;
 		tCon.gridheight = 2;
-		tCon.gridwidth = 2;
+		tCon.gridwidth = 7;
 		this.add(termScrollPane, tCon);
 		
 		render.addMouseListener(new MouseListener(){
@@ -149,6 +152,9 @@ public class RenderPanel extends SubPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
+				if (ceg == null){
+					return;
+				}
 				int mouseX = e.getX();
 				int mouseY = e.getY();
 				selected.setText("");
@@ -156,7 +162,7 @@ public class RenderPanel extends SubPanel {
 				for (ValueGraphic vg : ceg.getComponents()){
 					if (mouseX >= vg.getX1() && mouseX <= vg.getX2() && mouseY >= vg.getY1() && mouseY <= vg.getY2())
 					{
-						selected.append(vg.toString() + '\n' + vg.getValue().toString() + "\n\n");
+						selected.append(vg.toString() + '\n' + vg.getValue().toString() + "\nUpperHeight: "+ vg.getUpperHeight() + "\n\n");
 					}
 				}
 				
@@ -190,7 +196,7 @@ public class RenderPanel extends SubPanel {
 		
 	}
 
-	public void render(Graphics g) throws ParseException, Exception{
+	public void render(Graphics2D g) throws ParseException, Exception{
 		ceg = new CompleteExpressionGraphic(parser.ParseExpression(entryLine.getField().getText()));
 		g.setColor(Color.white);
 		g.fillRect(0, 0, render.getWidth(), render.getHeight());
@@ -198,6 +204,7 @@ public class RenderPanel extends SubPanel {
 		g.setColor(Color.black);
 		ceg.draw();
 	}
+	
 	public OCTextField getEntryLine() {
 		return entryLine;
 	}

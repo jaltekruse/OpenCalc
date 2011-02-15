@@ -25,22 +25,23 @@ public class Var extends Value implements ValueWithName {
 	
 	@Override
 	public Value eval(){
-		return this;
+		return num;
 	}
 	
 	public String toString() {
 		String varInfo = new String();
-		varInfo += "[";
-		varInfo += varString + " = ";
-		if (num != null)
-		{
-			varInfo += num.toString();
-		}
-		else
-		{
-			varInfo += "null";
-		}
-		varInfo += "]";
+		varInfo += varString;
+//		varInfo += "[";
+//		varInfo += varString + " = ";
+//		if (num != null)
+//		{
+//			varInfo += num.toString();
+//		}
+//		else
+//		{
+//			varInfo += "null";
+//		}
+//		varInfo += "]";
 		return varInfo;
 	}
 

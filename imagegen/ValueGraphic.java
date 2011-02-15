@@ -4,15 +4,26 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Vector;
 
+import tree.BinExpression;
+import tree.Constant;
+import tree.Fraction;
+import tree.Operator;
 import tree.Value;
+import tree.Var;
+import tree.Nothing;
 
 public abstract class ValueGraphic<E extends Value> {
+	
+	//used to store the amount of space above the object,used to center later
+	//objects added to ExpressionGraphic
+	private int upperHeight, lowerHeight;
 	
 	private int x1, y1, x2, y2;
 	protected E value;
 	private ValueGraphic north, south, east, west;
 	private Vector<ValueGraphic> components;
-	private CompleteExpressionGraphic compExGraphic; 
+	private CompleteExpressionGraphic compExGraphic;
+	private Font f;
 	
 	public ValueGraphic(E v, CompleteExpressionGraphic compExGraphic){
 		this.compExGraphic = compExGraphic;
@@ -20,7 +31,33 @@ public abstract class ValueGraphic<E extends Value> {
 		value = v;
 	}
 	
-
+	ValueGraphic makeValueGraphic(Value v) throws RenderException{
+		if (v instanceof Fraction)
+		{
+			return new FractionGraphic((Fraction)v, getCompExGraphic());
+		}
+		else if(v instanceof Var || v instanceof Constant)
+		{
+			return new ValueWithNameGraphic(v, getCompExGraphic());
+		}
+		else if (v instanceof Nothing){
+			return new NothingGraphic((Nothing)v, getCompExGraphic());
+		}
+		else if (v instanceof BinExpression)
+		{
+			if (((BinExpression)v).getOp() == Operator.DIVIDE){
+				return new DivisionGraphic((BinExpression)v, getCompExGraphic());
+			}
+			else if (((BinExpression)v).getOp() == Operator.POWER){
+				return new ExponentGraphic((BinExpression)v, getCompExGraphic());
+			}
+			else{
+				return new BinExpressionGraphic((BinExpression)v, getCompExGraphic());
+			}
+			
+		}
+		throw new RenderException("unsupported Value");
+	}
 	
 	void setX1(int x1) {
 		this.x1 = x1;
@@ -55,26 +92,13 @@ public abstract class ValueGraphic<E extends Value> {
 		return y2;
 	}
 
-	void shiftToX2(int x2) {
-		int xChange = x2 - this.x2;
-		for (ValueGraphic vg : components){
-			vg.setX2(vg.getX2() + xChange);
-		}
-		this.x2 = x2;
-	}
-	
-	void shiftToY2(int y2) {
-		int yChange = y2 - this.y2;
-		for (ValueGraphic vg : components){
-			vg.setY2(vg.getY2() + yChange);
-		}
-		this.y2 = y2;
-	}
 	void shiftToX1(int x1) {
 		int xChange = x1 - this.x1;
 		for (ValueGraphic vg : components){
 			vg.setX1(vg.getX1() + xChange);
+			vg.setX2(vg.getX2() + xChange);
 		}
+		this.x2 += xChange;
 		this.x1 = x1;
 	}
 
@@ -82,8 +106,18 @@ public abstract class ValueGraphic<E extends Value> {
 		int yChange = y1 - this.y1;
 		for (ValueGraphic vg : components){
 			vg.setY1(vg.getY1() + yChange);
+			vg.setY2(vg.getY2() + yChange);
 		}
+		this.y2 += yChange;
 		this.y1 = y1;
+	}
+	
+	int getHeight(){
+		return y2 - y1;
+	}
+	
+	int getWidth(){
+		return x2 - x1;
 	}
 	
 	void setValue(E v){
@@ -150,5 +184,29 @@ public abstract class ValueGraphic<E extends Value> {
 
 	public Vector<ValueGraphic> getComponents() {
 		return components;
+	}
+
+	public void setUpperHeight(int upperHeight) {
+		this.upperHeight = upperHeight;
+	}
+
+	public int getUpperHeight() {
+		return upperHeight;
+	}
+
+	public void setLowerHeight(int lowerHeight) {
+		this.lowerHeight = lowerHeight;
+	}
+
+	public int getLowerHeight() {
+		return lowerHeight;
+	}
+
+	public void setFont(Font f) {
+		this.f = f;
+	}
+
+	public Font getFont() {
+		return f;
 	}
 }

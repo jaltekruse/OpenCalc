@@ -85,7 +85,7 @@ public class MainApplet extends JApplet{
 	private JScrollPane varScrollPane, constScrollPane;
 	private static OCTextField textWithFocus;
 	private JPanel graph;
-	private CalcPanel text;
+	private static CalcPanel text;
 	private ExpressionParser parser;
 	private ValStoragePanel varPanel, constPanel;
 	private JTabbedPane calcTabs, mathFunc, graphTabs;
@@ -103,6 +103,7 @@ public class MainApplet extends JApplet{
 	static GlassPane glassPane;
 	private Container contentPane;
 	private GraphWindow graphWindow;
+	private static RenderPanel render;
 	
 	/**
 	 * @throws ValueNotStoredException 
@@ -193,7 +194,10 @@ public class MainApplet extends JApplet{
 		
 		graphTabs.add(new Graph3DPanel(200, 200, this), "3Dgraph");
 		
-		graphTabs.add(new RenderPanel(this), "render");
+		render = new RenderPanel(this);
+		graphTabs.add(render,"render");
+		
+		graphTabs.setSelectedIndex(6);
 
 		graphTabs.addChangeListener(graphTabsListener());
 		
@@ -278,10 +282,7 @@ public class MainApplet extends JApplet{
 //		
 //		graphTabs.setBounds(401, 10, 400, 300);
 		
-		setCurrTextField(text.getEntryLine());
-		
 		this.repaint();
-		text.getEntryLine().getField().selectAll();
 	}
 
 	public void setGlassVisible(boolean b){
@@ -347,6 +348,20 @@ public class MainApplet extends JApplet{
 				}
 				if (nameSelected.equals("newGraph")){
 					graphWindow.repaint();
+				}
+				if (nameSelected.equals("render")){
+					try {
+						setCurrTextField(render.getEntryLine());
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ValueNotStoredException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (EvalException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		};
@@ -436,7 +451,7 @@ public class MainApplet extends JApplet{
 		g.repaint();
 	}
 
-	public static OCTextField getCurrTextField() {
+	public OCTextField getCurrTextField() {
 		return textWithFocus;
 	}
 
@@ -444,22 +459,13 @@ public class MainApplet extends JApplet{
 		return varPanel;
 	}
 
-	public void setCurrTextField(OCTextField focused) throws ParseException, ValueNotStoredException, EvalException {
+	public static void setCurrTextField(OCTextField focused) throws ParseException, ValueNotStoredException, EvalException {
 		if (!textWithFocus.equals(focused)) {
 			textWithFocus.primaryAction();
 			glassPane.setHistoryVisible(false);
 			textWithFocus = focused;
 		}
 		textWithFocus.getField().requestFocus();
-	}
-
-	public int getCurrCaretPos() {
-		return textWithFocusCaretPos;
-	}
-
-	public void addToCaretPos(int i) {
-		textWithFocusCaretPos += i;
-		updateCaretPos();
 	}
 	
 	public CalcPanel getCalcPanel(){
@@ -494,6 +500,10 @@ public class MainApplet extends JApplet{
 		
 		frame.pack();
 		frame.setVisible(true);
+		
+//		setCurrTextField(text.getEntryLine());
+//		text.getEntryLine().getField().selectAll();
+		setCurrTextField(render.getEntryLine());
 	}
 
 	public static void main(String[] args) {

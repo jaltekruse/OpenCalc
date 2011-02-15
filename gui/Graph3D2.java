@@ -17,7 +17,7 @@ public class Graph3D2
     public Graph3DPanel panel;
     private GraphFunc[] functions;
     private final double[][] AXES = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-    private double[] viewAngles = {.8, .8, 0}; // Euler angles between view plane basis and XY plane
+    double[] viewAngles = {.8, .8, 0}; // Euler angles between view plane basis and XY plane
     private double[] viewCenter = {0, 0, -11}; // Center of view plane
     // NOTE: View basis must be orthonormal.
     private double[] focus = {0, 0, -9};
@@ -28,7 +28,7 @@ public class Graph3D2
     private Mode renderMode;
     private int NUM_DIVISIONS;
 
-    private Listener l;
+    //private Listener l;
 
     public Graph3D2(Graph3DPanel p)
     {
@@ -59,8 +59,8 @@ public class Graph3D2
         focus = new double[3];
         dist = 1.0;*/
 
-        l = new Listener();
-        panel.addKeyListener(l);
+        //l = new Listener();
+        //panel.addKeyListener(l);
     }
 
     public void addFunction(Expression e, Color c)
@@ -100,6 +100,9 @@ public class Graph3D2
         double[] p = new double[2];
         int i, j;
 
+        g.setColor(Color.white);
+        g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
+        
         for(GraphFunc f: functions)
         {
             proj = projView(f);
@@ -316,42 +319,42 @@ public class Graph3D2
         }
     }
 
-    private class Listener extends MouseInputAdapter implements KeyListener
-    {
-        public void keyPressed(KeyEvent k)
-        {
-        }
-        public void keyReleased(KeyEvent k)
-        {
-            System.out.println("MOO!");
-            int key = k.getKeyCode();
-
-            boolean r = true;
-            switch(key)
-            {
-                case KeyEvent.VK_1: viewAngles[0] += .2; break;
-                case KeyEvent.VK_2: viewAngles[1] += .2; break;
-                case KeyEvent.VK_3: viewAngles[2] += .2; break;
-                case KeyEvent.VK_4: viewAngles[0] -= .2; break;
-                case KeyEvent.VK_5: viewAngles[1] -= .2; break;
-                case KeyEvent.VK_6: viewAngles[2] -= .2; break;
-                default: r = false;
-            }
-            if(r)
-                panel.repaint();
-        }
-        public void keyTyped(KeyEvent k)
-        {
-        }
-
-        public void mousePressed(MouseEvent m)
-        {
-        }
-        public void mouseReleased(MouseEvent m)
-        {
-        }
-        public void mouseClicked(MouseEvent m)
-        {
-        }
-    }
+//    private class Listener extends MouseInputAdapter implements KeyListener
+//    {
+//        public void keyPressed(KeyEvent k)
+//        {
+//        }
+//        public void keyReleased(KeyEvent k)
+//        {
+//            System.out.println("MOO!");
+//            int key = k.getKeyCode();
+//
+//            boolean r = true;
+//            switch(key)
+//            {
+//                case KeyEvent.VK_1: viewAngles[0] += .2; break;
+//                case KeyEvent.VK_2: viewAngles[1] += .2; break;
+//                case KeyEvent.VK_3: viewAngles[2] += .2; break;
+//                case KeyEvent.VK_4: viewAngles[0] -= .2; break;
+//                case KeyEvent.VK_5: viewAngles[1] -= .2; break;
+//                case KeyEvent.VK_6: viewAngles[2] -= .2; break;
+//                default: r = false;
+//            }
+//            if(r)
+//                panel.repaint();
+//        }
+//        public void keyTyped(KeyEvent k)
+//        {
+//        }
+//
+//        public void mousePressed(MouseEvent m)
+//        {
+//        }
+//        public void mouseReleased(MouseEvent m)
+//        {
+//        }
+//        public void mouseClicked(MouseEvent m)
+//        {
+//        }
+//    }
 }

@@ -118,11 +118,12 @@ public class ExpressionParser {
 		while (currCharNum <= eqtn.length() - 1) {
 			parseElement(eqtn, currCharNum);
 			elementCount++;
+			System.out.println("lengthLast: " + lengthLast);
 			currCharNum += lengthLast;
 			//uncomment the next two lines to print out the expression 
 			//as the loop executes
-			//if (e != null)
-				//System.out.println(e.toString());
+			if (e != null)
+				System.out.println(e.toString());
 		}
 		
 		if (matchedParens == 1)
@@ -136,15 +137,20 @@ public class ExpressionParser {
 		else{} //parens were matched 
 		if (vals.size() == 1){//there were no operators given
 			
-			if (vals.get(0) instanceof Var 
-					&& ((Var)vals.get(0)).getValue() == null){
-				throw new ParseException("Variable \"" + 
-						((Var)vals.get(0)).getName() + "\" has not been given a value");
-			}
+//			if (vals.get(0) instanceof Var 
+//					&& ((Var)vals.get(0)).getValue() == null){
+//				throw new ParseException("Variable \"" + 
+//						((Var)vals.get(0)).getName() + "\" has not been given a value");
+//			}
 			return vals.get(0);
 		}
 		if (e == null){
 			throw new ParseException("invalid expression");
+		}
+		if (e instanceof BinExpression){
+			if (((BinExpression)e).getRightChild() == null){
+				addNewValue(new Nothing());
+			}
 		}
 		while(e.hasParent()){
 			e = e.getParent();
@@ -165,7 +171,7 @@ public class ExpressionParser {
 		
 		currChar = s.charAt(pos);
 		lengthLast = 1;
-		//System.out.println("currChar: " + currChar);
+		System.out.println("currChar: " + currChar);
 		switch(currChar){
 		case '+':
 			addBinOp(Operator.ADD);
@@ -388,7 +394,7 @@ public class ExpressionParser {
 			return;
 		}
 		else if(varElm.equals("frac")){
-			//think of how to add things like this
+			//think of how to add things like this, functions with multiple inputs
 		}
 		else if(varElm.equals("solve")){
 			
@@ -399,11 +405,11 @@ public class ExpressionParser {
 				addNewValue(tempElm);
 				return;
 			}
-			if (!(e == null && vals.size() == 0)){// something has been scanned in
-				if (VARLIST.findIfStored(varElm) == null){
-					throw new ParseException("Variable \"" + varElm + "\" has not been given a value");
-				}
-			}
+//			if (!(e == null && vals.size() == 0)){// something has been scanned in
+//				if (VARLIST.findIfStored(varElm) == null){
+//					throw new ParseException("Variable \"" + varElm + "\" has not been given a value");
+//				}
+//			}
 			
 			Var newVar = VARLIST.storeVar(varElm, null);
 			addNewValue(newVar);
@@ -411,21 +417,21 @@ public class ExpressionParser {
 	}
 	
 	public void addNewValue(Value v) throws ParseException{
-		if (v instanceof Var && ((Var)v).getValue() == null & e != null)
-		{//a new variable is being added to the tree, that has not been given a value (a tree has already
-			//been started because the current expression "e" is not null)
-			throw new ParseException("Variable \"" + ((Var)v).getName()
-					+ "\" has not been given a value");
-		}
-		if (vals.size() == 1 && e == null && vals.get(0) instanceof Var 
-				&& ((Var)vals.get(0)).getValue() == null)
-		{//A variable was found and before a subsequent operator was found, another 
-			//value was found, system would add implied multiplication, but the only use of 
-			//an undeclared variable is "varName = 8*9" etc.
-			throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
-					+ "\" has not been given a value");
-		}
-		else if(e instanceof BinExpression){
+//		if (v instanceof Var && ((Var)v).getValue() == null & e != null)
+//		{//a new variable is being added to the tree, that has not been given a value (a tree has already
+//			//been started because the current expression "e" is not null)
+//			throw new ParseException("Variable \"" + ((Var)v).getName()
+//					+ "\" has not been given a value");
+//		}
+//		if (vals.size() == 1 && e == null && vals.get(0) instanceof Var 
+//				&& ((Var)vals.get(0)).getValue() == null)
+//		{//A variable was found and before a subsequent operator was found, another 
+//			//value was found, system would add implied multiplication, but the only use of 
+//			//an undeclared variable is "varName = 8*9" etc.
+//			throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
+//					+ "\" has not been given a value");
+//		}
+		if(e instanceof BinExpression){
 			if(((BinExpression)e).getRightChild() == null){
 				((BinExpression)e).setRightChild(v);
 				return;
@@ -438,12 +444,12 @@ public class ExpressionParser {
 		}
 		else if(e instanceof UrinaryExpression){
 			if (vals.size() == 1 || ((UrinaryExpression)e).hasChild()){
-				if (vals.size() > 0 && vals.get(0) instanceof Var){
-					if (((Var)vals.get(0)).getValue() == null){
-						throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
-								+ "\" has not been given a value");
-					}
-				}
+//				if (vals.get(0) instanceof Var){
+//					if (((Var)vals.get(0)).getValue() == null){
+//						throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
+//								+ "\" has not been given a value");
+//					}
+//				}
 				addBinOp(Operator.MULTIPLY);
 				addNewValue(v);
 				return;
@@ -476,11 +482,14 @@ public class ExpressionParser {
 				addUrinaryOp(Operator.NEG);
 				return;
 			}
-			else{
-				throw new ParseException("2 binary operators adjacent");
+			else
+			{
+				//throw new ParseException("2 binary operators adjacent");
+				addNewValue(new Nothing());
+				System.out.println("RAWSRASRWEFSADFSDF: " + e.toString());
 			}
 		}
-		else if (e instanceof UrinaryExpression && ((UrinaryExpression)e).getChild() == null){
+		if (e instanceof UrinaryExpression && ((UrinaryExpression)e).getChild() == null){
 			if (vals.size() == 1 && e.isContainerOp()){
 				newEx = new BinExpression(o);
 				newEx.setLeftChild(vals.remove(0));
@@ -490,7 +499,8 @@ public class ExpressionParser {
 				return;
 			}
 			else{
-				throw new ParseException("urinary expression without a value");		
+				//throw new ParseException("urinary expression without a value");
+				addNewValue(new Nothing());
 			}
 		}
 		else{
@@ -501,15 +511,19 @@ public class ExpressionParser {
 					return;
 				}
 				else if (o != Operator.ASSIGN){
-					if (vals.size() == 1 && vals.get(0) instanceof Var){
-						if (((Var)vals.get(0)).getValue() == null){
-							throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
-									+ "\" has not been given a value");
-						}
-					}
+//					if (vals.size() == 1 && vals.get(0) instanceof Var){
+//						if (((Var)vals.get(0)).getValue() == null){
+//							throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
+//									+ "\" has not been given a value");
+//						}
+//					}
 					e = newEx;
 					if (vals.size() == 1){
 						newEx.setLeftChild(vals.get(0));
+					}
+					else
+					{
+						newEx.setLeftChild(new Nothing());
 					}
 					vals = new ArrayList<Value>();
 					return;
@@ -519,18 +533,22 @@ public class ExpressionParser {
 					if (vals.size() == 1){
 						newEx.setLeftChild(vals.get(0));
 					}
+					else
+					{
+						newEx.setLeftChild(new Nothing());
+					}
 					vals = new ArrayList<Value>();
 					return;
 				}
 			}
-			if(e.getOp() == null){
-				if (vals.size() == 1){
-					e = newEx;
-					newEx.setLeftChild(vals.get(0));
-					vals = new ArrayList<Value>();
-					return;
-				}
-			}
+//			if(e.getOp() == null){
+//				if (vals.size() == 1){
+//					e = newEx;
+//					newEx.setLeftChild(vals.get(0));
+//					vals = new ArrayList<Value>();
+//					return;
+//				}
+//			}
 			if (vals.size() == 1){
 				newEx.setLeftChild(vals.get(0));
 				vals = new ArrayList<Value>();
@@ -567,22 +585,36 @@ public class ExpressionParser {
 								&& !(e.getParent().isContainerOp())){
 							e = e.getParent();
 						}
+						System.out.println("afterloop: " + e.toString());
 						if (e.hasParent() && e.getParent().isContainerOp()){
 							((UrinaryExpression)e.getParent()).setChild(newEx);
 						}
-						if (e instanceof BinExpression){
-							if (e.hasParent()){
-								Expression parent = e.getParent();
-								if (parent instanceof BinExpression){
-									((BinExpression) parent).setRightChild(newEx);
-								}
-								else if(parent instanceof UrinaryExpression){
-									((UrinaryExpression) parent).setChild(newEx);
-								}
+						if (e instanceof BinExpression)
+						{
+							if (e.getOp().getPrec() < newEx.getOp().getPrec())
+							{
+								((BinExpression)newEx).setLeftChild(((BinExpression)e).getRightChild());
+								((BinExpression)e).setRightChild(newEx);
+								e = newEx;
+								return;
 							}
-							newEx.setLeftChild(e);
-							e = newEx;
-							return;
+							else
+							{
+								System.out.println("after loop: " + e.toString());
+								if (e.hasParent())
+								{
+									Expression parent = e.getParent();
+									if (parent instanceof BinExpression){
+										((BinExpression) parent).setRightChild(newEx);
+									}
+									else if(parent instanceof UrinaryExpression){
+										((UrinaryExpression) parent).setChild(newEx);
+									}
+								}
+								newEx.setLeftChild(e);
+								e = newEx;
+								return;
+							}
 						}
 						newEx.setLeftChild(e);
 						e = newEx;

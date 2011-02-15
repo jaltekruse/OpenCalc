@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -110,10 +111,10 @@ public class GlassPane extends JComponent{
 	}
 	
 	public void refresh(){
-		if (mainApp.getCurrTextField().getHistory().size() == 0)
-		{//requested to add a history box to a field without a history
-			return;
-		}
+//		if (mainApp.getCurrTextField().getHistory().size() == 0)
+//		{//requested to add a history box to a field without a history
+//			return;
+//		}
 		if (!mainApp.getCurrTextField().isShowing()){
 			setHistoryVisible(false);
 			return;
@@ -131,10 +132,10 @@ public class GlassPane extends JComponent{
 	}
 
 	public void addFieldHistory(){
-		if (mainApp.getCurrTextField().getHistory().size() == 0)
-		{//requested to add a history box to a field without a history
-			return;
-		}
+//		if (mainApp.getCurrTextField().getHistory().size() == 0)
+//		{//requested to add a history box to a field without a history
+//			return;
+//		}
 		if (!mainApp.getCurrTextField().isShowing()){
 			setHistoryVisible(false);
 			return;
@@ -250,10 +251,17 @@ public class GlassPane extends JComponent{
 		});
 		height = history.size() * 15;
 		
-		int i = history.size() - 1;
-		historyPane.append(history.get(i));
-		for (i--; i >= 0; i--){
-			historyPane.append('\n' + history.get(i));
+		if (history.size() == 0){
+			height = 15;
+			historyPane.append("empty");
+		}
+		else{
+	
+			int i = history.size() - 1;
+			historyPane.append(history.get(i));
+			for (i--; i >= 0; i--){
+				historyPane.append('\n' + history.get(i));
+			}
 		}
 		
 		x = mainApp.getCurrTextField().getField().getLocationOnScreen().x
@@ -276,7 +284,8 @@ public class GlassPane extends JComponent{
 		
 		selectStart = 0;
 		historyPane.setCaretPosition(selectStart);
-		moveIndex(-1);
+		
+		selectCurrLine();
 		
 		refresh();
 	}
@@ -329,6 +338,8 @@ public class GlassPane extends JComponent{
 	public void setHistoryVisible(boolean b){
 		if (histScrollPane != null)
 		{
+			JScrollBar tempScroll = histScrollPane.getVerticalScrollBar();
+			tempScroll.setValue(0);
 			histScrollPane.setVisible(b);
 		}
 	}

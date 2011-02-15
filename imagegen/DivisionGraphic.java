@@ -6,21 +6,30 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 import tree.BinExpression;
+import tree.Constant;
 import tree.Fraction;
 import tree.Operator;
 import tree.Value;
+import tree.Var;
 
 public class DivisionGraphic extends BinExpressionGraphic {
 
-	public enum Style{
+	public static enum Style{
 		SLASH, DIAGONAL, HORIZONTAL
 	}
+	//number of pixels the bar overhangs the widest child (numerator or denominator)
+	private int sizeOverhang;
 	
+	//number of pixels left above and below the horizontal bar
+	private int spaceAroundBar;
 	private Style style;
+	private int heightNumer, heightDenom;
 	
 	public DivisionGraphic(BinExpression b, CompleteExpressionGraphic gr) {
 		super(b, gr);
 		style = Style.HORIZONTAL;
+		sizeOverhang = 2;
+		spaceAroundBar = 5;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -36,7 +45,8 @@ public class DivisionGraphic extends BinExpressionGraphic {
 //			super.getCompExGraphic().getGraphics().setColor(Color.gray);
 //			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
 //			super.getCompExGraphic().getGraphics().setColor(Color.black);
-			super.getCompExGraphic().getGraphics().drawLine(symbolX1, symbolY1 + 3, symbolX2, symbolY1 + 3);
+			super.getCompExGraphic().getGraphics().drawLine(symbolX1, symbolY1 + spaceAroundBar + 1, symbolX2, 
+					symbolY1 + spaceAroundBar + 1); 
 		}
 	}
 	
@@ -45,7 +55,10 @@ public class DivisionGraphic extends BinExpressionGraphic {
 		// TODO Auto-generated method stub
 		
 		g.setFont(f);
+		setFont(f);
 		FontMetrics fm = g.getFontMetrics();
+		System.out.println(f.getStringBounds("+", fm.getFontRenderContext()).getHeight());
+		System.out.println(fm.getHeight());
 		((BinExpression)super.getValue()).getOp().getSymbol();
 		Value tempLeft = ((BinExpression)super.getValue()).getLeftChild();
 		Value tempRight = ((BinExpression)super.getValue()).getRightChild();
@@ -59,106 +72,19 @@ public class DivisionGraphic extends BinExpressionGraphic {
 		if (style == Style.SLASH)
 		{
 			
-			if (tempLeft instanceof Fraction)
-			{
-				
-				Fraction leftFrac = ((Fraction)tempLeft);
-				leftValGraphic = new FractionGraphic(leftFrac, getCompExGraphic());
-			}
-			
-			else if (tempLeft instanceof BinExpression)
-			{
-				
-				BinExpression leftBinEx = ((BinExpression)tempLeft);
-				leftValGraphic = new BinExpressionGraphic(leftBinEx, getCompExGraphic());
-				
-			}
+			leftValGraphic = makeValueGraphic(tempLeft);
 			
 			super.getCompExGraphic().components.add(leftValGraphic);
 			leftSize = leftValGraphic.requestSize(g, f, x1, y1);
-			symbolSize[0] = fm.stringWidth(getValue().getOp().getSymbol());
-			symbolSize[1] = fm.getHeight() - 9;
+			symbolSize[0] = getCompExGraphic().getStringWidth(getValue().getOp().getSymbol(), f);
+			symbolSize[1] = getCompExGraphic().getFontHeight(f);
 			symbolX1 = x1 + leftSize[0];
 			System.out.println(leftSize[1]/2.0);
 			symbolY1 = y1 + ((int)Math.round(leftSize[1]/2.0) - (int) (Math.round(symbolSize[1])/2.0));
 			symbolX2 = x1 + leftSize[0] + symbolSize[0];
 			symbolY2 = symbolSize[1] + symbolY1;
-			//other if statements for checking the left, decimal, imaginary, other val types
 			
-			if (tempRight instanceof Fraction){
-				
-				Fraction rightFrac = ((Fraction)tempRight);
-				rightValGraphic = new FractionGraphic(rightFrac, getCompExGraphic());
-				rightSize = rightValGraphic.requestSize(g, f, symbolX2, y1);
-				super.getCompExGraphic().components.add(rightValGraphic);
-				
-			}
-			
-			else if (tempRight instanceof BinExpression){
-				
-				BinExpression rightBinEx = ((BinExpression)tempRight);
-				rightValGraphic = new BinExpressionGraphic(rightBinEx, getCompExGraphic());
-				rightSize = rightValGraphic.requestSize(g, f, symbolX2, y1);
-				
-				super.getCompExGraphic().components.add(rightValGraphic);
-	
-				
-			}
-			
-			super.getComponents().add(leftValGraphic);
-			super.getComponents().add(rightValGraphic);
-			
-			totalSize[0] = symbolX2 + rightSize[0] - x1;
-			totalSize[1] = symbolY2 - y1;
-			super.setX1(x1);
-			super.setY1(y1);
-			super.setX2(x1 + totalSize[0]);
-			super.setY2(y1 + totalSize[1]);
-			return totalSize;
-		}
-		else if (style == Style.HORIZONTAL){
-			if (tempLeft instanceof Fraction)
-			{
-				
-				Fraction leftFrac = ((Fraction)tempLeft);
-				leftValGraphic = new FractionGraphic(leftFrac, getCompExGraphic());
-			}
-			
-			else if (tempLeft instanceof BinExpression)
-			{
-				
-				if (((BinExpression)tempLeft).getOp() == Operator.DIVIDE){
-					leftValGraphic = new DivisionGraphic((BinExpression)tempLeft, super.getCompExGraphic());
-				}
-				else{
-					leftValGraphic = new BinExpressionGraphic((BinExpression)tempLeft, super.getCompExGraphic());
-				}
-				
-			}
-			
-			leftSize = leftValGraphic.requestSize(g, f, x1, y1);
-			super.getCompExGraphic().components.add(leftValGraphic);
-			
-			//other if statements for checking the left, decimal, imaginary, other val types
-			
-			if (tempRight instanceof Fraction){
-				
-				Fraction rightFrac = ((Fraction)tempRight);
-				rightValGraphic = new FractionGraphic(rightFrac, getCompExGraphic());
-				
-			}
-			
-			else if (tempRight instanceof BinExpression){
-				
-				if (((BinExpression)tempRight).getOp() == Operator.DIVIDE){
-					rightValGraphic = new DivisionGraphic((BinExpression)tempRight, super.getCompExGraphic());
-				}
-				else{
-					rightValGraphic = new BinExpressionGraphic((BinExpression)tempRight, super.getCompExGraphic());
-				}
-				
-			}
-			
+			rightValGraphic = makeValueGraphic(tempRight);
 			
 			rightSize = rightValGraphic.requestSize(g, f, symbolX2, y1);
 			super.getCompExGraphic().components.add(rightValGraphic);
@@ -166,29 +92,61 @@ public class DivisionGraphic extends BinExpressionGraphic {
 			super.getComponents().add(leftValGraphic);
 			super.getComponents().add(rightValGraphic);
 			
+			totalSize[0] = symbolX2 + rightSize[0] - x1;
+			totalSize[1] = symbolY2 - y1;
+			setUpperHeight((int) Math.round((totalSize[1]/2.0)));
+			setLowerHeight(getUpperHeight());
+			super.setX1(x1);
+			super.setY1(y1);
+			super.setX2(x1 + totalSize[0]);
+			super.setY2(y1 + totalSize[1]);
+			return totalSize;
+		}
+		else if (style == Style.HORIZONTAL){
+			
+			leftValGraphic = makeValueGraphic(tempLeft);
+			
+			leftSize = leftValGraphic.requestSize(g, f, x1, y1);
+			super.getCompExGraphic().components.add(leftValGraphic);
+			
+			//other if statements for checking the left, decimal, imaginary, other val types
+			
+			rightValGraphic = makeValueGraphic(tempRight);
+			
+			rightSize = rightValGraphic.requestSize(g, f, symbolX2, y1);
+			super.getCompExGraphic().components.add(rightValGraphic);
+			setHeightNumer(leftSize[1]);
+			setHeightDenom(rightSize[1]);
+			
+			super.getComponents().add(leftValGraphic);
+			super.getComponents().add(rightValGraphic);
+			
 			symbolX1 = x1;
 			
 			if (leftSize[0] > rightSize[0]){
-				symbolX2 = x1 + leftSize[0] + 8;
+				symbolX2 = x1 + leftSize[0] + 2 * sizeOverhang;
 			}
 			else
 			{
-				symbolX2 = x1 + rightSize[0] + 8;
+				symbolX2 = x1 + rightSize[0] + 2 * sizeOverhang;
 			}
 			
 			leftValGraphic.shiftToX1((int)(Math.round(((symbolX2 - symbolX1) - leftSize[0]))/2.0) + x1);
-			leftValGraphic.shiftToX2(leftValGraphic.getX1() + leftSize[0]);
+			//leftValGraphic.shiftToX2(leftValGraphic.getX1() + leftSize[0]);
 			
 			symbolY1 = leftSize[1] + y1;
-			symbolY2 = symbolY1 + 7;
-			
+			symbolY2 = symbolY1 + 1 + 2 * spaceAroundBar;
+			totalSize[1] = symbolY2 + rightSize[1] - y1;
+
 			rightValGraphic.shiftToX1((int)(Math.round(((symbolX2 - symbolX1) - rightSize[0]))/2.0) + x1);
-			rightValGraphic.shiftToX2(rightValGraphic.getX1() + rightSize[0]);
+			//rightValGraphic.shiftToX2(rightValGraphic.getX1() + rightSize[0]);
 			rightValGraphic.shiftToY1(symbolY2 + 1);
-			rightValGraphic.shiftToY2(rightValGraphic.getY1() + rightSize[1]);
+			//rightValGraphic.shiftToY2(rightValGraphic.getY1() + rightSize[1]);
 			
+			setUpperHeight(leftSize[1] + spaceAroundBar);
+			setLowerHeight(rightSize[1] + spaceAroundBar);
 			totalSize[0] = symbolX2 - x1;
-			totalSize[1] = symbolY2 + rightSize[1]- y1;
+			totalSize[1] = symbolY2 + rightSize[1] - y1;
 			super.setX1(x1);
 			super.setY1(y1);
 			super.setX2(x1 + totalSize[0]);
@@ -197,6 +155,24 @@ public class DivisionGraphic extends BinExpressionGraphic {
 		}
 		
 		return null;
+	}
+
+	public void setHeightNumer(int heightNumer) {
+		this.heightNumer = heightNumer;
+	}
+
+	public int getHeightNumer() {
+		//adds 3 for the whitespace
+		return heightNumer + spaceAroundBar;
+	}
+
+	public void setHeightDenom(int heightDenom) {
+		this.heightDenom = heightDenom;
+	}
+
+	public int getHeightDenom() {
+		//adds 3 for the whitespace
+		return heightDenom + spaceAroundBar;
 	}
 
 }
