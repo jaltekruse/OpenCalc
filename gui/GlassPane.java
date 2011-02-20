@@ -120,11 +120,9 @@ public class GlassPane extends JComponent{
 			return;
 		}
 		if (!history.isEmpty()){
-			int totalChars = 0;
 			Scanner s = new Scanner(historyPane.getText());
 			historyPane.requestFocus();
 			historyPane.setSelectionStart(selectStart);
-			int lineLength =  s.nextLine().length();
 			historyPane.setSelectionEnd(selectEnd);
 			this.setVisible(true);
 			this.repaint();
@@ -283,7 +281,7 @@ public class GlassPane extends JComponent{
 		historyPane.setVisible(true);
 		
 		selectStart = 0;
-		historyPane.setCaretPosition(selectStart);
+		historyPane.setCaretPosition(1);
 		
 		selectCurrLine();
 		
@@ -294,6 +292,18 @@ public class GlassPane extends JComponent{
 		
 		String text = historyPane.getText();
 		int caret = historyPane.getCaretPosition();
+		
+		if (caret == 0){
+			selectStart = 0;
+			for (int j = 1; selectStart + j < text.length(); j++)
+			{
+				if (text.charAt(selectStart+ j) == '\n')
+				{
+					selectEnd = selectStart + j;
+					return;
+				}
+			}
+		}
 		
 		for (int i = 0; i + caret < text.length() + 1; i++)
 		{
@@ -331,16 +341,22 @@ public class GlassPane extends JComponent{
 				}
 			}
 		}
-		
-		
 	}
 	
 	public void setHistoryVisible(boolean b){
 		if (histScrollPane != null)
 		{
-			JScrollBar tempScroll = histScrollPane.getVerticalScrollBar();
-			tempScroll.setValue(0);
-			histScrollPane.setVisible(b);
+			if (b == true){
+				JScrollBar tempScroll = histScrollPane.getVerticalScrollBar();
+				tempScroll.setValue(0);
+				historyPane.setCaretPosition(0);
+				selectCurrLine();
+				refresh();
+				histScrollPane.setVisible(b);
+			}
+			else{
+				histScrollPane.setVisible(b);
+			}
 		}
 	}
 	

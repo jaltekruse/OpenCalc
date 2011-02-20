@@ -122,10 +122,9 @@ public class ExpressionParser {
 			currCharNum += lengthLast;
 			//uncomment the next two lines to print out the expression 
 			//as the loop executes
-//			if (e != null)
-//				System.out.println(e.toString());
+			if (e != null)
+				System.out.println(e.toString());
 		}
-		
 		if (matchedParens == 1)
 		{//there was one open paren that did not get close, assume one at the end
 			hitCloseParen();
@@ -153,7 +152,7 @@ public class ExpressionParser {
 		while(e.hasParent()){
 			e = e.getParent();
 		}
-		//System.out.println(e.toString());
+		System.out.println("end parsing:" + e.toString());
 		return e;
 	}
 	
@@ -280,7 +279,7 @@ public class ExpressionParser {
 	 * @throws ParseException 
 	 */
 	public void scanNum(String s, int pos) throws ParseException {
-		int length = 0;
+		int length = 0, numDecimalPts = 0;
 		boolean hasPowOfTen = false, hasNegPower = false;
 		
 		//this loop determines the length of the number, it is scanned
@@ -291,6 +290,14 @@ public class ExpressionParser {
 			if ((currChar >= '0' && currChar <= '9') || currChar == '.'
 					|| currChar == 'E' || currChar == '-') {
 				length++;
+				if (currChar == '.'){
+					if (numDecimalPts > 0){
+						throw new ParseException("number formatted improperly, too many \".\"");
+					}
+					else{
+						numDecimalPts++;
+					}
+				}
 				if ((currChar == 'E' || currChar == '.') && hasPowOfTen) {
 					length--;
 					break;
@@ -307,6 +314,9 @@ public class ExpressionParser {
 			}
 			else
 				break;
+		}
+		if (s.substring(pos, pos+ length).equals(".")){
+			throw new ParseException("Error with a '.'");
 		}
 		lengthLast = length;
 		double number = Double.parseDouble(s.substring(pos, pos + length));

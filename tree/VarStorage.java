@@ -95,7 +95,7 @@ public class VarStorage extends ValueStorage {
 		return v;
 	}
 	
-	public void updateVarVal(String s, double val){
+	public void updateVarVal(String s, double val) throws EvalException{
 		ValueWithName tempElm = findIfStored(s);
 		if (tempElm instanceof Var){
 			((Var) tempElm).setValue( (Number)

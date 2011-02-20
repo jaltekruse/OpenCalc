@@ -239,6 +239,7 @@ public class CalcPanel extends SubPanel {
 				if (getAnswersIn() == 2){
 					treeResult = treeResult.toDec();
 				}
+				System.out.println("treeResult: " + treeResult);
 				terminal.append(treeResult.toString() + "\n");
 			}
 			catch (ParseException e){

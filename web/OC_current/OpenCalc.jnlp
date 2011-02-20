@@ -19,8 +19,8 @@ Descriptor 6.0//EN" "http://java.sun.com/dtd/JNLP-6.0.dtd">
                        I don't know which version is required.
                -->
                <j2se version="1.6+" />
-               <jar href="OC_JAR_6_1b_10.jar" main="true"
+               <jar href="OpenCalc.jar" main="true"
 download="eager" />
        </resources>
-       <application-desc main-class="gui.NewCalc" />
+       <application-desc main-class="gui.MainApplet" />
 </jnlp>

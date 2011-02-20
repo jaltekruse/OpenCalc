@@ -190,14 +190,14 @@ public class MainApplet extends JApplet{
 		graphTabs.add(new DrawPad(500, 500, this), "Draw");
 		
 		graphWindow = new GraphWindow(200, 200, this);
-		graphTabs.add(graphWindow, "newGraph");
+		//graphTabs.add(graphWindow, "newGraph");
 		
-		graphTabs.add(new Graph3DPanel(200, 200, this), "3Dgraph");
+		//graphTabs.add(new Graph3DPanel(200, 200, this), "3Dgraph");
 		
 		render = new RenderPanel(this);
-		graphTabs.add(render,"render");
+		//graphTabs.add(render,"render");
 		
-		graphTabs.setSelectedIndex(6);
+		graphTabs.setSelectedIndex(0);
 
 		graphTabs.addChangeListener(graphTabsListener());
 		

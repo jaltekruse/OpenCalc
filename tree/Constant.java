@@ -72,121 +72,121 @@ public class Constant extends NumberWithName {
 	}
 
 	@Override
-	public Value multiply(Decimal d) {
+	public Value multiply(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.multiply(d);
 	}
 
 	@Override
-	public Value multiply(Fraction f) {
+	public Value multiply(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.multiply(f);
 	}
 
 	@Override
-	public Value multiply(Matrix m) {
+	public Value multiply(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value multiply(Irrational i) {
+	public Value multiply(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value add(Decimal d) {
+	public Value add(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.add(d);
 	}
 
 	@Override
-	public Value add(Fraction f) {
+	public Value add(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.add(f);
 	}
 
 	@Override
-	public Value add(Matrix m) {
+	public Value add(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value add(Irrational i) {
+	public Value add(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value subtract(Decimal d) {
+	public Value subtract(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.subtract(d);
 	}
 
 	@Override
-	public Value subtract(Fraction f) {
+	public Value subtract(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.subtract(f);
 	}
 
 	@Override
-	public Value subtract(Matrix m) {
+	public Value subtract(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value subtract(Irrational i) {
+	public Value subtract(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value divide(Decimal d) {
+	public Value divide(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.divide(d);
 	}
 
 	@Override
-	public Value divide(Fraction f) {
+	public Value divide(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.divide(f);
 	}
 
 	@Override
-	public Value divide(Matrix m) {
+	public Value divide(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value divide(Irrational i) {
+	public Value divide(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value power(Decimal d) {
+	public Value power(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.power(d);
 	}
 
 	@Override
-	public Value power(Fraction f) {
+	public Value power(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return v.power(f);
 	}
 
 	@Override
-	public Value power(Matrix m) {
+	public Value power(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value power(Irrational i) {
+	public Value power(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}

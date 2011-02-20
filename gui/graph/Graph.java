@@ -101,10 +101,14 @@ public class Graph {
 	}
 	
 	public void shiftGraph(double xPix, double yPix){
-		varList.updateVarVal("xMin", (xPix)*X_PIXEL);
-		varList.updateVarVal("xMax", (xPix)*X_PIXEL);
-		varList.updateVarVal("yMin", (yPix)*Y_PIXEL);
-		varList.updateVarVal("yMax", (yPix)*Y_PIXEL);
+		try{
+			varList.updateVarVal("xMin", (xPix)*X_PIXEL);
+			varList.updateVarVal("xMax", (xPix)*X_PIXEL);
+			varList.updateVarVal("yMin", (yPix)*Y_PIXEL);
+			varList.updateVarVal("yMax", (yPix)*Y_PIXEL);
+		} catch (Exception ex){
+			;
+		}
 		graphWindow.repaint();
 	}
 	

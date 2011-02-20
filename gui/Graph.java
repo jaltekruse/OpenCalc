@@ -21,7 +21,6 @@ package gui;
  */
 
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -212,11 +211,14 @@ public class Graph extends SubPanel {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
-				varList.updateVarVal("xMin", (mouseX - e.getX())*X_PIXEL);
-				varList.updateVarVal("xMax", (mouseX - e.getX())*X_PIXEL);
-				varList.updateVarVal("yMin", (e.getY()- mouseY)*Y_PIXEL);
-				varList.updateVarVal("yMax", (e.getY()- mouseY)*Y_PIXEL);
+				try{
+					varList.updateVarVal("xMin", (mouseX - e.getX())*X_PIXEL);
+					varList.updateVarVal("xMax", (mouseX - e.getX())*X_PIXEL);
+					varList.updateVarVal("yMin", (e.getY()- mouseY)*Y_PIXEL);
+					varList.updateVarVal("yMax", (e.getY()- mouseY)*Y_PIXEL);
+				} catch (Exception ex){
+					;
+				}
 				repaint();
 				mouseX = e.getX();
 				mouseY = e.getY();

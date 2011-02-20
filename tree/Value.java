@@ -34,53 +34,53 @@ public abstract class Value {
 		return parent;
 	}
 	
-	public abstract Value multiply(Decimal d);
+	public abstract Value multiply(Decimal d) throws EvalException;
 	
-	public abstract Value multiply(Fraction f);
+	public abstract Value multiply(Fraction f) throws EvalException;
 	
-	public abstract Value multiply(Matrix m);
+	public abstract Value multiply(Matrix m) throws EvalException;
 	
-	public abstract Value multiply(Irrational i);
-	
-	
-	
-	public abstract Value add(Decimal d);
-	
-	public abstract Value add(Fraction f);
-	
-	public abstract Value add(Matrix m);
-	
-	public abstract Value add(Irrational i);
+	public abstract Value multiply(Irrational i) throws EvalException;
 	
 	
 	
-	public abstract Value subtract(Decimal d);
+	public abstract Value add(Decimal d) throws EvalException;
 	
-	public abstract Value subtract(Fraction f);
+	public abstract Value add(Fraction f) throws EvalException;
 	
-	public abstract Value subtract(Matrix m);
+	public abstract Value add(Matrix m) throws EvalException;
 	
-	public abstract Value subtract(Irrational i);
-	
-	
-	
-	public abstract Value divide(Decimal d);
-	
-	public abstract Value divide(Fraction f);
-	
-	public abstract Value divide(Matrix m);
-	
-	public abstract Value divide(Irrational i);
+	public abstract Value add(Irrational i) throws EvalException;
 	
 	
 	
-	public abstract Value power(Decimal d);
+	public abstract Value subtract(Decimal d) throws EvalException;
 	
-	public abstract Value power(Fraction f);
+	public abstract Value subtract(Fraction f) throws EvalException;
 	
-	public abstract Value power(Matrix m);
+	public abstract Value subtract(Matrix m) throws EvalException;
 	
-	public abstract Value power(Irrational i);
+	public abstract Value subtract(Irrational i) throws EvalException;
+	
+	
+	
+	public abstract Value divide(Decimal d) throws EvalException;
+	
+	public abstract Value divide(Fraction f) throws EvalException;
+	
+	public abstract Value divide(Matrix m) throws EvalException;
+	
+	public abstract Value divide(Irrational i) throws EvalException;
+	
+	
+	
+	public abstract Value power(Decimal d) throws EvalException;
+	
+	public abstract Value power(Fraction f) throws EvalException;
+	
+	public abstract Value power(Matrix m) throws EvalException;
+	
+	public abstract Value power(Irrational i) throws EvalException;
 	
 	
 	public abstract Value squareRoot() throws EvalException;
@@ -103,7 +103,7 @@ public abstract class Value {
 	
 	public abstract Value natLog() throws EvalException;
 
-	public Value add(Value v){
+	public Value add(Value v) throws EvalException{
 		if (v instanceof Decimal){
 			return add((Decimal) v);
 		}
@@ -124,7 +124,7 @@ public abstract class Value {
 		}
 	}
 
-	public Value subtract(Value v){
+	public Value subtract(Value v) throws EvalException{
 		if (v instanceof Decimal){
 			return subtract((Decimal) v);
 		}
@@ -145,7 +145,7 @@ public abstract class Value {
 		}
 	}
 	
-	public Value multiply(Value v){
+	public Value multiply(Value v) throws EvalException{
 		if (v instanceof Decimal){
 			return multiply((Decimal) v);
 		}
@@ -166,7 +166,7 @@ public abstract class Value {
 		}
 	}
 	
-	public Value divide(Value v){
+	public Value divide(Value v) throws EvalException{
 		if (v instanceof Decimal){
 			return divide((Decimal) v);
 		}
@@ -187,7 +187,7 @@ public abstract class Value {
 		}
 	}
 
-	public Value power(Value v) {
+	public Value power(Value v) throws EvalException {
 		// TODO Auto-generated method stub
 		if (v instanceof Decimal){
 			return power((Decimal) v);

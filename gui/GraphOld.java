@@ -93,7 +93,7 @@ public class GraphOld extends SubPanel {
 		graph = new SubPanel(){
 			
 			public void paint(Graphics g) {
-				System.out.println("repaint graph");
+				//System.out.println("repaint graph");
 				g.setColor(Color.white);
 				X_SIZE = graph.getSize().width;
 				Y_SIZE = graph.getSize().height;
@@ -196,10 +196,14 @@ public class GraphOld extends SubPanel {
 			public void mouseDragged(MouseEvent e) {
 				// TODO Auto-generated method stub
 				
+				try{
 				varList.updateVarVal("xMin", (mouseX - e.getX())*X_PIXEL);
 				varList.updateVarVal("xMax", (mouseX - e.getX())*X_PIXEL);
 				varList.updateVarVal("yMin", (e.getY()- mouseY)*Y_PIXEL);
 				varList.updateVarVal("yMax", (e.getY()- mouseY)*Y_PIXEL);
+				} catch (EvalException ex){
+					ex.printStackTrace();
+				}
 				repaint();
 				mouseX = e.getX();
 				mouseY = e.getY();
@@ -298,7 +302,7 @@ public class GraphOld extends SubPanel {
 		varList.updateVarVal("yMax", (Y_MAX-Y_MIN)*(100-rate)/100);
 		
 		repaint();
-		System.out.println("finished zoom");
+		//System.out.println("finished zoom");
 	}
 	
 	public Function[] getFunctions(){
@@ -382,16 +386,16 @@ public class GraphOld extends SubPanel {
 
 	private void drawAxis(Graphics g) throws EvalException {
 
-		System.out.println("axis");
+		//System.out.println("axis");
 		
 		try {
 			//these four statements are for resizing the grid after zooming
 			if((X_MAX-X_MIN)/X_STEP >= 24)
 			{
-				System.out.println("too many x");
+				//System.out.println("too many x");
 				if ((X_MAX-X_MIN)/20 > 1)
 				{
-					System.out.println("greater than 1");
+					//System.out.println("greater than 1");
 					varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
 					X_STEP = varList.getVarVal("xStep").toDec().getValue();
 					
@@ -410,10 +414,10 @@ public class GraphOld extends SubPanel {
 			}
 			
 			else if((X_MAX-X_MIN)/X_STEP <= 16){
-				System.out.println("too few x");
+				//System.out.println("too few x");
 				if ((X_MAX-X_MIN)/20 > 1)
 				{
-					System.out.println("greater than 1");
+					//System.out.println("greater than 1");
 					varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
 					X_STEP = varList.getVarVal("xStep").toDec().getValue();
 					
@@ -422,7 +426,7 @@ public class GraphOld extends SubPanel {
 				}
 				else
 				{
-					System.out.println("do loop to find dec");
+					//System.out.println("do loop to find dec");
 					for (int i = 0; i < 25; i ++){
 						if ((X_MAX-X_MIN)/20 < Math.pow(.5, i)){
 							varList.setVarVal("xStep", new Decimal(Math.pow(.5, i)));
@@ -433,14 +437,14 @@ public class GraphOld extends SubPanel {
 			}
 			
 			if((Y_MAX-Y_MIN)/Y_STEP >= 24){
-				System.out.println("too many y");
+				//System.out.println("too many y");
 				varList.setVarVal("yStep", new Decimal((Y_MAX-Y_MIN)/20));
 				if ((Y_MAX-Y_MIN)/20 > 1)
 				{
 	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
 	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
 					
-					System.out.println("greater than 1");
+					//System.out.println("greater than 1");
 					varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
 					Y_STEP = varList.getVarVal("yStep").toDec().getValue();
 				}
@@ -456,18 +460,18 @@ public class GraphOld extends SubPanel {
 			}
 			
 			else if((Y_MAX-Y_MIN)/Y_STEP <= 16){
-				System.out.println("too few y");
+				//System.out.println("too few y");
 				if ((Y_MAX-Y_MIN)/20 > 1)
 				{
 	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
 	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
-					System.out.println("greater than 1");
+					//System.out.println("greater than 1");
 					varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
 					Y_STEP = varList.getVarVal("yStep").toDec().getValue();
 				}
 				else
 				{
-					System.out.println("do loop to find dec");
+					//System.out.println("do loop to find dec");
 					for (int i = 0; i < 25
 					; i ++){
 						if ((Y_MAX-Y_MIN)/20 < Math.pow(.5, i)){
@@ -692,7 +696,7 @@ public class GraphOld extends SubPanel {
 	}
 
 	public void graphCart(Function f, Graphics g) {
-		System.out.println("graphcart");
+		//System.out.println("graphcart");
 		String eqtn = f.getFuncEqtn();
 		Var ind = f.getIndependentVar();
 		Var dep = f.getDependentVar();

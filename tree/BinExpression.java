@@ -42,9 +42,15 @@ public class BinExpression extends Expression {
 	
 	@Override
 	public Value eval() throws EvalException{
+		
 		Value leftVal = null;
 		if (leftChild != null){
-			leftVal = leftChild.eval();
+			if (op == Operator.ASSIGN && leftChild instanceof Var){
+				leftVal = leftChild;
+			}
+			else{
+				leftVal = leftChild.eval();
+			}
 		}
 		else{
 			throw new EvalException("binary operator without a left child");

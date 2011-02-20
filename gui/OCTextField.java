@@ -199,12 +199,16 @@ public class OCTextField extends SubPanel {
 	 * @throws ValueNotStoredException
 	 * @throws EvalException
 	 */
-	public void associatedAction() throws ParseException, ValueNotStoredException, EvalException {
+	public void associatedAction(){
 		
 		String currText = field.getText();
 		if (!currText.equals(null) && !currText.equals("") && mainApp != null) {
-			field.setText(mainApp.evalCalc(currText).toString());
-			mainApp.updateGraph();
+			try{
+				field.setText(mainApp.evalCalc(currText).toString());
+				mainApp.updateGraph();
+			} catch (Exception ex){
+				field.setText("error with eval, hit the down arrow to get to history");
+			}
 		}
 	}
 	

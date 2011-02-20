@@ -24,7 +24,10 @@ public class Var extends Value implements ValueWithName {
 	}
 	
 	@Override
-	public Value eval(){
+	public Value eval() throws EvalException{
+		if (num == null){
+			throw new EvalException("Variable \"" + getName() + "\" has not been given a value");
+		}
 		return num;
 	}
 	
@@ -46,121 +49,121 @@ public class Var extends Value implements ValueWithName {
 	}
 
 	@Override
-	public Value multiply(Decimal d) {
+	public Value multiply(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.multiply(d);
 	}
 
 	@Override
-	public Value multiply(Fraction f) {
+	public Value multiply(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.multiply(f);
 	}
 
 	@Override
-	public Value multiply(Matrix m) {
+	public Value multiply(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value multiply(Irrational i) {
+	public Value multiply(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value add(Decimal d) {
+	public Value add(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.add(d);
 	}
 
 	@Override
-	public Value add(Fraction f) {
+	public Value add(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.add(f);
 	}
 
 	@Override
-	public Value add(Matrix m) {
+	public Value add(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value add(Irrational i) {
+	public Value add(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value subtract(Decimal d) {
+	public Value subtract(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.subtract(d);
 	}
 
 	@Override
-	public Value subtract(Fraction f) {
+	public Value subtract(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.subtract(f);
 	}
 
 	@Override
-	public Value subtract(Matrix m) {
+	public Value subtract(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value subtract(Irrational i) {
+	public Value subtract(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value divide(Decimal d) {
+	public Value divide(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.divide(d);
 	}
 
 	@Override
-	public Value divide(Fraction f) {
+	public Value divide(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.divide(f);
 	}
 
 	@Override
-	public Value divide(Matrix m) {
+	public Value divide(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value divide(Irrational i) {
+	public Value divide(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value power(Decimal d) {
+	public Value power(Decimal d) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.power(d);
 	}
 
 	@Override
-	public Value power(Fraction f) {
+	public Value power(Fraction f) throws EvalException {
 		// TODO Auto-generated method stub
 		return num.power(f);
 	}
 
 	@Override
-	public Value power(Matrix m) {
+	public Value power(Matrix m) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Value power(Irrational i) {
+	public Value power(Irrational i) throws EvalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -236,7 +239,7 @@ public class Var extends Value implements ValueWithName {
 		}
 	}
 
-	public void updateValue(double d) {
+	public void updateValue(double d) throws EvalException {
 		// TODO Auto-generated method stub
 		num = (Number) num.add(new Decimal(d));
 	}

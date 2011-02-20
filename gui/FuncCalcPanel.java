@@ -66,13 +66,16 @@ public class FuncCalcPanel extends SubPanel {
 	
 	/**
 	 * Need to rewrite this for tree.
+	 * @throws EvalException 
+	 * @throws ParseException 
 	 */
-	public void derive(){
+	public void derive() throws EvalException, ParseException{
 		if ("".equals(func.getFuncEqtn())) {
 			slopeVal.getField().setText("no eqtn");
 		}
 		else if (!indVarVal.getField().getText().equals("")){
-			double x = Double.parseDouble(indVarVal.getField().getText());
+			Value temp = mainApp.getParser().ParseExpression((indVarVal.getField().getText()));
+			double x = temp.eval().toDec().getValue();
 			func.setDerivative(x);
 			func.setDeriving(true);
 			graphOld.repaint();
@@ -209,7 +212,15 @@ public class FuncCalcPanel extends SubPanel {
 			indVar = new OCLabel(func.getIndependentVar().getName() + ":", 1, 1, 0, 0, deriveBox, mainApp);
 			indVarVal = new OCTextField(true, 4, 1, 1, 1, 0, deriveBox, mainApp){
 				public void associatedAction(){
-					derive();
+					try {
+						derive();
+					} catch (EvalException e) {
+						// TODO Auto-generated catch block
+						;
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						;
+					}
 				}
 			};
 			
@@ -230,7 +241,15 @@ public class FuncCalcPanel extends SubPanel {
 			
 			if(func.isDeriving()){
 				indVarVal.getField().setText("" + func.getDerivative());
-				derive();
+				try {
+					derive();
+				} catch (EvalException e) {
+					// TODO Auto-generated catch block
+					;
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					;
+				}
 			}
 			
 			if(func.isTracingPt()){
