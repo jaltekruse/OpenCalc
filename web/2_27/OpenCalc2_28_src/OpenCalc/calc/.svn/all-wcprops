@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svnroot/opencalc/!svn/ver/25/OpenCalc/calc
+END
+Evaluator.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svnroot/opencalc/!svn/ver/27/OpenCalc/calc/Evaluator.java
+END
+Operators.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/Operators.java
+END
+Term.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/opencalc/!svn/ver/21/OpenCalc/calc/Term.java
+END
+ElementWithIdentifier.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svnroot/opencalc/!svn/ver/22/OpenCalc/calc/ElementWithIdentifier.java
+END
+ParseElements.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svnroot/opencalc/!svn/ver/25/OpenCalc/calc/ParseElements.java
+END
+IndexerWords.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/opencalc/!svn/ver/21/OpenCalc/calc/IndexerWords.java
+END
+ElmStorageGroup.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/ElmStorageGroup.java
+END
+Var.java
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/Var.java
+END
+Num.java
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svnroot/opencalc/!svn/ver/21/OpenCalc/calc/Num.java
+END
+CompleteTerm.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/opencalc/!svn/ver/21/OpenCalc/calc/CompleteTerm.java
+END
+Constant.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/22/OpenCalc/calc/Constant.java
+END
+Operator.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/21/OpenCalc/calc/Operator.java
+END
+ElementStorage.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/ElementStorage.java
+END
+SimpleTerm.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/opencalc/!svn/ver/21/OpenCalc/calc/SimpleTerm.java
+END
+ElmStorageIndex.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/ElmStorageIndex.java
+END
+ComplexTerm.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svnroot/opencalc/!svn/ver/21/OpenCalc/calc/ComplexTerm.java
+END
+Element.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/Element.java
+END
+Function.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/Function.java
+END
+ConstantStorage.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/ConstantStorage.java
+END
+calc.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/opencalc/!svn/ver/27/OpenCalc/calc/calc.java
+END
+VarStorage.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/opencalc/!svn/ver/26/OpenCalc/calc/VarStorage.java
+END

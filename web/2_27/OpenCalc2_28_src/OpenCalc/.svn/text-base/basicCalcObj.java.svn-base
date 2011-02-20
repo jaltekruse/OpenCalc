@@ -1,0 +1,111 @@
+import java.util.LinkedList;
+
+
+public class calc 
+{
+	//testing SVN update
+	//testing again, this time in eclipse
+	public static LinkedList<Object> CURRLIST;
+	public static LinkedList<Object> ORIGIONALLIST;
+	public static Evaluator CURREVAL;
+	public static Vars VARLIST;
+	public static Operators OPSLIST;
+	public static int PRECISION = 9;
+	public static int BASE = 10;
+	public NewCalc calcObj;
+	
+	public calc(NewCalc currCalcObj){
+		calcObj = currCalcObj;
+		ORIGIONALLIST = new LinkedList<Object>();
+		CURRLIST = new LinkedList<Object>();
+		CURREVAL = new Evaluator();
+		VARLIST = new Vars(calcObj);
+		OPSLIST = new Operators();
+		PRECISION = 9;
+		BASE = 10;
+	}
+	
+	public static String printList(LinkedList list){
+		String result = new String();
+		int i = 0;
+		Object currObj = new Object();
+		
+		do{
+			currObj = list.get(i);
+			i++;
+			if (currObj instanceof Operator)
+				currObj = (Operator) currObj;
+			else if (currObj instanceof Num)
+				currObj = (Num) currObj;
+			else if (currObj instanceof Var)
+				currObj = (Var) currObj;
+			result += currObj.toString();
+		}
+		while (currObj != list.getLast());
+		
+		return result;
+	}
+
+	public int getVarListLength(){
+		return VARLIST.getLength();
+	}
+	
+	public Vars getVarList(){
+		return VARLIST;
+	}
+	
+	/**
+	 * @param args
+	 */
+	public void parse(String s) 
+	{
+		// TODO: get input string from user, call  to parse, then call to solve
+			ORIGIONALLIST.clear();
+			String eqtnStr = s;
+
+			char[] equation = eqtnStr.toCharArray();
+			
+			//System.out.println(eqtnStr);
+			
+			//call parsing class
+			ParseElements.Parse(equation);
+	}
+	
+	public double solve(){
+		CURRLIST = (LinkedList<Object>) ORIGIONALLIST.clone();
+		double result = 0;
+		result = CURREVAL.eval();
+		VARLIST.setVarVal("ans",result);
+		return result;
+		//System.out.println(result);
+	}
+	
+	public double derivAtPoint(double x){
+		double firstVal = 0;
+		VARLIST.setVarVal("x", x);
+		firstVal = solve();
+		VARLIST.setVarVal("x", x + .000000001);
+		return (solve() - firstVal/ .000000001);
+	}
+	public double integrate(double a, double b){
+		double lastX = a, lastY, currX = a, currY, aveY, result = 0;
+		VARLIST.setVarVal("x", a);
+		lastY = solve();
+		double xStep = (b-a)/10000;
+		int trapCount = 0;
+		
+		while (currX < b - xStep){
+			//System.out.println(currX);
+			VARLIST.updateVar(0, xStep);
+			currX = VARLIST.getVarVal("x");
+			currY = solve();
+			aveY = (lastY + currY)/2;
+			result += aveY * xStep;
+			trapCount++;
+			lastY = currY;
+		}
+		System.out.println("num trapizoids: " + trapCount);
+		return result;
+		
+	}
+}

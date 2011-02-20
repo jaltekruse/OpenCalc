@@ -1,0 +1,9 @@
+<html>
+<title>OpenCalc</title>
+<body>
+<applet code=NewCalc.class
+        codebase="bin/"
+	width="700" height="500" >
+</applet>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<html>
+<body>
+<applet code=GUI.NewCalc.class width="750" height="500" >
+</applet>
+</body>
+</html>

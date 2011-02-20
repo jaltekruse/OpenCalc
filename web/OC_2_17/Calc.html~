@@ -1,0 +1,17 @@
+<html>
+<body>
+<h1>OpenCalc</h1>
+<applet code=GUI/NewCalc.class
+	archive="OC_JAR_2_17b_10.jar"
+	width="850" height="570" >
+</applet>
+<p>
+OpenCalc is a Graphing Calculator for the web.
+Copyright (C) 2009, 2010 Jason Altekruse
+</br>
+Visit our Webpage to find the latest version!
+<a href="https://sourceforge.net/projects/opencalc/">OpenCalc Home<a/> 
+</p>
+</body>
+</html>
+

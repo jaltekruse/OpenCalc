@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svnroot/opencalc/!svn/ver/25/OpenCalc/GUI
+END
+CalcPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/CalcPanel.java
+END
+DrawPad.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/DrawPad.java
+END
+ElmStoragePanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/ElmStoragePanel.java
+END
+Graph.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/Graph.java
+END
+OCTextWithValButton.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/OCTextWithValButton.java
+END
+FuncPane.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/FuncPane.java
+END
+FuncCalcPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/opencalc/!svn/ver/27/OpenCalc/GUI/FuncCalcPanel.java
+END
+TrigPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/TrigPanel.java
+END
+OCButton.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/OCButton.java
+END
+SubPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/opencalc/!svn/ver/21/OpenCalc/GUI/SubPanel.java
+END
+FunctionsPane.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/opencalc/!svn/ver/27/OpenCalc/GUI/FunctionsPane.java
+END
+OCLabel.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/OCLabel.java
+END
+GraphAttributesPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/GraphAttributesPanel.java
+END
+GridPropsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/GridPropsPanel.java
+END
+OCTextField.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/OCTextField.java
+END
+Stroke.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/Stroke.java
+END
+NumsAndOppsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/NumsAndOppsPanel.java
+END
+NewCalc.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/NewCalc.java
+END
+DrawObj.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svnroot/opencalc/!svn/ver/26/OpenCalc/GUI/DrawObj.java
+END

@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI
+END
+CalcPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/CalcPanel.java
+END
+GraphAttributesPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/GraphAttributesPanel.java
+END
+Graph.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/Graph.java
+END
+OCTextWithValButton.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/OCTextWithValButton.java
+END
+GridPropsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/GridPropsPanel.java
+END
+OCTextField.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/OCTextField.java
+END
+TrigPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/TrigPanel.java
+END
+VarsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/VarsPanel.java
+END
+NumsAndOppsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/NumsAndOppsPanel.java
+END
+OCButton.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/OCButton.java
+END
+NewCalc.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/NewCalc.java
+END
+SubPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/opencalc/!svn/ver/19/OpenCalc/GUI/SubPanel.java
+END
+GraphFuncPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/GraphFuncPanel.java
+END
+GraphCalcPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svnroot/opencalc/!svn/ver/18/OpenCalc/GUI/GraphCalcPanel.java
+END
