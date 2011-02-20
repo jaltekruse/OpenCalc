@@ -30,6 +30,7 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 	public void draw() {
 		// TODO Auto-generated method stub
 		Graphics g = super.getCompExGraphic().getGraphics();
+		g.setFont(getFont());
 		FontMetrics fm = g.getFontMetrics();
 		if (style == Style.SLASH || (style == Style.HORIZONTAL && getValue().getDenominator() == 1)){
 //			super.getCompExGraphic().getGraphics().setColor(Color.gray);
@@ -56,7 +57,6 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 		// TODO right now prints toString representation, need to make horizonal, and slash representations soon
 		g.setFont(f);
 		setFont(f);
-		FontMetrics fm = g.getFontMetrics();
 		if (style == Style.SLASH){
 			String s = getValue().toString();
 			int[] size = new int[2];

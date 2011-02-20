@@ -79,7 +79,7 @@ public class RenderPanel extends SubPanel {
 				try {
 					render.repaint();
 				} catch (Exception e) {
-					e.printStackTrace();
+					selected.setText("error with render: " + e.getMessage());
 				}
 			}
 		};
@@ -100,14 +100,14 @@ public class RenderPanel extends SubPanel {
 		
 		mousePos = new OCTextField(false, 16, 1, 1, 0, 12, this, mainApp) {};
 
-		solve = new OCButton("render", "Evaluate the current expression.", 1, 1, 5, 10, this, mainApp) {
+		solve = new OCButton("render", "Render the current expression.", 1, 1, 5, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
 					render.repaint();
 				
 					entryLine.primaryAction();
 				} catch (Exception e) {
-					e.printStackTrace();
+					selected.setText("error with render: " + e.getMessage());
 				}
 			}
 		};
@@ -120,10 +120,10 @@ public class RenderPanel extends SubPanel {
 					}
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					selected.setText("error with render: " + e.getMessage());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					selected.setText("error with render: " + e.getMessage());
 				}
 			}
 		};

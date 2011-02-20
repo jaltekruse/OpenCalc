@@ -17,6 +17,7 @@ import tree.Value;
 public class CompleteExpressionGraphic{
 
 	Vector<ValueGraphic> components;
+	ValueGraphic root;
 	
 	int xSize, ySize;
 	private Graphics2D graphics;
@@ -32,19 +33,25 @@ public class CompleteExpressionGraphic{
 	public CompleteExpressionGraphic(Value v){
 		this.v = v;
 		bigFont =  new Font("Lucida Sans Unicode", 0, 16);
-		System.out.println(bigFont.canDisplay(2200));
 		smallFont = new Font("Lucida Sans Unicode", 0, 10);
 	}
 	
 	public void draw(){
+
+		draw(root);
+//		for (ValueGraphic vg : components){
+//			graphics.setFont(vg.getFont());
+//			vg.draw();
+//		}
+	}
+	
+	public void draw(ValueGraphic v){
 		
-		for (ValueGraphic vg : components){
-			System.out.println(vg.toString());
-			System.out.println("x1: " + vg.getX1() + " y1: " + vg.getY1() + " x2: " + vg.getX2() + " y2: " + vg.getY2());
-			System.out.println("heightUpper: " + vg.getValue().toString());
-			System.out.println("height:" + vg.getHeight());
-			graphics.setFont(vg.getFont());
-			vg.draw();
+		graphics.setFont(v.getFont());
+		v.draw();
+		Vector<ValueGraphic> temp = v.getComponents(); 
+		for (ValueGraphic vg : temp){
+			draw(vg);
 		}
 	}
 
@@ -58,9 +65,8 @@ public class CompleteExpressionGraphic{
 		
 		components.add(temp);
 		tempSize = temp.requestSize(g, bigFont, x1, y1);
+		root = temp;
 		
-		components.add(temp);
-		tempSize = temp.requestSize(g, bigFont, x1, y1);
 		xSize = tempSize[0];
 		ySize = tempSize[1];
 	}

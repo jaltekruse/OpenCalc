@@ -36,7 +36,6 @@ public class UrinaryExpression extends Expression {
 				case INV_SIN:	return childVal.invSin();
 				case INV_COS:	return childVal.invCos();
 				case INV_TAN:	return childVal.invTan();
-				case NOTHING:	return childVal.eval();
 				case PAREN:		return childVal.eval();
 				case NEG:		return childVal.neg();
 				case SQRT:		return childVal.squareRoot();

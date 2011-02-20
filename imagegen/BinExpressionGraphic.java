@@ -13,9 +13,8 @@ import tree.Var;
 import tree.Constant;
 import tree.Fraction;
 
-public class BinExpressionGraphic extends ValueGraphic<BinExpression> {
+public class BinExpressionGraphic extends ExpressionGraphic{
 
-	int symbolX1, symbolX2, symbolY1, symbolY2;
 	static final int space = 4;
 	
 	public BinExpressionGraphic(BinExpression b, CompleteExpressionGraphic gr) {
@@ -31,7 +30,6 @@ public class BinExpressionGraphic extends ValueGraphic<BinExpression> {
 //		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
 //		super.getCompExGraphic().getGraphics().setColor(Color.black);
 		
-		//super.getCompExGraphic().getGraphics().setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.getCompExGraphic().getGraphics().drawString(getValue().getOp().getSymbol(),
 				symbolX1 + space, symbolY2);
 	}
@@ -42,9 +40,6 @@ public class BinExpressionGraphic extends ValueGraphic<BinExpression> {
 		
 		g.setFont(f);
 		setFont(f);
-		FontMetrics fm = g.getFontMetrics();
-		System.out.println(fm.getStringBounds("+", g).getHeight());
-		((BinExpression)super.getValue()).getOp().getSymbol();
 		Value tempLeft = ((BinExpression)super.getValue()).getLeftChild();
 		Value tempRight = ((BinExpression)super.getValue()).getRightChild();
 		ValueGraphic leftValGraphic = null;
@@ -65,10 +60,10 @@ public class BinExpressionGraphic extends ValueGraphic<BinExpression> {
 		rightSize = rightValGraphic.requestSize(g, f, x1, y1);
 		super.getCompExGraphic().components.add(rightValGraphic);
 		
-		System.out.println("leftSize: " + leftSize[0]);
 		symbolSize[0] = getCompExGraphic().getStringWidth(getValue().getOp().getSymbol(), f) + 2 * space;
 		symbolSize[1] = getCompExGraphic().getFontHeight(f);
 		rightValGraphic.shiftToX1(leftSize[0] + symbolSize[0] + x1);
+		
 		int height = 0;
 		
 		if (leftValGraphic.getUpperHeight() > rightValGraphic.getUpperHeight()){
@@ -99,6 +94,7 @@ public class BinExpressionGraphic extends ValueGraphic<BinExpression> {
 		symbolX1 = x1 + leftSize[0];
 		symbolX2 = x1 + leftSize[0] + symbolSize[0];
 		
+		//do not mess up the order of these adds!!!, look at methods getLeftGraphic to find out why
 		super.getComponents().add(leftValGraphic);
 		super.getComponents().add(rightValGraphic);
 		
@@ -116,25 +112,11 @@ public class BinExpressionGraphic extends ValueGraphic<BinExpression> {
 		return null;
 	}
 	
-	void shiftToX1(int x1) {
-		int xChange = x1 - getX1();
-		for (ValueGraphic vg : getComponents()){
-			vg.shiftToX1(vg.getX1() + xChange);
-		}
-		setX2(getX2() + xChange);
-		symbolX1 += xChange;
-		symbolX2 += xChange;
-		setX1(x1);
+	public ValueGraphic getLeftGraphic(){
+		return super.getComponents().get(0);
 	}
-
-	void shiftToY1(int y1) {
-		int yChange = y1 - getY1();
-		for (ValueGraphic vg : getComponents()){
-			vg.shiftToY1(vg.getY1() + yChange);
-		}
-		setY2(getY2() + yChange);
-		symbolY1 += yChange;
-		symbolY2 += yChange;
-		setY1(y1);
+	
+	public ValueGraphic getRightGraphic(){
+		return super.getComponents().get(1);
 	}
 }

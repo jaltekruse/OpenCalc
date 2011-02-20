@@ -56,10 +56,6 @@ public class DivisionGraphic extends BinExpressionGraphic {
 		
 		g.setFont(f);
 		setFont(f);
-		FontMetrics fm = g.getFontMetrics();
-		System.out.println(f.getStringBounds("+", fm.getFontRenderContext()).getHeight());
-		System.out.println(fm.getHeight());
-		((BinExpression)super.getValue()).getOp().getSymbol();
 		Value tempLeft = ((BinExpression)super.getValue()).getLeftChild();
 		Value tempRight = ((BinExpression)super.getValue()).getRightChild();
 		ValueGraphic leftValGraphic = null;

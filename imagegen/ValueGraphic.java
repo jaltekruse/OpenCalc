@@ -11,6 +11,8 @@ import tree.Operator;
 import tree.Value;
 import tree.Var;
 import tree.Nothing;
+import tree.UrinaryExpression;
+import tree.Decimal;
 
 public abstract class ValueGraphic<E extends Value> {
 	
@@ -36,6 +38,9 @@ public abstract class ValueGraphic<E extends Value> {
 		{
 			return new FractionGraphic((Fraction)v, getCompExGraphic());
 		}
+		if (v instanceof Decimal){
+			return new DecimalGrpahic((Decimal)v, getCompExGraphic());
+		}
 		else if(v instanceof Var || v instanceof Constant)
 		{
 			return new ValueWithNameGraphic(v, getCompExGraphic());
@@ -56,6 +61,14 @@ public abstract class ValueGraphic<E extends Value> {
 			}
 			
 		}
+		else if (v instanceof UrinaryExpression){
+			if (((UrinaryExpression)v).getOp() == Operator.PAREN)
+			{
+				return new ParenGraphic(((UrinaryExpression)v), getCompExGraphic());
+			}
+			return new UnaryExpressionGraphic((UrinaryExpression)v, getCompExGraphic());
+		}
+		System.out.println(v.toString());
 		throw new RenderException("unsupported Value");
 	}
 	

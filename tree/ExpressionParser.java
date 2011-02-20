@@ -118,12 +118,12 @@ public class ExpressionParser {
 		while (currCharNum <= eqtn.length() - 1) {
 			parseElement(eqtn, currCharNum);
 			elementCount++;
-			System.out.println("lengthLast: " + lengthLast);
+			//System.out.println("lengthLast: " + lengthLast);
 			currCharNum += lengthLast;
 			//uncomment the next two lines to print out the expression 
 			//as the loop executes
-			if (e != null)
-				System.out.println(e.toString());
+//			if (e != null)
+//				System.out.println(e.toString());
 		}
 		
 		if (matchedParens == 1)
@@ -134,9 +134,7 @@ public class ExpressionParser {
 		else if (matchedParens != 0){
 			throw new ParseException("Did not match parenthesis");
 		}
-		else{} //parens were matched 
 		if (vals.size() == 1){//there were no operators given
-			
 //			if (vals.get(0) instanceof Var 
 //					&& ((Var)vals.get(0)).getValue() == null){
 //				throw new ParseException("Variable \"" + 
@@ -149,7 +147,7 @@ public class ExpressionParser {
 		}
 		if (e instanceof BinExpression){
 			if (((BinExpression)e).getRightChild() == null){
-				addNewValue(new Nothing());
+				addValue(new Nothing());
 			}
 		}
 		while(e.hasParent()){
@@ -171,7 +169,7 @@ public class ExpressionParser {
 		
 		currChar = s.charAt(pos);
 		lengthLast = 1;
-		System.out.println("currChar: " + currChar);
+		//System.out.println("currChar: " + currChar);
 		switch(currChar){
 		case '+':
 			addBinOp(Operator.ADD);
@@ -206,6 +204,9 @@ public class ExpressionParser {
 			break;
 		case '(':
 			matchedParens++;
+			if (vals.size() == 1){
+				addBinOp(Operator.MULTIPLY);
+			}
 			addUrinaryOp(Operator.PAREN);
 			break;
 		case ')':
@@ -235,19 +236,34 @@ public class ExpressionParser {
 	
 	private void hitCloseParen() throws ParseException {
 		// TODO Auto-generated method stub
-		if (e.isContainerOp()){
-			if(vals.size() == 1){
-				addUrinaryOp(Operator.NOTHING);
+		if (e.isContainerOp())
+		{
+			if (vals.size() == 1){
+				((UrinaryExpression)e).setChild(vals.get(0));
+				vals = new ArrayList<Value>();
+				return;
+			}
+			else if (((UrinaryExpression)e).getChild() == null)
+			{
+				((UrinaryExpression)e).setChild(new Nothing());
+				return;
+			}
+		}
+		else if (e instanceof BinExpression)
+		{
+			if (((BinExpression)e).getRightChild() == null)
+			{
+				addValue(new Nothing());
 			}
 		}
 		int numParensHit = 0;
-		do{
+		while (e.hasParent() && numParensHit < 1)
+		{
 			e = e.getParent();
-			if (e.getOp() == Operator.PAREN){
+			if (e != null && e.getOp() == Operator.PAREN){
 				numParensHit++;;
 			}
-		}while (e.hasParent() && numParensHit != 2);
-		
+		}
 		if (numParensHit == 2)
 			e = (Expression) ((UrinaryExpression)e).getChild();
 	}
@@ -297,17 +313,17 @@ public class ExpressionParser {
 		Decimal newNum = new Decimal(number);
 		if (!hasPowOfTen && length < 9){
 			Value newFrac = Fraction.Dec2Frac(newNum);
-			addNewValue(newFrac);
+			addValue(newFrac);
 		}
 		else{
-			addNewValue(newNum);
+			addValue(newNum);
 		}
 	}
 	
 	/**
 	 * Scans a Variable. Checks if it is an existing variable or constant
 	 * and if it is adds the respective element to the expression.
-	 * 
+	 * addNewValue
 	 * @param s - string to parse
 	 * @param pos - current position
 	 * @return an Operator object
@@ -397,12 +413,12 @@ public class ExpressionParser {
 			//think of how to add things like this, functions with multiple inputs
 		}
 		else if(varElm.equals("solve")){
-			
+			//will be the evaluate algebraically function, not quite done yet...
 		}
 		else{
 			Constant tempElm = (Constant) CONSTLIST.findIfStored(varElm);
 			if (tempElm != null){ //if not a current Constant
-				addNewValue(tempElm);
+				addValue(tempElm);
 				return;
 			}
 //			if (!(e == null && vals.size() == 0)){// something has been scanned in
@@ -412,25 +428,11 @@ public class ExpressionParser {
 //			}
 			
 			Var newVar = VARLIST.storeVar(varElm, null);
-			addNewValue(newVar);
+			addValue(newVar);
 		}
 	}
 	
-	public void addNewValue(Value v) throws ParseException{
-//		if (v instanceof Var && ((Var)v).getValue() == null & e != null)
-//		{//a new variable is being added to the tree, that has not been given a value (a tree has already
-//			//been started because the current expression "e" is not null)
-//			throw new ParseException("Variable \"" + ((Var)v).getName()
-//					+ "\" has not been given a value");
-//		}
-//		if (vals.size() == 1 && e == null && vals.get(0) instanceof Var 
-//				&& ((Var)vals.get(0)).getValue() == null)
-//		{//A variable was found and before a subsequent operator was found, another 
-//			//value was found, system would add implied multiplication, but the only use of 
-//			//an undeclared variable is "varName = 8*9" etc.
-//			throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
-//					+ "\" has not been given a value");
-//		}
+	public void addValue(Value v) throws ParseException{
 		if(e instanceof BinExpression){
 			if(((BinExpression)e).getRightChild() == null){
 				((BinExpression)e).setRightChild(v);
@@ -438,24 +440,19 @@ public class ExpressionParser {
 			}
 			else{
 				addBinOp(Operator.MULTIPLY);
-				addNewValue(v);
+				addValue(v);
 				return;
 			}
 		}
 		else if(e instanceof UrinaryExpression){
 			if (vals.size() == 1 || ((UrinaryExpression)e).hasChild()){
-//				if (vals.get(0) instanceof Var){
-//					if (((Var)vals.get(0)).getValue() == null){
-//						throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
-//								+ "\" has not been given a value");
-//					}
-//				}
 				addBinOp(Operator.MULTIPLY);
-				addNewValue(v);
+				addValue(v);
 				return;
 			}
 			else if (e.isContainerOp()){
 				vals.add(v);
+
 				return;
 			}
 			else if(((UrinaryExpression)e).getChild() == null){
@@ -468,7 +465,7 @@ public class ExpressionParser {
 		}
 		else if(vals.size() == 1){
 			addBinOp(Operator.MULTIPLY);
-			addNewValue(v);
+			addValue(v);
 			return;
 		}
 		vals.add(v);
@@ -485,8 +482,7 @@ public class ExpressionParser {
 			else
 			{
 				//throw new ParseException("2 binary operators adjacent");
-				addNewValue(new Nothing());
-				System.out.println("RAWSRASRWEFSADFSDF: " + e.toString());
+				addValue(new Nothing());
 			}
 		}
 		if (e instanceof UrinaryExpression && ((UrinaryExpression)e).getChild() == null){
@@ -499,8 +495,9 @@ public class ExpressionParser {
 				return;
 			}
 			else{
-				//throw new ParseException("urinary expression without a value");
-				addNewValue(new Nothing());
+				addValue(new Nothing());
+				addBinOp(o);
+				return;
 			}
 		}
 		else{
@@ -576,6 +573,9 @@ public class ExpressionParser {
 						if (e.hasParent() && e.getParent().isContainerOp()){
 							((UrinaryExpression)e.getParent()).setChild(newEx);
 						}
+						if (e.hasParent() && e.getParent() instanceof BinExpression){
+							((BinExpression)(e.getParent())).setRightChild(newEx);
+						}
 						newEx.setLeftChild(e);
 						e = newEx;
 						return;
@@ -584,10 +584,6 @@ public class ExpressionParser {
 						while(e.hasParent() && newEx.getOp().getPrec() < e.getOp().getPrec()
 								&& !(e.getParent().isContainerOp())){
 							e = e.getParent();
-						}
-						System.out.println("afterloop: " + e.toString());
-						if (e.hasParent() && e.getParent().isContainerOp()){
-							((UrinaryExpression)e.getParent()).setChild(newEx);
 						}
 						if (e instanceof BinExpression)
 						{
@@ -600,7 +596,6 @@ public class ExpressionParser {
 							}
 							else
 							{
-								System.out.println("after loop: " + e.toString());
 								if (e.hasParent())
 								{
 									Expression parent = e.getParent();
@@ -636,7 +631,7 @@ public class ExpressionParser {
 		}
 		if (e instanceof BinExpression  && ((BinExpression)e).getRightChild() != null){
 			addBinOp(Operator.MULTIPLY);
-			addNewValue(newEx);
+			addValue(newEx);
 			e = newEx;
 			return;
 		}
@@ -662,12 +657,6 @@ public class ExpressionParser {
 				if (o.isUrinaryPost()){
 					newEx.setChild(vals.get(0));
 				}
-				else if (vals.size() == 1 && vals.get(0) instanceof Var){
-					if (((Var)vals.get(0)).getValue() == null){
-						throw new ParseException("Variable \"" + ((Var)vals.get(0)).getName()
-								+ "\" has not been given a value");
-					}
-				}
 				else{ //there is a value before the UrinaryOp, such as with 4sin x
 					addBinOp(Operator.MULTIPLY);
 					addUrinaryOp(o);
@@ -690,7 +679,7 @@ public class ExpressionParser {
 						newBinEx.setLeftChild(e);
 						e = newBinEx;
 						addBinOp(Operator.MULTIPLY);
-						addNewValue(newEx);
+						addValue(newEx);
 					}
 				}
 				else {
