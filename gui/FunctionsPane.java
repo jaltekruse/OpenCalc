@@ -3,10 +3,12 @@ package gui;
 
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import tree.EvalException;
@@ -34,7 +36,8 @@ public class FunctionsPane extends SubPanel {
 	private Function[] functions;
 	private MainApplet mainApp;
 	
-	public FunctionsPane(MainApplet currmainApp){
+	public FunctionsPane(MainApplet currmainApp, TopLevelContainer topLevelComp){
+		super(topLevelComp);
 		mainApp = currmainApp;
 		graphOld = mainApp.getGraphObj();
 		
@@ -51,7 +54,7 @@ public class FunctionsPane extends SubPanel {
 		pCon.weightx = 1;
 		pCon.weighty = 1;
 		
-		SubPanel funcVars = new SubPanel();
+		JPanel funcVars = new SubPanel(getTopLevelContainer());
 		funcVars.setBorder(BorderFactory.createTitledBorder("Function Vars"));
 		this.add(funcVars, pCon);
 		OCButton x = new OCButton("x", 1, 1, 0, 0, funcVars, mainApp);
@@ -60,7 +63,7 @@ public class FunctionsPane extends SubPanel {
 		for (int i = 0; i < functions.length; i++) {
 			pCon.gridy = i + 1;
 			pCon.insets = new Insets(6, 2, 6, 2);
-			this.add(new GraphAttributesPanel(mainApp, this, graphColors[i], functions[i]), pCon);
+			this.add(new GraphAttributesPanel(mainApp, getTopLevelContainer(), this, graphColors[i], functions[i]), pCon);
 		}
 		OCButton graph = new OCButton("Graph", 1, 1, 0, functions.length + 1, this, mainApp){
 			public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{

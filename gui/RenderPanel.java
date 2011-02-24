@@ -25,6 +25,8 @@ import imagegen.ImageGenerator;
 import imagegen.ValueGraphic;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -43,6 +45,7 @@ import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -61,12 +64,12 @@ public class RenderPanel extends SubPanel {
 	private ExpressionParser parser;
 
     private SubPanel thisPanel;
-    private SubPanel render;
+    private JPanel render;
     private CompleteExpressionGraphic ceg;
     
 
-	public RenderPanel(final MainApplet currmainApp) {
-
+	public RenderPanel(final MainApplet currmainApp, TopLevelContainer topLevelComp) {
+		super(topLevelComp);
 		mainApp = currmainApp;
 		thisPanel = this;
 		
@@ -74,7 +77,7 @@ public class RenderPanel extends SubPanel {
 		
 		GridBagConstraints tCon = new GridBagConstraints();
 
-		entryLine = new OCTextField(true, 16, 1, 1, 0, 10, this, mainApp) {
+		entryLine = new OCTextField(getTopLevelContainer(), true, 16, 1, 1, 0, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
 					render.repaint();
@@ -84,7 +87,7 @@ public class RenderPanel extends SubPanel {
 			}
 		};
 		
-		selected = new JTextArea(16,8);
+		selected = new JTextArea(16,6);
 		
 		Font terminalFont = new Font("newFont", 1, 14);
 		parser = mainApp.getParser();
@@ -98,7 +101,7 @@ public class RenderPanel extends SubPanel {
 		JScrollPane termScrollPane = new JScrollPane(selected);
 		termScrollPane.setWheelScrollingEnabled(true);
 		
-		mousePos = new OCTextField(false, 16, 1, 1, 0, 12, this, mainApp) {};
+		mousePos = new OCTextField(getTopLevelContainer(), false, 16, 1, 1, 0, 12, this, mainApp) {};
 
 		solve = new OCButton("render", "Render the current expression.", 1, 1, 5, 10, this, mainApp) {
 			public void associatedAction() {
@@ -111,7 +114,8 @@ public class RenderPanel extends SubPanel {
 				}
 			}
 		};
-		render = new SubPanel(){
+		
+		render = new JPanel(){
 			public void paint(Graphics g){
 				try {
 					if (!entryLine.getField().getText().equals(""))
@@ -127,6 +131,9 @@ public class RenderPanel extends SubPanel {
 				}
 			}
 		};
+		render.setMinimumSize(new Dimension(700, 700));
+		JScrollPane renderScrollPane = new JScrollPane(render);
+		
 		render.setPreferredSize(new Dimension(400, 300));
 		tCon.fill = GridBagConstraints.BOTH;
 		tCon.weightx = 1;
@@ -135,7 +142,7 @@ public class RenderPanel extends SubPanel {
 		tCon.gridy = 0;
 		tCon.gridheight = 10;
 		tCon.gridwidth = 7;		
-		this.add(render, tCon);
+		this.add(renderScrollPane, tCon);
 		//this.add(comp, tCon);
 		
 		tCon.fill = GridBagConstraints.BOTH;

@@ -43,7 +43,7 @@ public class DivisionGraphic extends BinExpressionGraphic {
 		}
 		else if (style == Style.HORIZONTAL){
 //			super.getCompExGraphic().getGraphics().setColor(Color.gray);
-//			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
+//			super.getCompExGraphic().getGraphics().fillRect(getX1(), getY1(), getX2() - getX1(), getY2() - getY1());
 //			super.getCompExGraphic().getGraphics().setColor(Color.black);
 			super.getCompExGraphic().getGraphics().drawLine(symbolX1, symbolY1 + spaceAroundBar + 1, symbolX2, 
 					symbolY1 + spaceAroundBar + 1); 
@@ -132,11 +132,11 @@ public class DivisionGraphic extends BinExpressionGraphic {
 			
 			symbolY1 = leftSize[1] + y1;
 			symbolY2 = symbolY1 + 1 + 2 * spaceAroundBar;
-			totalSize[1] = symbolY2 + rightSize[1] - y1;
+			System.out.println("symbolY2: " + symbolY2);
 
 			rightValGraphic.shiftToX1((int)(Math.round(((symbolX2 - symbolX1) - rightSize[0]))/2.0) + x1);
 			//rightValGraphic.shiftToX2(rightValGraphic.getX1() + rightSize[0]);
-			rightValGraphic.shiftToY1(symbolY2 + 1);
+			rightValGraphic.shiftToY1(symbolY2);
 			//rightValGraphic.shiftToY2(rightValGraphic.getY1() + rightSize[1]);
 			
 			setUpperHeight(leftSize[1] + spaceAroundBar);

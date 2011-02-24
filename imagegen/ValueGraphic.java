@@ -66,6 +66,18 @@ public abstract class ValueGraphic<E extends Value> {
 			{
 				return new ParenGraphic(((UrinaryExpression)v), getCompExGraphic());
 			}
+			else if (((UrinaryExpression)v).getOp() == Operator.NEG)
+			{
+				return new NegationGraphic(((UrinaryExpression)v), getCompExGraphic());
+			}
+			else if (((UrinaryExpression)v).getOp() == Operator.SQRT)
+			{
+				return new RadicalGraphic(((UrinaryExpression)v), getCompExGraphic());
+			}
+			else if (((UrinaryExpression)v).getOp() == Operator.FACT)
+			{
+				return new UnaryPostGraphic(((UrinaryExpression)v), getCompExGraphic());
+			}
 			return new UnaryExpressionGraphic((UrinaryExpression)v, getCompExGraphic());
 		}
 		System.out.println(v.toString());

@@ -34,9 +34,11 @@ public class GlassPane extends JComponent{
 	ArrayList<String> history;
 	JTextArea historyPane;
 	private JScrollPane histScrollPane;
+	TopLevelContainer topLevelContainer;
 
-	public GlassPane(final MainApplet mainApp){
+	public GlassPane(final MainApplet mainApp, TopLevelContainer c){
 		this.mainApp = mainApp;
+		topLevelContainer = c;
 		thisPane = this;
 		this.setVisible(true);
 	}
@@ -141,6 +143,7 @@ public class GlassPane extends JComponent{
 		this.removeAll();
 		historyPane = new JTextArea(5,5);
 		history = mainApp.getCurrTextField().getHistory();
+		System.out.println(mainApp.getCurrTextField());
 		historyPane.setEditable(true);
 		
 		histScrollPane = new JScrollPane(historyPane);
@@ -247,10 +250,10 @@ public class GlassPane extends JComponent{
 			}
 			
 		});
-		height = history.size() * 15;
+		height = history.size() * 16;
 		
 		if (history.size() == 0){
-			height = 15;
+			height = 16;
 			historyPane.append("empty");
 		}
 		else{
@@ -263,10 +266,13 @@ public class GlassPane extends JComponent{
 		}
 		
 		x = mainApp.getCurrTextField().getField().getLocationOnScreen().x
-			- mainApp.getLocationOnScreen().x;
+			- topLevelContainer.getContentPane().getLocationOnScreen().x;
 		y = mainApp.getCurrTextField().getField().getLocationOnScreen().y
-			- mainApp.getLocationOnScreen().y 
+			- topLevelContainer.getContentPane().getLocationOnScreen().y 
 			+ mainApp.getCurrTextField().getField().getHeight();
+		if (topLevelContainer.getJMenuBar() != null){
+			y += topLevelContainer.getJMenuBar().getHeight();
+		}
 		width = 200;
 
 		historyPane.setBorder(new LineBorder(Color.BLACK, 1));
@@ -284,7 +290,7 @@ public class GlassPane extends JComponent{
 		historyPane.setCaretPosition(1);
 		
 		selectCurrLine();
-		
+		this.setVisible(true);
 		refresh();
 	}
 

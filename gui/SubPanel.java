@@ -20,6 +20,7 @@ package gui;
  along with OpenCalc  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.awt.Container;
 import java.awt.GridBagLayout;
 
 import javax.swing.JPanel;
@@ -29,8 +30,14 @@ public class SubPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private TopLevelContainer topLevelContainer;
 
-	public SubPanel() {
+	public SubPanel(TopLevelContainer topLevelComp) {
 		this.setLayout(new GridBagLayout());
+		this.topLevelContainer = topLevelComp;
+	}
+	
+	public TopLevelContainer getTopLevelContainer(){
+		return topLevelContainer;
 	}
 }

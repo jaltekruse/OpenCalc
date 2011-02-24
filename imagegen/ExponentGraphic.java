@@ -19,12 +19,14 @@ public class ExponentGraphic extends BinExpressionGraphic {
 	}
 	
 	private int spaceBetweenBaseAndSuper;
+	private int extraShiftUp;
 	private Style style;
 
 	public ExponentGraphic(BinExpression b, CompleteExpressionGraphic gr) {
 		super(b, gr);
 		style = Style.SUPERSCRIPT;
 		spaceBetweenBaseAndSuper = 3;
+		extraShiftUp = 2;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -70,13 +72,13 @@ public class ExponentGraphic extends BinExpressionGraphic {
 			rightValGraphic.shiftToX1(x1 + leftSize[0] + spaceBetweenBaseAndSuper);
 			
 			int shiftDownLeft = 0;
-			shiftDownLeft = rightValGraphic.getUpperHeight();
+			shiftDownLeft = rightValGraphic.getUpperHeight() + extraShiftUp;
 			if (leftValGraphic instanceof ExponentGraphic)
 			{
 				if ( ((ExponentGraphic) leftValGraphic).getRightGraphic().getHeight() / 2.0 <
 						rightValGraphic.getLowerHeight() )
 				{
-					shiftDownLeft = rightValGraphic.getHeight() - (int) 
+					shiftDownLeft = rightValGraphic.getHeight() + extraShiftUp - (int) 
 							Math.round(((ExponentGraphic)leftValGraphic).getRightGraphic().getHeight()/2.0);
 				}
 			}
@@ -84,7 +86,7 @@ public class ExponentGraphic extends BinExpressionGraphic {
 			{
 				if ( leftValGraphic.getHeight() / 2.0 < rightValGraphic.getLowerHeight() )
 				{
-					shiftDownLeft = rightValGraphic.getHeight() - (int) 
+					shiftDownLeft = rightValGraphic.getHeight() + extraShiftUp - (int) 
 							Math.round(leftValGraphic.getHeight()/2.0);
 				}
 			}

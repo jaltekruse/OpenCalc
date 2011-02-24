@@ -1,6 +1,8 @@
 package gui;
 
+import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 
 import tree.EvalException;
 import tree.ParseException;
@@ -38,32 +41,33 @@ public class ValStoragePanel extends SubPanel {
 	private int i;
 
 
-	public ValStoragePanel(MainApplet currmainApp, ValueStorage e) {
-		mainApp = currmainApp;
+	public ValStoragePanel(final MainApplet mainApp, TopLevelContainer topLevelComp, ValueStorage e) {
+		super(topLevelComp);
+		this.mainApp = mainApp;
 		elements = e;
 		this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		groups = new SubPanel();
+		groups = new SubPanel(getTopLevelContainer());
 		//groups.setBorder(BorderFactory.createTitledBorder("Groups"));
-		elmButtons = new SubPanel();
-		addElm = new SubPanel();
+		elmButtons = new SubPanel(getTopLevelContainer());
+		addElm = new SubPanel(getTopLevelContainer());
 		//addElm.setBorder(BorderFactory.createTitledBorder("Make/Set"));
 		
 		elmName = new OCLabel("Name:", 1, 1, 0, 0, addElm, mainApp);
-		name = new OCTextField(true, 9, 1, 1, 1, 0, addElm, mainApp){
+		name = new OCTextField(getTopLevelContainer(), true, 9, 1, 1, 1, 0, addElm, mainApp){
 			public void associatedAction(){
 				//do nothing, must hit button 
 			}
 		};
 		
 		val = new OCLabel("Val:", 1, 1, 2, 0, addElm, mainApp);
-		value = new OCTextField(true, 9, 1, 1, 3, 0, addElm, mainApp){
+		value = new OCTextField(getTopLevelContainer(), true, 9, 1, 1, 3, 0, addElm, mainApp){
 			public void associatedAction(){
 				//do nothing, must hit button
 			}
 		};
 		
 		group = new OCLabel("Group:", 1, 1, 0, 1, addElm, mainApp);
-		groupName = new OCTextField(true, 9, 1, 1, 1, 1, addElm, mainApp){
+		groupName = new OCTextField(getTopLevelContainer(), true, 9, 1, 1, 1, 1, addElm, mainApp){
 			public void associatedAction(){
 				//do nothing, must hit button
 			}

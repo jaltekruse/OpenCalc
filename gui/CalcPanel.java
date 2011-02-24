@@ -20,23 +20,21 @@ package gui;
  along with OpenCalc  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import imagegen.CompleteExpressionGraphic;
 import imagegen.ImageGenerator;
 
+import java.awt.Container;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -70,8 +68,9 @@ public class CalcPanel extends SubPanel {
     //tells the current selection for output, 1 = exact, 2 = decimal
     private int answersIn;
 
-	public CalcPanel(final MainApplet currmainApp) {
+	public CalcPanel(final MainApplet currmainApp, TopLevelContainer topLevelComp) {
 
+		super(topLevelComp);
 		mainApp = currmainApp;
 		thisPanel = this;
 		img = new ImageGenerator(mainApp);
@@ -90,7 +89,7 @@ public class CalcPanel extends SubPanel {
 		
 		GridBagConstraints tCon = new GridBagConstraints();
 
-		entryLine = new OCTextField(true, 16, 1, 1, 0, 10, this, mainApp) {
+		entryLine = new OCTextField(getTopLevelContainer(), true, 16, 1, 1, 0, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
 					solverAction();
@@ -192,7 +191,8 @@ public class CalcPanel extends SubPanel {
 		
 		exact.setSelected(true);
 		
-		answersInPanel = new SubPanel();
+		answersInPanel = new SubPanel(getTopLevelContainer());
+		answersInPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints bCon = new GridBagConstraints();
 		

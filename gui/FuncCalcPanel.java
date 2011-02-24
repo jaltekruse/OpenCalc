@@ -3,10 +3,14 @@ package gui;
 
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import tree.Decimal;
@@ -16,7 +20,7 @@ import tree.Value;
 import tree.Number;
 import tree.ValueNotStoredException;
 
-public class FuncCalcPanel extends SubPanel {
+public class FuncCalcPanel extends SubPanel{
 
 	/**
 	 * 
@@ -30,12 +34,17 @@ public class FuncCalcPanel extends SubPanel {
 	private OCLabel indVar, depVar, start, end, intApprox, slopeApprox, spacer;
 	private Color color;
 	private SubPanel  traceBox, intBox, deriveBox;
+	private GlassPane glassPanel;
+
 	
-	public FuncCalcPanel(MainApplet currmainApp, Function f, Color c){
+	public FuncCalcPanel(MainApplet currmainApp, TopLevelContainer comp, Function f, Color c){
+		super(comp);
 		mainApp = currmainApp;
 		graphOld = mainApp.getGraphObj();
 		func = f;
 		color = c;
+		glassPanel = new GlassPane(mainApp, comp);
+		this.setLayout(new GridBagLayout());
 		
 		refreshFields();
 	}
@@ -46,11 +55,20 @@ public class FuncCalcPanel extends SubPanel {
 	public void integrate(){
 		if ("".equals(func.getFuncEqtn())) {
 			intVal.getField().setText("no eqtn");
+			intVal.getField().setText("no eqtn");
 		}
 		else if (!startInt.getField().getText().equals("") && !endInt.getField().getText().equals("")){
-			double a = Double.parseDouble(startInt.getField().getText());
-			double b = Double.parseDouble(endInt.getField().getText());
+			double a = 0, b = 0;
+			try{
+				a = mainApp.getParser().ParseExpression(startInt.getField().getText()).eval().toDec().getValue();
+				b = mainApp.getParser().ParseExpression(endInt.getField().getText()).eval().toDec().getValue();
+			}catch (Exception ex){
+				intVal.getField().setText("error");
+				return;
+			}
 			func.setIntegral(a, b);
+			startInt.getField().setText("" + a);
+			endInt.getField().setText("" + b);
 			graphOld.repaint();
 			//mainApp.getBasicmainApp().parse(func.getFuncEqtn());
 			String integral = new String();
@@ -125,11 +143,12 @@ public class FuncCalcPanel extends SubPanel {
 	
 	public void refreshFields(){
 		
+		
 		this.removeAll();
 		GridBagConstraints pCon = new GridBagConstraints();
-		traceBox = new SubPanel();
-		intBox = new SubPanel();
-		deriveBox = new SubPanel();
+		traceBox = new SubPanel(getTopLevelContainer());
+		intBox = new SubPanel(getTopLevelContainer());
+		deriveBox = new SubPanel(getTopLevelContainer());
 		
 		GridBagConstraints bCon = new GridBagConstraints();
 		
@@ -170,7 +189,7 @@ public class FuncCalcPanel extends SubPanel {
 		traceBox.add(colorBox, pCon);
 		
 		indVar = new OCLabel(func.getIndependentVar().getName() + ":", 1, 1, 1, 0, traceBox, mainApp);
-		pt2Trace = new OCTextField(true, 9, 1, 1, 2, 0, traceBox, mainApp) {
+		pt2Trace = new OCTextField(getTopLevelContainer(), true, 9, 1, 1, 2, 0, traceBox, mainApp) {
 			public void associatedAction() {
 				tracePt();
 			}
@@ -183,16 +202,16 @@ public class FuncCalcPanel extends SubPanel {
 		};
 		
 		depVar = new OCLabel(func.getDependentVar().getName() + ":", 1, 1, 4, 0, traceBox, mainApp);
-		tracePtVal = new OCTextField(false, 9, 1, 1, 5, 0, traceBox, mainApp);
+		tracePtVal = new OCTextField(getTopLevelContainer(), false, 9, 1, 1, 5, 0, traceBox, mainApp);
 		
 		if(func.getGraphType() == 1){
 			start = new OCLabel("start:", 1, 1, 0, 0, intBox, mainApp);
-			startInt = new OCTextField(true, 4, 1, 1, 1, 0, intBox, mainApp){
+			startInt = new OCTextField(getTopLevelContainer(), true, 4, 1, 1, 1, 0, intBox, mainApp){
 				public void associatedAction(){
 				}
 			};
 			end = new OCLabel("end:", 1, 1, 2, 0, intBox, mainApp);
-			endInt = new OCTextField(true, 4, 1, 1, 3, 0, intBox, mainApp){
+			endInt = new OCTextField(getTopLevelContainer(), true, 4, 1, 1, 3, 0, intBox, mainApp){
 				public void associatedAction(){
 				}
 			};
@@ -206,11 +225,11 @@ public class FuncCalcPanel extends SubPanel {
 			};
 			
 			intApprox = new OCLabel("Int:", 1, 1, 5, 0, intBox, mainApp);
-			intVal = new OCTextField(false, 9, 1, 1, 6, 0, intBox, mainApp);
+			intVal = new OCTextField(getTopLevelContainer(), false, 9, 1, 1, 6, 0, intBox, mainApp);
 			
 			
 			indVar = new OCLabel(func.getIndependentVar().getName() + ":", 1, 1, 0, 0, deriveBox, mainApp);
-			indVarVal = new OCTextField(true, 4, 1, 1, 1, 0, deriveBox, mainApp){
+			indVarVal = new OCTextField(getTopLevelContainer(), true, 4, 1, 1, 1, 0, deriveBox, mainApp){
 				public void associatedAction(){
 					try {
 						derive();
@@ -231,7 +250,7 @@ public class FuncCalcPanel extends SubPanel {
 			};
 			
 			slopeApprox = new OCLabel("Slope:", 1, 1, 3, 0, deriveBox, mainApp);
-			slopeVal = new OCTextField(false, 9, 1, 1, 4, 0, deriveBox, mainApp);
+			slopeVal = new OCTextField(getTopLevelContainer(), false, 9, 1, 1, 4, 0, deriveBox, mainApp);
 			
 			if(func.isTakingIntegral()){
 				startInt.getField().setText("" + func.getStartIntegral());

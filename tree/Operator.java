@@ -33,7 +33,9 @@ public enum Operator {
 	
 	public boolean isUrinaryPost(){
 		if(this == FACT)
+		{
 			return true;
+		}
 		return false;
 	}
 	

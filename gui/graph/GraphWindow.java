@@ -1,6 +1,7 @@
 package gui.graph;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -13,6 +14,8 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JPanel;
+
 import tree.EvalException;
 import tree.ParseException;
 import tree.ValueNotStoredException;
@@ -20,6 +23,7 @@ import tree.VarStorage;
 
 import gui.MainApplet;
 import gui.SubPanel;
+import gui.TopLevelContainer;
 
 public class GraphWindow extends SubPanel{
 	
@@ -31,7 +35,7 @@ public class GraphWindow extends SubPanel{
 	private MainApplet mainApp;
 	private int textHeight;
 	private Graph largeGraph;
-	private SubPanel graph;
+	private JPanel graph;
 	private BufferedImage buffer;
 	private double mouseX,
 	mouseY, mouseRefX, mouseRefY;
@@ -40,14 +44,15 @@ public class GraphWindow extends SubPanel{
 	private Runnable current;
 	private Object currObj;
 	
-	public GraphWindow(int xSize, int ySize, MainApplet mainApp){
+	public GraphWindow(MainApplet mainApp, TopLevelContainer topLevelComp, int xSize, int ySize){
+		super(topLevelComp);
 		this.setPreferredSize(new Dimension(xSize, ySize));
 		this.mainApp = mainApp;
 		largeGraph = new Graph(this, mainApp);
 		buffer = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
 		repaint();
 		
-		graph = new SubPanel(){
+		graph = new JPanel(){
 			
 			public void paint(Graphics g) {
 				largeGraph.repaint(g);

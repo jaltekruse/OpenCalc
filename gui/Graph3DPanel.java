@@ -7,6 +7,7 @@ package gui;
 
 import tree.*;
 
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -14,6 +15,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+import javax.swing.JPanel;
 
 public class Graph3DPanel extends SubPanel
 {
@@ -25,15 +28,15 @@ public class Graph3DPanel extends SubPanel
     private Graph3DPanel thisPanel;
     private MainApplet mainApp;
 
-    public Graph3DPanel(int xSize, int ySize, MainApplet mApp)
+    public Graph3DPanel(final MainApplet mainApp, TopLevelContainer topLevelComp, int xSize, int ySize)
     {
-        super();
-      	this.mainApp = mApp;
+        super(topLevelComp);
+      	this.mainApp = mainApp;
         thisPanel = this;
         
         graph = new Graph3D2(thisPanel);
         
-        panel3d = new SubPanel(){
+        panel3d = new SubPanel(getTopLevelContainer()){
             public void paint(Graphics g)
             {
                 if(this != null && mainApp != null)
@@ -124,7 +127,7 @@ public class Graph3DPanel extends SubPanel
 		bCon.gridy = 0;
 		this.add(panel3d, bCon);
 		
-		field = new OCTextField(true, 20, 1,1,0,8,this, mainApp){
+		field = new OCTextField(getTopLevelContainer(), true, 20, 1,1,0,8,this, mainApp){
 			public void associatedAction(){
 		        try
 		        {

@@ -32,8 +32,8 @@ public class CompleteExpressionGraphic{
 	
 	public CompleteExpressionGraphic(Value v){
 		this.v = v;
-		bigFont =  new Font("Lucida Sans Unicode", 0, 16);
-		smallFont = new Font("Lucida Sans Unicode", 0, 10);
+		bigFont =  new Font("SansSerif", 0, 16);
+		smallFont = new Font("SansSerif", 0, 10);
 	}
 	
 	public void draw(){
@@ -91,7 +91,7 @@ public class CompleteExpressionGraphic{
 			return graphics.getFontMetrics().getHeight() - 7;
 		}
 		else if (f.equals(smallFont)){
-			return graphics.getFontMetrics().getHeight() - 6;
+			return graphics.getFontMetrics().getHeight() - 5;
 		}
 		else
 		{

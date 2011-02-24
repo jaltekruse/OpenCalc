@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -14,18 +15,19 @@ import tree.ParseException;
 import tree.Value;
 import tree.Number;
 
-public class OCTextWithValButton extends OCTextField {
+public class OCTextWithValButton extends OCTextField{
 
 	MainApplet mainApp;
 	OCTextField field;
 	OCButton button;
 	String varName;
-	SubPanel box;
+	JPanel box;
 
-	public OCTextWithValButton(String s, boolean editable, int length,
+	public OCTextWithValButton(TopLevelContainer topLevelComp, String s, boolean editable, int length,
 			int gridWidth, int gridHeight, int gridx, int gridy,
 			JComponent comp, MainApplet currmainApp) {
-
+		
+		super(topLevelComp);
 		varName = s;
 		mainApp = currmainApp;
 		super.setLayout(new GridBagLayout());
@@ -37,11 +39,11 @@ public class OCTextWithValButton extends OCTextField {
 		pCon.gridy = gridy;
 		pCon.weightx = 1;
 		pCon.weighty = 1;
-		box = new SubPanel();
+		box = new SubPanel(getTopLevelContainer());
 		
 		comp.add(box, pCon);
 
-		field = new OCTextField(editable, length, 2, gridHeight, 0, 0, box,
+		field = new OCTextField(getTopLevelContainer(), editable, length, 2, gridHeight, 0, 0, box,
 				mainApp) {
 			public void associatedAction() {
 				String currText = field.getText();

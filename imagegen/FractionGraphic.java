@@ -31,6 +31,7 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 		// TODO Auto-generated method stub
 		Graphics g = super.getCompExGraphic().getGraphics();
 		g.setFont(getFont());
+		System.out.println(getFont().getName());
 		FontMetrics fm = g.getFontMetrics();
 		if (style == Style.SLASH || (style == Style.HORIZONTAL && getValue().getDenominator() == 1)){
 //			super.getCompExGraphic().getGraphics().setColor(Color.gray);

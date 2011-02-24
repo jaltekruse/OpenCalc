@@ -23,6 +23,7 @@ package gui;
 
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -41,7 +42,7 @@ import javax.swing.JTextArea;
 
 public class GraphAttributesPanel extends SubPanel {
 
-	/**
+	/**mainApp
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -59,16 +60,15 @@ public class GraphAttributesPanel extends SubPanel {
 	private JCheckBox graphing;
 	private FuncCalcPanel funcCalcPanel;
 
-	public GraphAttributesPanel(MainApplet currmainApp, FunctionsPane fp, Color c, Function f) {
+	public GraphAttributesPanel(final MainApplet mainApp, TopLevelContainer topLevelComp, FunctionsPane fp, Color c, Function f) {
 		// TODO Auto-generated constructor stub
-		
+		super(topLevelComp);
 		func = f;
 		redundant = this;
-		mainApp = currmainApp;
+		this.mainApp = mainApp;
 		graphTypes = fp.getGraphTypes();
 		color = c;
 		graphOld = mainApp.getGraphObj();
-		funcCalcPanel = new FuncCalcPanel(mainApp, func, color);
 
 		colorBox = new JPanel() {
 			/**
@@ -78,10 +78,9 @@ public class GraphAttributesPanel extends SubPanel {
 
 			public void paint(Graphics g) {
 				g.setColor(color);
-				g.fillRect(0, 0, 10, 10);
+				g.fillRect(0, 0, this.getWidth(), this.getHeight());
 			}
 		};
-		colorBox.setPreferredSize(new Dimension(10, 10));
 		
 		graphing = new JCheckBox();
 		graphing.setSelected(true);
@@ -128,7 +127,7 @@ public class GraphAttributesPanel extends SubPanel {
 			}
 		});
 		
-		graphEntry = new OCTextField(true, 10, 5, 1, 4, 0, this, mainApp) {
+		graphEntry = new OCTextField(getTopLevelContainer(), true, 10, 5, 1, 4, 0, this, mainApp) {
 			public void associatedAction() {
 				graph();
 			}
@@ -144,7 +143,10 @@ public class GraphAttributesPanel extends SubPanel {
 			func.setColor(color);
 			func.setGraphing(true);
 			graphOld.repaint();
-			funcCalcPanel.refreshFields();
+			if (funcCalcPanel != null)
+			{
+				funcCalcPanel.refreshFields();
+			}
 		}
 		else{
 			func.setGraphing(false);
@@ -164,10 +166,11 @@ public class GraphAttributesPanel extends SubPanel {
 		pCon.gridy = 0;
 		pCon.gridheight = 1;
 		pCon.gridwidth = 1;
-		pCon.ipadx = 3;
+		pCon.ipadx = 1;
 		pCon.ipady = 3;
 		this.add(graphing, pCon);
 		
+		pCon.ipadx = 2;
 		pCon.gridx = 1;
 		this.add(colorBox, pCon);
 		
@@ -190,13 +193,15 @@ public class GraphAttributesPanel extends SubPanel {
 		
 		OCButton advanced = new OCButton("adv.", 1, 1, 10, 0, this, mainApp){
 			public void associatedAction() {
-				GridBagConstraints bCon = new GridBagConstraints();
 				
-				JFrame calcs = new JFrame("Calc");
-				calcs.getContentPane().add(funcCalcPanel);
-				calcs.setPreferredSize(new Dimension(600, 160));
-				calcs.pack();
-				calcs.setVisible(true);
+				if (funcCalcPanel == null || !funcCalcPanel.isShowing()){
+					OCFrame calcs = new OCFrame(mainApp);
+					funcCalcPanel = new FuncCalcPanel(mainApp, calcs, func, color);
+					calcs.add(funcCalcPanel);
+					calcs.setPreferredSize(new Dimension(600, 160));
+					calcs.pack();
+					calcs.setVisible(true);
+				}
 			}
 		};
 		

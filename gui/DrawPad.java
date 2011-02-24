@@ -1,6 +1,8 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -8,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+
+import javax.swing.JPanel;
 
 public class DrawPad extends SubPanel {
 
@@ -20,7 +24,8 @@ public class DrawPad extends SubPanel {
 	
 	MainApplet mainApp;
 	
-	public DrawPad(int xSize, int ySize, MainApplet currmainApp) {
+	public DrawPad(MainApplet currmainApp, TopLevelContainer topLevelComp, int xSize, int ySize) {
+		super(topLevelComp);
 		mainApp = currmainApp;
 		X_SIZE = xSize;
 		Y_SIZE = ySize;
@@ -36,7 +41,7 @@ public class DrawPad extends SubPanel {
 		bCon.gridy = 0;
 		drawing = true;
 		pen = true;
-		draw = new SubPanel(){
+		draw = new SubPanel(getTopLevelContainer()){
 			public void paint(Graphics g){
 				g.setColor(Color.WHITE);
 				g.fillRect(0, 0, draw.getSize().width, draw.getSize().height);
@@ -57,7 +62,7 @@ public class DrawPad extends SubPanel {
 		this.add(draw, bCon);
 		
 		
-		props = new SubPanel();
+		props = new SubPanel(getTopLevelContainer());
 		undo = new OCButton("Undo", 1, 1, 0, 0, props, mainApp){
 			public void associatedAction(){
 				if(strokes.size() > 0)

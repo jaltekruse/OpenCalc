@@ -21,6 +21,7 @@ package gui;
  */
 
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -47,8 +48,9 @@ public class NumsAndOppsPanel extends SubPanel {
 	private MainApplet mainApp;
 	private JComboBox angleUnitSelect;
 	
-	NumsAndOppsPanel(final MainApplet mainApp) {
+	NumsAndOppsPanel(final MainApplet mainApp, TopLevelContainer topLevelComp) {
 		// SubPanel(Numbuttons, NumTextFields)
+		super(topLevelComp);
 		this.mainApp = mainApp;
 		trigInv = false;
 		this.setLayout(new GridBagLayout());

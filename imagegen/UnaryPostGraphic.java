@@ -7,32 +7,25 @@ import java.awt.Graphics;
 import tree.UrinaryExpression;
 import tree.Value;
 
-public class ParenGraphic extends UnaryExpressionGraphic {
+public class UnaryPostGraphic extends UnaryExpressionGraphic {
 
-	private int space;
-	private int overhang;
-	private int widthParens;
+private int space;
 	
-	public ParenGraphic(UrinaryExpression v, CompleteExpressionGraphic compExGraphic) {
+	public UnaryPostGraphic(UrinaryExpression v,
+			CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
-		space = 2;
-		overhang = 3;
-		widthParens = 3;
+		space = 3;
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
-		
 //		super.getCompExGraphic().getGraphics().setColor(Color.gray);
-//		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
+//		super.getCompExGraphic().getGraphics().fillRect(getX1(), getY1(), getX2() - getX1(), getY2() - getY1());
 //		super.getCompExGraphic().getGraphics().setColor(Color.black);
-		
-		super.getCompExGraphic().getGraphics().drawArc(getX1(), getY1(),
-				widthParens * 2, getY2() - getY1(), 90, 180);
-		super.getCompExGraphic().getGraphics().drawArc(getX2() - widthParens * 2,
-				getY1(), widthParens * 2, getY2() - getY1(), 270, 180);
+		super.getCompExGraphic().getGraphics().drawString(getValue().getOp().getSymbol(),
+				symbolX1, symbolY2);
 	}
 
 	@Override
@@ -57,23 +50,21 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		super.getComponents().add(childValGraphic);
 		super.getCompExGraphic().components.add(childValGraphic);
 		
-		childSize = childValGraphic.requestSize(g, f, x1 + widthParens + space, y1 + overhang);
-		widthParens += (int) Math.round(childSize[1]/14.0);
-		childValGraphic.shiftToX1(x1 + widthParens + space);
+		childSize = childValGraphic.requestSize(g, f, x1 + symbolSize[0], y1);
 		
-		symbolSize[0] = childSize[0] + space * 2 + widthParens * 2;
-		symbolSize[1] = childSize[1] + overhang * 2;
+		symbolSize[0] = super.getCompExGraphic().getStringWidth(value.getOp().getSymbol(), f);
+		symbolSize[1] = super.getCompExGraphic().getFontHeight(f);
 		
-		symbolY1 = y1;
+		symbolY1 = y1 + childValGraphic.getUpperHeight() - (int) Math.round(symbolSize[1]/2.0);
 		symbolY2 = symbolY1 + symbolSize[1];
-		symbolX1 = x1;
+		symbolX1 = x1 + space + childSize[0];
 		symbolX2 = x1 + symbolSize[0];
 		
-		setUpperHeight(childValGraphic.getUpperHeight() + overhang);
-		setLowerHeight(childValGraphic.getLowerHeight() + overhang);
+		setUpperHeight(childValGraphic.getUpperHeight());
+		setLowerHeight(childValGraphic.getLowerHeight());
 		
-		totalSize[0] = symbolSize[0];
-		totalSize[1] = symbolSize[1];
+		totalSize[0] = symbolSize[0] + childSize[0];
+		totalSize[1] = childSize[1];
 		super.setX1(x1);
 		super.setY1(y1);
 		super.setX2(x1 + totalSize[0]);
@@ -81,5 +72,4 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		// TODO Auto-generated method stub
 		return totalSize;
 	}
-
 }

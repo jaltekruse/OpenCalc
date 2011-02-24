@@ -8,8 +8,9 @@ import java.awt.Insets;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-public class OCLabel extends SubPanel {
+public class OCLabel extends JPanel {
 	
 	String dispText;
 	MainApplet mainApp;

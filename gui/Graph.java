@@ -22,6 +22,7 @@ package gui;
 
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -63,7 +64,8 @@ public class Graph extends SubPanel {
 	// stuff to put in separate graph class
 	private Function[] functions;
 
-	public Graph(int xSize, int ySize, MainApplet currmainApp) {
+	public Graph(MainApplet currmainApp, TopLevelContainer topLevelComp, int xSize, int ySize) {
+		super(topLevelComp);
 		mainApp = currmainApp;
 		parser = mainApp.getParser();
 		varList = parser.getVarList();
@@ -90,7 +92,7 @@ public class Graph extends SubPanel {
 			functions[i] = new Function(parser);
 		}
 		
-		graph = new SubPanel(){
+		graph = new SubPanel(getTopLevelContainer()){
 			
 			public void paint(Graphics g) {
 				g.setColor(Color.WHITE);
@@ -259,7 +261,7 @@ public class Graph extends SubPanel {
 		this.add(graph, bCon);
 		this.setPreferredSize(new Dimension(xSize, ySize));
 		
-		SubPanel props = new SubPanel();
+		JPanel props = new JPanel();
 		OCButton zoomPlus = new OCButton("Zoom+", 1, 1, 0, 0, props, mainApp){
 			public void associatedAction(){
 				try {

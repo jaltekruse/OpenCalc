@@ -1,5 +1,6 @@
 package imagegen;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
@@ -21,6 +22,9 @@ public class UnaryExpressionGraphic extends ExpressionGraphic {
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
+//		super.getCompExGraphic().getGraphics().setColor(Color.gray);
+//		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
+//		super.getCompExGraphic().getGraphics().setColor(Color.black);
 		super.getCompExGraphic().getGraphics().drawString(getValue().getOp().getSymbol(),
 				symbolX1, symbolY2);
 	}

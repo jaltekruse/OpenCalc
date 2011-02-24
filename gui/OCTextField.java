@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -34,14 +36,16 @@ public class OCTextField extends SubPanel {
 	
 	ArrayList<String> history;
 
-	public OCTextField() {
+	public OCTextField(TopLevelContainer topLevelComp) {
+		super(topLevelComp);
 		field = new JTextField();
 	}
 
-	public OCTextField(boolean editable, int length, int gridWidth,
+	public OCTextField(TopLevelContainer topLevelComp, boolean editable, int length, int gridWidth,
 			int gridHeight, int gridx, int gridy, JComponent comp,
 			final MainApplet currmainApp) {
 		
+		super(topLevelComp);
 		this.comp = comp;
 		field = new JTextField();
 		field.setEditable(editable);
@@ -107,11 +111,19 @@ public class OCTextField extends SubPanel {
 				if (e.getKeyCode() == KeyEvent.VK_DOWN){
 					if (!field.getText().equals("")){
 						addToHistory(field.getText());
-						field.setText("");
 					}
-					MainApplet.getGlassPanel().addFieldHistory();
-					MainApplet.getGlassPanel().refresh();
-					MainApplet.getGlassPanel().setHistoryVisible(true);
+					getTopLevelContainer().getGlassPanel().addFieldHistory();
+					getTopLevelContainer().getGlassPanel().refresh();
+					getTopLevelContainer().getGlassPanel().setHistoryVisible(true);
+				}
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
+					getTopLevelContainer().getGlassPanel().setHistoryVisible(false);
+					mainApp.getCurrTextField().getField().requestFocus();
+				}
+				if (e.getKeyCode() == KeyEvent.VK_UP){
+					mainApp.getCurrTextField().getField().requestFocus();
+					getTopLevelContainer().getGlassPanel().setHistoryVisible(false);
+					return;
 				}
 			}
 
@@ -134,17 +146,16 @@ public class OCTextField extends SubPanel {
 		if (editable){
 			OCButton dropDown = new OCButton(false,"v", 1, 1, 1, 0, this, mainApp){
 				public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{
-					if (mainApp.getGlassPanel().historyIsVisible()){
-						mainApp.getGlassPanel().setHistoryVisible(false);
+					if (getTopLevelContainer().getGlassPanel().historyIsVisible()){
+						getTopLevelContainer().getGlassPanel().setHistoryVisible(false);
 						if (!mainApp.getCurrTextField().equals(thisField)){
 							mainApp.setCurrTextField(thisField);
 							if (!field.getText().equals("")){
 								addToHistory(field.getText());
-								field.setText("");
 							}
-							MainApplet.getGlassPanel().addFieldHistory();
-							MainApplet.getGlassPanel().refresh();
-							MainApplet.getGlassPanel().setHistoryVisible(true);
+							getTopLevelContainer().getGlassPanel().addFieldHistory();
+							getTopLevelContainer().getGlassPanel().refresh();
+							getTopLevelContainer().getGlassPanel().setHistoryVisible(true);
 						}
 					}
 					else{
@@ -152,17 +163,16 @@ public class OCTextField extends SubPanel {
 						//dont know why this doesn't work, have to fix it sometime
 						if (!field.getText().equals("")){
 							addToHistory(field.getText());
-							field.setText("");
 						}
-						MainApplet.getGlassPanel().addFieldHistory();
-						MainApplet.getGlassPanel().refresh();
-						MainApplet.getGlassPanel().setHistoryVisible(true);
+						getTopLevelContainer().getGlassPanel().addFieldHistory();
+						getTopLevelContainer().getGlassPanel().refresh();
+						getTopLevelContainer().getGlassPanel().setHistoryVisible(true);
 					}
 				}
 			};
 		}
 		
-		tCon.fill = GridBagConstraints.HORIZONTAL;
+		tCon.fill = GridBagConstraints.BOTH;
 		tCon.weightx = 1;
 		tCon.gridheight = 1;
 		tCon.gridwidth = gridWidth;

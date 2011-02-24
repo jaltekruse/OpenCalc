@@ -149,6 +149,11 @@ public class ExpressionParser {
 				addValue(new Nothing());
 			}
 		}
+		if (e instanceof UrinaryExpression){
+			if (((UrinaryExpression)e).getChild() == null){
+				addValue(new Nothing());
+			}
+		}
 		while(e.hasParent()){
 			e = e.getParent();
 		}
@@ -168,7 +173,7 @@ public class ExpressionParser {
 		
 		currChar = s.charAt(pos);
 		lengthLast = 1;
-		//System.out.println("currChar: " + currChar);
+		System.out.println("currChar: " + currChar);
 		switch(currChar){
 		case '+':
 			addBinOp(Operator.ADD);
@@ -504,7 +509,13 @@ public class ExpressionParser {
 				vals = new ArrayList<Value>();
 				return;
 			}
-			else{
+			else if (vals.size() == 0 && o == Operator.SUBTRACT)
+			{
+				addUrinaryOp(Operator.NEG);
+				return;
+			}
+			else
+			{
 				addValue(new Nothing());
 				addBinOp(o);
 				return;
@@ -575,50 +586,45 @@ public class ExpressionParser {
 					}
 				}
 				else {
-					if (e.isContainerOp() && ((UrinaryExpression)e).hasChild()){
-						while(newEx.getOp().getPrec() < e.getOp().getPrec() && e.hasParent()
-								&& !(e.getParent().isContainerOp())){
-							e = e.getParent();
-						}
-						if (e.hasParent() && e.getParent().isContainerOp()){
-							((UrinaryExpression)e.getParent()).setChild(newEx);
-						}
-						if (e.hasParent() && e.getParent() instanceof BinExpression){
-							((BinExpression)(e.getParent())).setRightChild(newEx);
-						}
-						newEx.setLeftChild(e);
-						e = newEx;
-						return;
+					while(e.hasParent() && newEx.getOp().getPrec() < e.getOp().getPrec()
+							&& !(e.getParent().isContainerOp())){
+						e = e.getParent();
 					}
-					else{
-						while(e.hasParent() && newEx.getOp().getPrec() < e.getOp().getPrec()
-								&& !(e.getParent().isContainerOp())){
-							e = e.getParent();
-						}
-						if (e instanceof BinExpression)
+					if (e instanceof BinExpression)
+					{
+						if (e.getOp().getPrec() < newEx.getOp().getPrec())
 						{
-							if (e.getOp().getPrec() < newEx.getOp().getPrec())
+							((BinExpression)newEx).setLeftChild(((BinExpression)e).getRightChild());
+							((BinExpression)e).setRightChild(newEx);
+							e = newEx;
+							return;
+						}
+						else
+						{
+							if (e.hasParent())
 							{
-								((BinExpression)newEx).setLeftChild(((BinExpression)e).getRightChild());
-								((BinExpression)e).setRightChild(newEx);
-								e = newEx;
-								return;
-							}
-							else
-							{
-								if (e.hasParent())
-								{
-									Expression parent = e.getParent();
-									if (parent instanceof BinExpression){
-										((BinExpression) parent).setRightChild(newEx);
-									}
-									else if(parent instanceof UrinaryExpression){
-										((UrinaryExpression) parent).setChild(newEx);
-									}
+								Expression parent = e.getParent();
+								if (parent instanceof BinExpression){
+									((BinExpression) parent).setRightChild(newEx);
 								}
-								newEx.setLeftChild(e);
-								e = newEx;
-								return;
+								else if(parent instanceof UrinaryExpression){
+									((UrinaryExpression) parent).setChild(newEx);
+								}
+							}
+							newEx.setLeftChild(e);
+							e = newEx;
+							return;
+						}
+					}
+					else if (e instanceof UrinaryExpression){
+						if (e.hasParent())
+						{
+							Expression parent = e.getParent();
+							if (parent instanceof BinExpression){
+								((BinExpression) parent).setRightChild(newEx);
+							}
+							else if(parent instanceof UrinaryExpression){
+								((UrinaryExpression) parent).setChild(newEx);
 							}
 						}
 						newEx.setLeftChild(e);
@@ -631,8 +637,19 @@ public class ExpressionParser {
 	}
 	
 	public void addUrinaryOp(Operator o) throws ParseException{
-		//this is wrong, need to modify for urinaryOp, just copied from Bin
 		UrinaryExpression newEx = new UrinaryExpression(o);
+		
+		if (e == null){
+			if (vals.size() == 1){
+				addBinOp(Operator.MULTIPLY);
+				addUrinaryOp(o);
+				return;
+			}
+			e = newEx;
+			vals = new ArrayList<Value>();
+			return;
+		}
+		
 		if (e instanceof BinExpression  && ((BinExpression)e).getRightChild() == null){
 			//System.out.println("right child null");
 			((BinExpression)e).setRightChild(newEx);
@@ -640,6 +657,14 @@ public class ExpressionParser {
 			return;
 		}
 		if (e instanceof BinExpression  && ((BinExpression)e).getRightChild() != null){
+			if (o == Operator.NOT){
+				newEx.setChild(((BinExpression)e).getRightChild());
+				vals = new ArrayList<Value>();
+				newEx.setOp(Operator.FACT);
+				((BinExpression)e).setRightChild(newEx);
+				e = newEx;
+				return;
+			}
 			addBinOp(Operator.MULTIPLY);
 			addValue(newEx);
 			e = newEx;
@@ -650,14 +675,20 @@ public class ExpressionParser {
 			e = newEx;
 			return;
 		}
-		else if (e instanceof UrinaryExpression && e.isContainerOp()){
-			((UrinaryExpression)e).setChild(newEx);
-			if (vals.size() == 1){
+		else if (e instanceof UrinaryExpression){
+			
+			if (o.isUrinaryPost()){
 				newEx.setChild(vals.get(0));
 				vals = new ArrayList<Value>();
+				((UrinaryExpression)e).setChild(newEx);
+				e = newEx;
+				return;
 			}
-			e = newEx;
-			return;
+			else{
+				((UrinaryExpression)e).setChild(newEx);
+				e = newEx;
+				return;
+			}
 		}
 		else if (e instanceof UrinaryExpression && ((UrinaryExpression)e).getChild() == null){
 			throw new ParseException("urinary expression without a value");
@@ -666,6 +697,7 @@ public class ExpressionParser {
 			if (vals.size() == 1){
 				if (o.isUrinaryPost()){
 					newEx.setChild(vals.get(0));
+					vals = new ArrayList<Value>();
 				}
 				else{ //there is a value before the UrinaryOp, such as with 4sin x
 					addBinOp(Operator.MULTIPLY);
@@ -673,40 +705,41 @@ public class ExpressionParser {
 					return;
 				}
 			}
-			if(e == null){
-				e = newEx;
-				vals = new ArrayList<Value>();
-				return;
-			}
 			else{
-				if (newEx.getOp().getPrec() > e.getOp().getPrec()){
-					if (e instanceof BinExpression){
-						((BinExpression)e).setRightChild(newEx);
-						e = newEx;
-					}
-					else if (e instanceof UrinaryExpression){
-						BinExpression newBinEx = new BinExpression();
-						newBinEx.setLeftChild(e);
-						e = newBinEx;
-						addBinOp(Operator.MULTIPLY);
-						addValue(newEx);
-					}
-				}
-				else {
-					if (e.isContainerOp() && ((UrinaryExpression)e).hasChild()){
-						newEx.setChild(e);
-						e = newEx;
-						return;
-					}
-					while(newEx.getOp().getPrec() < e.getOp().getPrec() && e.hasParent()
-							&& !(e.getParent().isContainerOp())){
-						e = e.getParent();
-					}
-					newEx.setChild(e);
-					e = newEx;
-					return;
-				}
+				;
 			}
+//			else{
+//				System.out.println("got to else of addBinOp!!!!!!!!!!!!");
+//				if (newEx.getOp().getPrec() > e.getOp().getPrec()){
+//					System.out.println("parent2: "+ e.toString());
+//					if (e instanceof BinExpression){
+//						((BinExpression)e).setRightChild(newEx);
+//						e = newEx;
+//					}
+//					else if (e instanceof UrinaryExpression){
+//						BinExpression newBinEx = new BinExpression();
+//						newBinEx.setLeftChild(e);
+//						e = newBinEx;
+//						addBinOp(Operator.MULTIPLY);
+//						addValue(newEx);
+//					}
+//				}
+//				else {
+//					System.out.println("parent3: "+ e.toString());
+//					if (e.isContainerOp() && ((UrinaryExpression)e).hasChild()){
+//						newEx.setChild(e);
+//						e = newEx;
+//						return;
+//					}
+//					while(newEx.getOp().getPrec() < e.getOp().getPrec() && e.hasParent()
+//							&& !(e.getParent().isContainerOp())){
+//						e = e.getParent();
+//					}
+//					newEx.setChild(e);
+//					e = newEx;
+//					return;
+//				}
+//			}
 		}
 	}
 	

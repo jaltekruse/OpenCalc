@@ -21,10 +21,12 @@ package gui;
  */
 
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
@@ -41,13 +43,15 @@ public class GridPropsPanel extends SubPanel {
 	private JScrollPane scroll;
 	private ExpressionParser parser;
 
-	public GridPropsPanel(MainApplet currmainApp) throws ParseException, ValueNotStoredException, EvalException {
-
+	public GridPropsPanel(MainApplet currmainApp, TopLevelContainer topLevelComp) 
+			throws ParseException, ValueNotStoredException, EvalException {
+		super(topLevelComp);
 		this.setLayout(new GridBagLayout());
 		this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		mainApp = currmainApp;
 		parser = mainApp.getParser();
-		fields = new SubPanel();
+		fields = new SubPanel(getTopLevelContainer());
+		fields.setLayout(new GridBagLayout());
 		fields.setPreferredSize(new Dimension(320, 300));
 		scroll = new JScrollPane(fields);
 		GridBagConstraints pCon = new GridBagConstraints();
@@ -65,59 +69,59 @@ public class GridPropsPanel extends SubPanel {
 		 * 		JComponent comp, final NewCalc currmainApp)
 		 */
 
-		xMin = new OCTextWithValButton("xMin", true, 15, 3, 1, 0, 0, fields, mainApp) {
+		xMin = new OCTextWithValButton(getTopLevelContainer(), "xMin", true, 15, 3, 1, 0, 0, fields, mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
-		xMax = new OCTextWithValButton("xMax", true, 15, 3, 1, 0, 1, fields,
+		xMax = new OCTextWithValButton(getTopLevelContainer(), "xMax", true, 15, 3, 1, 0, 1, fields,
 				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
-		yMin = new OCTextWithValButton("yMin", true, 15, 3, 1, 0, 2, fields,
+		yMin = new OCTextWithValButton(getTopLevelContainer(), "yMin", true, 15, 3, 1, 0, 2, fields,
 				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
-		yMax = new OCTextWithValButton("yMax", true, 15, 3, 1, 0, 3, fields,
-				mainApp) {
-			public void associatedAction() {
-				graphAttributeAction(varName, field);
-			}
-		};
-		
-		xStep = new OCTextWithValButton("xStep", true, 15, 3, 1, 0, 4, fields,
+		yMax = new OCTextWithValButton(getTopLevelContainer(), "yMax", true, 15, 3, 1, 0, 3, fields,
 				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
-		yStep = new OCTextWithValButton("yStep", true, 15, 3, 1, 0, 5, fields,
+		xStep = new OCTextWithValButton(getTopLevelContainer(), "xStep", true, 15, 3, 1, 0, 4, fields,
 				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
-		thetaMin = new OCTextWithValButton("thetaMin", true, 15, 3, 1, 0, 6, fields,
+		yStep = new OCTextWithValButton(getTopLevelContainer(), "yStep", true, 15, 3, 1, 0, 5, fields,
 				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
-		thetaMax = new OCTextWithValButton("thetaMax", true, 15, 3, 1, 0, 7, fields,
+		thetaMin = new OCTextWithValButton(getTopLevelContainer(), "thetaMin", true, 15, 3, 1, 0, 6, fields,
 				mainApp) {
 			public void associatedAction() {
 				graphAttributeAction(varName, field);
 			}
 		};
 		
-		thetaStep = new OCTextWithValButton("thetaStep", true, 15, 3, 1, 0, 8, fields,
+		thetaMax = new OCTextWithValButton(getTopLevelContainer(), "thetaMax", true, 15, 3, 1, 0, 7, fields,
+				mainApp) {
+			public void associatedAction() {
+				graphAttributeAction(varName, field);
+			}
+		};
+		
+		thetaStep = new OCTextWithValButton(getTopLevelContainer(), "thetaStep", true, 15, 3, 1, 0, 8, fields,
 				mainApp) {
 			public void associatedAction() {
 				String currText = field.getField().getText();
@@ -140,7 +144,7 @@ public class GridPropsPanel extends SubPanel {
 			}
 		};
 		
-		zoomRate = new OCTextField(true, 5, 2, 1, 0, 9, fields, mainApp){
+		zoomRate = new OCTextField(getTopLevelContainer(), true, 5, 2, 1, 0, 9, fields, mainApp){
 			/**
 			 * 
 			 */

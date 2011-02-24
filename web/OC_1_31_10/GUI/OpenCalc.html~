@@ -1,9 +1,0 @@
-<html>
-<title>OpenCalc</title>
-<body>
-<applet
-	code=NewCalc.class
-	width="700" height="500" >
-</applet>
-</body>
-</html>

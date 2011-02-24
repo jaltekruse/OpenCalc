@@ -1,10 +1,12 @@
 package gui.graph;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 
 import gui.MainApplet;
 import gui.SubPanel;
+import gui.TopLevelContainer;
 
 public class GraphPanel extends SubPanel{
 
@@ -12,11 +14,12 @@ public class GraphPanel extends SubPanel{
 	private GraphWindow graphWindow;
 	private GraphToolbar toolbar;
 	
-	public GraphPanel(int width, int height, MainApplet mainApp){
+	public GraphPanel(MainApplet mainApp, TopLevelContainer topLevelComp, int width, int height){
+		super(topLevelComp);
 		this.mainApp = mainApp;
 		
-		graphWindow = new GraphWindow(width, height, mainApp);
-		toolbar = new GraphToolbar(mainApp);
+		graphWindow = new GraphWindow(mainApp, getTopLevelContainer(), width, height);
+		toolbar = new GraphToolbar(mainApp, getTopLevelContainer());
 		
 		GridBagConstraints bCon = new GridBagConstraints();
 		bCon.fill = GridBagConstraints.BOTH;
