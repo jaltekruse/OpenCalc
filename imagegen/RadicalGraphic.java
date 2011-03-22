@@ -61,6 +61,7 @@ public class RadicalGraphic extends ExpressionGraphic {
 		g.setFont(f);
 		setFont(f);
 		Value tempChild = ((UrinaryExpression)super.getValue()).getChild();
+		System.out.println(tempChild.toString());
 		ValueGraphic childValGraphic = null;
 		int[] childSize = {0,0};
 		int[] symbolSize = {0, 0};
@@ -69,7 +70,7 @@ public class RadicalGraphic extends ExpressionGraphic {
 		childValGraphic = makeValueGraphic(tempChild);
 		
 		super.getComponents().add(childValGraphic);
-		super.getCompExGraphic().components.add(childValGraphic);
+		super.getCompExGraphic().getComponents().add(childValGraphic);
 		
 		childSize = childValGraphic.requestSize(g, f, x1 + widthFront + space, y1 + space);
 		widthFront += (int) Math.round(childSize[1]/14.0);

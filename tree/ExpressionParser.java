@@ -34,21 +34,35 @@ import tree.Operator;
 
 public class ExpressionParser {
 	
+	//an expression to keep track of the current position in the tree
 	private Expression e;
+	
+	//temporary storage for values found that have not been attached to an expression 
 	private ArrayList<Value> vals;
+	
+	//persistent storage of variables, for more info see Var and Varstorage classes
 	public VarStorage VARLIST;
+	
+	//persistent storage of constants, for more info see Constant and ConstantStorage classes
 	public ConstantStorage CONSTLIST;
+	
 	private int currCharNum, elementCount;
 	private char currChar;
+	
+	//counter for the number of parenthesis found, if ( found add one, if ) found xubtract one
 	private int matchedParens;
+	
+	//the root GUI, used to influence other parts of the application
 	private MainApplet GUI;
 	
+	//used to keep track of the units for angle measures, impacts the trig function evaluation
 	private int angleUnits;
 	public static final int RAD = 1;
 	public static final int DEG = 2;
 	public static final int GRAD = 3;
 	
-	private static final String dateModified = "12-17-2010";
+	//was used for creating a history, so the date last modified could be stored alongside results
+	private static final String dateModified = "2-25-2011";
 
 	//this value stores the number of characters in the string input that
 	//an element takes up, other elements that are automatically added by
@@ -56,14 +70,14 @@ public class ExpressionParser {
 	private int lengthLast;
 
 	/** 
-	 * Creates a new <code> ExpressionParser</code>
+	 * Creates a new <code> ExpressionParser</code> sets the angle units to Radians.
 	 */
 	public ExpressionParser() {
 		lengthLast = 0;
 		vals = new ArrayList<Value>();
 		VARLIST = new VarStorage(this);
 		CONSTLIST = new ConstantStorage();
-		angleUnits = 1;
+		angleUnits = RAD;
 		
 		//associates this object with all of the Decimal objects, so they can
 		//find the current angleUnits
@@ -97,7 +111,7 @@ public class ExpressionParser {
 	}
 	
 	/**
-	 * Takes the equation to be parsed and returns the expression.
+	 * Takes the equation to be parsed and returns the expression object representation of it.
 	 * 
 	 * @param eqtn - string to be parsed
 	 * @throws ParseException  
@@ -122,8 +136,8 @@ public class ExpressionParser {
 			currCharNum += lengthLast;
 			//uncomment the next two lines to print out the expression 
 			//as the loop executes
-			if (e != null)
-				System.out.println(e.toString());
+//			if (e != null)
+//				System.out.println(e.toString());
 		}
 		if (matchedParens == 1)
 		{//there was one open paren that did not get close, assume one at the end
@@ -157,7 +171,7 @@ public class ExpressionParser {
 		while(e.hasParent()){
 			e = e.getParent();
 		}
-		System.out.println("end parsing:" + e.toString());
+//		System.out.println("end parsing:" + e.toString());
 		return e;
 	}
 	
@@ -173,7 +187,7 @@ public class ExpressionParser {
 		
 		currChar = s.charAt(pos);
 		lengthLast = 1;
-		System.out.println("currChar: " + currChar);
+		//System.out.println("currChar: " + currChar);
 		switch(currChar){
 		case '+':
 			addBinOp(Operator.ADD);
@@ -412,6 +426,10 @@ public class ExpressionParser {
 			addUrinaryOp(Operator.INT);
 			return;
 		}
+		else if(varElm.equals("integral")){
+			addUrinaryOp(Operator.INTEGRAL);
+			return;
+		}
 		else if(varElm.equals("floor")){
 			addUrinaryOp(Operator.FLOOR);
 			return;
@@ -422,6 +440,10 @@ public class ExpressionParser {
 		}
 		else if(varElm.equals("sqrt")){
 			addUrinaryOp(Operator.SQRT);
+			return;
+		}
+		else if(varElm.equals("abs")){
+			addUrinaryOp(Operator.ABS);
 			return;
 		}
 		else if(varElm.equals("frac")){

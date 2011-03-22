@@ -1,5 +1,6 @@
 package imagegen;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Vector;
@@ -23,9 +24,11 @@ public abstract class ValueGraphic<E extends Value> {
 	private int x1, y1, x2, y2;
 	protected E value;
 	private ValueGraphic north, south, east, west;
+	private ValueGraphic mostInnerNorth, mostInnerSouth, mostInnerWest, mostInnerEast;
 	private Vector<ValueGraphic> components;
 	private CompleteExpressionGraphic compExGraphic;
 	private Font f;
+	private boolean selected;
 	
 	public ValueGraphic(E v, CompleteExpressionGraphic compExGraphic){
 		this.compExGraphic = compExGraphic;
@@ -39,7 +42,7 @@ public abstract class ValueGraphic<E extends Value> {
 			return new FractionGraphic((Fraction)v, getCompExGraphic());
 		}
 		if (v instanceof Decimal){
-			return new DecimalGrpahic((Decimal)v, getCompExGraphic());
+			return new DecimalGraphic((Decimal)v, getCompExGraphic());
 		}
 		else if(v instanceof Var || v instanceof Constant)
 		{
@@ -65,6 +68,10 @@ public abstract class ValueGraphic<E extends Value> {
 			if (((UrinaryExpression)v).getOp() == Operator.PAREN)
 			{
 				return new ParenGraphic(((UrinaryExpression)v), getCompExGraphic());
+			}
+			else if (((UrinaryExpression)v).getOp() == Operator.ABS)
+			{
+				return new AbsoluteValueGraphic(((UrinaryExpression)v), getCompExGraphic());
 			}
 			else if (((UrinaryExpression)v).getOp() == Operator.NEG)
 			{
@@ -233,5 +240,49 @@ public abstract class ValueGraphic<E extends Value> {
 
 	public Font getFont() {
 		return f;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+	
+	public Color getSelectedColor(){
+		return Color.gray.brighter();
+	}
+
+	public void setMostInnerNorth(ValueGraphic mostInnerNorth) {
+		this.mostInnerNorth = mostInnerNorth;
+	}
+
+	public ValueGraphic getMostInnerNorth() {
+		return mostInnerNorth;
+	}
+
+	public void setMostInnerSouth(ValueGraphic mostInnerSouth) {
+		this.mostInnerSouth = mostInnerSouth;
+	}
+
+	public ValueGraphic getMostInnerSouth() {
+		return mostInnerSouth;
+	}
+
+	public void setMostInnerWest(ValueGraphic mostInnerWest) {
+		this.mostInnerWest = mostInnerWest;
+	}
+
+	public ValueGraphic getMostInnerWest() {
+		return mostInnerWest;
+	}
+
+	public void setMostInnerEast(ValueGraphic mostInnerEast) {
+		this.mostInnerEast = mostInnerEast;
+	}
+
+	public ValueGraphic getMostInnerEast() {
+		return mostInnerEast;
 	}
 }

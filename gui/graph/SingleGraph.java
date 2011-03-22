@@ -2,9 +2,9 @@ package gui.graph;
 
 import java.awt.Graphics;
 
-public abstract class GraphedFunction extends GraphComponent {
+public abstract class SingleGraph extends GraphComponent {
 	
-	public GraphedFunction(Graph g){
+	public SingleGraph(Graph g){
 		super(g);
 	}
 

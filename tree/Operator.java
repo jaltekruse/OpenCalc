@@ -10,7 +10,7 @@ public enum Operator {
 	SIN(5, "sin"),		COS(5, "cos"),
 	TAN(5, "tan"),		INV_COS(5, "cos-1"),	INV_SIN(5, "sin-1"),	INV_TAN(5, "tan-1"),	LN(5, "ln"),
 	LOG(5, "log"),		ABS(5, "abs"),		FLOOR(5, "floor"),	CEILING(5, "ceil"),	INT(5, "int"),
-	ROUND(5, "round"),	NEG(5, "neg"),		FACT(5, "!"),
+	ROUND(5, "round"),	NEG(5, "neg"),		FACT(5, "!"), INTEGRAL(5, "integral"),
 	PAREN(6, null),	BRACKET(6, null),	CURL_BRAC(6, null),
 	SOLVE(7, "solve")
 	;

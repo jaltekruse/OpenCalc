@@ -11,6 +11,10 @@ public class NothingGraphic extends ValueGraphic {
 
 	public NothingGraphic(Nothing v, CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
+		setMostInnerWest(this);
+		setMostInnerEast(this);
+		setMostInnerNorth(this);
+		setMostInnerSouth(this);
 		// TODO Auto-generated constructor stub
 	}
 

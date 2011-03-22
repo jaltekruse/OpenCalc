@@ -23,6 +23,10 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 		style = Style.HORIZONTAL;
 		spaceAroundBar = 2;
 		sizeOverHang = 2;
+		setMostInnerWest(this);
+		setMostInnerEast(this);
+		setMostInnerNorth(this);
+		setMostInnerSouth(this);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -34,9 +38,13 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 		System.out.println(getFont().getName());
 		FontMetrics fm = g.getFontMetrics();
 		if (style == Style.SLASH || (style == Style.HORIZONTAL && getValue().getDenominator() == 1)){
-//			super.getCompExGraphic().getGraphics().setColor(Color.gray);
-//			super.getCompExGraphic().getGraphics().fillRect(getX1(), getY1(), getX2() - getX1(), getY2() - getY1());
-//			super.getCompExGraphic().getGraphics().setColor(Color.black);
+			if (isSelected())
+			{
+				super.getCompExGraphic().getGraphics().setColor(getSelectedColor());
+				super.getCompExGraphic().getGraphics().fillRect(getX1() - 2, getY1() - 2,
+						getX2() - getX1() + 4, getY2() - getY1() + 4);
+				super.getCompExGraphic().getGraphics().setColor(Color.black);
+			}
 			g.drawString(getValue().toString(), getX1(), getY2());
 		}
 		else if (style == Style.HORIZONTAL){

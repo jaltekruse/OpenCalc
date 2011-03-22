@@ -24,6 +24,8 @@ public class Graph {
 	private BufferedImage graphPic;
 	private Vector<GraphComponent> comp;
 	private CartAxis axis;
+	private Selection selection;
+	private DragDisk dragDisk;
 	
 	public Graph(GraphWindow window, MainApplet app){
 		mainApp = app;
@@ -33,7 +35,7 @@ public class Graph {
 		Y_SIZE = graphWindow.getGraphHeight();
 		graphPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 		axis = new CartAxis(this);
-		
+		dragDisk = new DragDisk(this, Color.magenta);
 		comp = new Vector<GraphComponent>();
 		
 		comp.add(axis);
@@ -67,7 +69,7 @@ public class Graph {
 			//just to be safe
 		}
 		
-		System.out.println("reapaint garph!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		//System.out.println("reapaint garph!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		graphPic.flush();
 		//graphPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 		//BufferedImage graphCompPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
@@ -81,7 +83,7 @@ public class Graph {
 		RescaleOp rop = new RescaleOp(scales, offsets, null);
 		
 		for (GraphComponent c : comp){
-			System.out.println("draw comp  " + c.toString());
+			//System.out.println("draw comp  " + c.toString());
 			//graphCompPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 			//c.draw(graphCompPic.getGraphics());
 			c.draw(g);
@@ -94,8 +96,12 @@ public class Graph {
 			//g.drawImage(c.getImage(), 0, 0, new Color(250, 250, 250, 20), null);
 			//graphCompPic.flush();
 		}
-		g.setColor(Color.black);
-		g.drawString("final graph", 50, 50);
+		if (selection != null){
+			selection.draw(g);
+		}
+		if (dragDisk != null){
+			dragDisk.draw(g);
+		}
 		g.dispose();
 		//graphCompPic.flush();
 	}
@@ -145,5 +151,21 @@ public class Graph {
 
 	public BufferedImage getGraphPic() {
 		return graphPic;
+	}
+	
+	public void AddComponent(GraphComponent p){
+		comp.add(p);
+	}
+
+	public void setSelection(Selection selection) {
+		this.selection = selection;
+	}
+
+	public Selection getSelection() {
+		return selection;
+	}
+	
+	public DragDisk getDragDisk(){
+		return dragDisk;
 	}
 }

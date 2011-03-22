@@ -21,10 +21,10 @@ public class CartAxis extends GraphComponent{
 			//these four statements are for resizing the grid after zooming
 			if((graph.X_MAX-graph.X_MIN)/graph.X_STEP >= 24)
 			{
-				System.out.println("too many x");
+//				System.out.println("too many x");
 				if ((graph.X_MAX-graph.X_MIN)/20 > 1)
 				{
-					System.out.println("greater than 1");
+//					System.out.println("greater than 1");
 					graph.varList.setVarVal("xStep", new Decimal((int)(graph.X_MAX-graph.X_MIN)/20));
 					graph.X_STEP = graph.varList.getVarVal("xStep").toDec().getValue();
 					
@@ -43,10 +43,10 @@ public class CartAxis extends GraphComponent{
 			}
 			
 			else if((graph.X_MAX-graph.X_MIN)/graph.X_STEP <= 16){
-				System.out.println("too few x");
+//				System.out.println("too few x");
 				if ((graph.X_MAX-graph.X_MIN)/20 > 1)
 				{
-					System.out.println("greater than 1");
+//					System.out.println("greater than 1");
 					graph.varList.setVarVal("xStep", new Decimal((int)(graph.X_MAX-graph.X_MIN)/20));
 					graph.X_STEP = graph.varList.getVarVal("xStep").toDec().getValue();
 					
@@ -55,7 +55,7 @@ public class CartAxis extends GraphComponent{
 				}
 				else
 				{
-					System.out.println("do loop to find dec");
+//					System.out.println("do loop to find dec");
 					for (int i = 0; i < 25; i ++){
 						if ((graph.X_MAX-graph.X_MIN)/20 < Math.pow(.5, i)){
 							graph.varList.setVarVal("xStep", new Decimal(Math.pow(.5, i)));
@@ -66,14 +66,14 @@ public class CartAxis extends GraphComponent{
 			}
 			
 			if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP >= 24){
-				System.out.println("too many y");
+//				System.out.println("too many y");
 				graph.varList.setVarVal("yStep", new Decimal((graph.Y_MAX-graph.Y_MIN)/20));
 				if ((graph.Y_MAX-graph.Y_MIN)/20 > 1)
 				{
 	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
 	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
 					
-					System.out.println("greater than 1");
+//					System.out.println("greater than 1");
 					graph.varList.setVarVal("yStep", new Decimal((int)(graph.Y_MAX-graph.Y_MIN)/20));
 					graph.Y_STEP = graph.varList.getVarVal("yStep").toDec().getValue();
 				}
@@ -89,18 +89,18 @@ public class CartAxis extends GraphComponent{
 			}
 			
 			else if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP <= 16){
-				System.out.println("too few y");
+//				System.out.println("too few y");
 				if ((graph.Y_MAX-graph.Y_MIN)/20 > 1)
 				{
 	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
 	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
-					System.out.println("greater than 1");
+//					System.out.println("greater than 1");
 					graph.varList.setVarVal("yStep", new Decimal((int)(graph.Y_MAX-graph.Y_MIN)/20));
 					graph.Y_STEP = graph.varList.getVarVal("yStep").toDec().getValue();
 				}
 				else
 				{
-					System.out.println("do loop to find dec");
+//					System.out.println("do loop to find dec");
 					for (int i = 0; i < 25
 					; i ++){
 						if ((graph.Y_MAX-graph.Y_MIN)/20 < Math.pow(.5, i)){

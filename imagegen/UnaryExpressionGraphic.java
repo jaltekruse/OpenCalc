@@ -52,7 +52,7 @@ public class UnaryExpressionGraphic extends ExpressionGraphic {
 		childValGraphic = makeValueGraphic(tempChild);
 		
 		super.getComponents().add(childValGraphic);
-		super.getCompExGraphic().components.add(childValGraphic);
+		super.getCompExGraphic().getComponents().add(childValGraphic);
 		
 		childSize = childValGraphic.requestSize(g, f, x1 + symbolSize[0], y1);
 		

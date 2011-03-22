@@ -62,6 +62,7 @@ public class RenderPanel extends SubPanel {
 	private JTextArea selected;
 	private OCButton solve;
 	private ExpressionParser parser;
+	private boolean justParsed;
 
     private SubPanel thisPanel;
     private JPanel render;
@@ -72,14 +73,17 @@ public class RenderPanel extends SubPanel {
 		super(topLevelComp);
 		mainApp = currmainApp;
 		thisPanel = this;
+		justParsed = false;
 		
 		parser = mainApp.getParser();
 		
 		GridBagConstraints tCon = new GridBagConstraints();
 
+		//add the line for expression entry
 		entryLine = new OCTextField(getTopLevelContainer(), true, 16, 1, 1, 0, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
+					justParsed = true;
 					render.repaint();
 				} catch (Exception e) {
 					selected.setText("error with render: " + e.getMessage());
@@ -87,11 +91,13 @@ public class RenderPanel extends SubPanel {
 			}
 		};
 		
+		//a textfield to show the list of components once an expression has been clicked
 		selected = new JTextArea(16,6);
 		
-		Font terminalFont = new Font("newFont", 1, 14);
 		parser = mainApp.getParser();
 		
+		//set a default message for the terminal
+		Font terminalFont = new Font("newFont", 1, 14);
 		selected.setFont(terminalFont);
 		selected.setEditable(false);
 		selected.setText("Enter an expression in the line,\n" +
@@ -101,33 +107,39 @@ public class RenderPanel extends SubPanel {
 		JScrollPane termScrollPane = new JScrollPane(selected);
 		termScrollPane.setWheelScrollingEnabled(true);
 		
+		//add a field to show the x and y position of a mouseclick
 		mousePos = new OCTextField(getTopLevelContainer(), false, 16, 1, 1, 0, 12, this, mainApp) {};
 
+		// create a button that does the same thing as hitting enter while in the entry textfield
 		solve = new OCButton("render", "Render the current expression.", 1, 1, 5, 10, this, mainApp) {
 			public void associatedAction() {
 				try {
+					justParsed = true;
 					render.repaint();
-				
+										
 					entryLine.primaryAction();
+					selected.setText("click on the rendered expression\n" +
+							"in the window to find what valueGraphics\n" +
+							"each component belongs to.");
 				} catch (Exception e) {
 					selected.setText("error with render: " + e.getMessage());
 				}
 			}
 		};
 		
+		//create the panel to render stuff onto
 		render = new JPanel(){
 			public void paint(Graphics g){
 				try {
+					System.out.println("repaint, justParsed: " + justParsed);
 					if (!entryLine.getField().getText().equals(""))
 					{
 						render((Graphics2D)g);
 					}
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					selected.setText("error with render: " + e.getMessage());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					selected.setText("error with render: " + e.getMessage());
+					e.printStackTrace();
+					selected.setText("error with render: \n" + e.getCause());
 				}
 			}
 		};
@@ -159,19 +171,20 @@ public class RenderPanel extends SubPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
-				if (ceg == null){
-					return;
-				}
-				int mouseX = e.getX();
-				int mouseY = e.getY();
-				selected.setText("");
-				mousePos.getField().setText("x: " + mouseX + "   y: " + mouseY);
-				for (ValueGraphic vg : ceg.getComponents()){
-					if (mouseX >= vg.getX1() && mouseX <= vg.getX2() && mouseY >= vg.getY1() && mouseY <= vg.getY2())
-					{
-						selected.append(vg.toString() + '\n' + vg.getValue().toString() + "\nUpperHeight: "+ vg.getUpperHeight() + "\n\n");
-					}
-				}
+//				render.requestFocus();
+//				if (ceg == null){
+//					return;
+//				}
+//				int mouseX = e.getX();
+//				int mouseY = e.getY();
+//				selected.setText("");
+//				mousePos.getField().setText("x: " + mouseX + "   y: " + mouseY);
+//				for (ValueGraphic vg : ceg.getComponents()){
+//					if (mouseX >= vg.getX1() && mouseX <= vg.getX2() && mouseY >= vg.getY1() && mouseY <= vg.getY2())
+//					{
+//						selected.append(vg.toString() + '\n' + vg.getValue().toString() + "\nUpperHeight: "+ vg.getUpperHeight() + "\n\n");
+//					}
+//				}
 				
 			}
 
@@ -201,15 +214,62 @@ public class RenderPanel extends SubPanel {
 			
 		});
 		
+		render.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getKeyCode() == KeyEvent.VK_LEFT){
+					if (ceg.getSelectedVals().get(0).getWest() != null){
+						ceg.getSelectedVals().get(0).setSelected(false);
+						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getWest());
+						ceg.getSelectedVals().get(0).setSelected(true);
+						System.out.println(ceg.getSelectedVals().get(0).getValue());
+					}
+					render.repaint();
+				}
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT){
+					if (ceg.getSelectedVals().get(0).getEast() != null){
+						ceg.getSelectedVals().get(0).setSelected(false);
+						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getEast());
+						ceg.getSelectedVals().get(0).setSelected(true);
+						System.out.println(ceg.getSelectedVals().get(0).getValue());
+					}
+					render.repaint();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
 	}
+	
 
 	public void render(Graphics2D g) throws ParseException, Exception{
-		ceg = new CompleteExpressionGraphic(parser.ParseExpression(entryLine.getField().getText()));
+		if (justParsed)
+		{
+			ceg = new CompleteExpressionGraphic(parser.ParseExpression(entryLine.getField().getText()));
+			ceg.generateExpressionGraphic((Graphics2D) g, 30, 40);
+		}
 		g.setColor(Color.white);
 		g.fillRect(0, 0, render.getWidth(), render.getHeight());
-		ceg.generateExpressionGraphic(g, 30, 40);
 		g.setColor(Color.black);
-		ceg.draw();
+		if (ceg != null){
+			ceg.setGraphics(g);
+			ceg.draw();
+		}
+		justParsed = false;
 	}
 	
 	public OCTextField getEntryLine() {

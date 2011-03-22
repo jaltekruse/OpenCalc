@@ -427,6 +427,7 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		Dimension frameDim = new Dimension(950, 700);
 		frame.setPreferredSize(frameDim);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
 
 		MainApplet currCalc = new MainApplet();
 		frame.add(currCalc);
@@ -434,9 +435,8 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		frame.pack();
 		frame.setVisible(true);
 		
-//		setCurrTextField(text.getEntryLine());
-//		text.getEntryLine().getField().selectAll();
-		setCurrTextField(render.getEntryLine());
+		setCurrTextField(text.getEntryLine());
+		text.getEntryLine().getField().selectAll();
 	}
 
 	public static void main(String[] args) {

@@ -9,10 +9,14 @@ import java.awt.Graphics;
 import tree.Decimal;
 import tree.Value;
 
-public class DecimalGrpahic extends ValueGraphic<Decimal> {
+public class DecimalGraphic extends ValueGraphic<Decimal> {
 
-	public DecimalGrpahic(Decimal v, CompleteExpressionGraphic compExGraphic) {
+	public DecimalGraphic(Decimal v, CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
+		setMostInnerWest(this);
+		setMostInnerEast(this);
+		setMostInnerNorth(this);
+		setMostInnerSouth(this);
 		// TODO Auto-generated constructor stub
 	}
 

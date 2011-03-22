@@ -19,16 +19,17 @@ public class BinExpressionGraphic extends ExpressionGraphic{
 	
 	public BinExpressionGraphic(BinExpression b, CompleteExpressionGraphic gr) {
 		super(b, gr);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	
 	public void draw() {
-		// TODO Auto-generated method stub
-//		super.getCompExGraphic().getGraphics().setColor(Color.gray);
-//		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
-//		super.getCompExGraphic().getGraphics().setColor(Color.black);
+		
+		if (isSelected()){
+			super.getCompExGraphic().getGraphics().setColor(getSelectedColor());
+			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1 - 2,
+					symbolX2 - symbolX1, symbolY2 - symbolY1 + 4);
+			super.getCompExGraphic().getGraphics().setColor(Color.black);
+		}
 		
 		super.getCompExGraphic().getGraphics().drawString(getValue().getOp().getSymbol(),
 				symbolX1 + space, symbolY2);
@@ -51,14 +52,22 @@ public class BinExpressionGraphic extends ExpressionGraphic{
 		
 		leftValGraphic = makeValueGraphic(tempLeft);
 		
-		super.getCompExGraphic().components.add(leftValGraphic);
+		super.getCompExGraphic().getComponents().add(leftValGraphic);
 		leftSize = leftValGraphic.requestSize(g, f, x1, y1);
-		//other if statements for checking the left, decimal, imaginary, other val types
 		
 		rightValGraphic = makeValueGraphic(tempRight);
 		
 		rightSize = rightValGraphic.requestSize(g, f, x1, y1);
-		super.getCompExGraphic().components.add(rightValGraphic);
+		super.getCompExGraphic().getComponents().add(rightValGraphic);
+		
+		//set the west and east fields for inside an outside of the expression
+//		setMostInnerWest(leftValGraphic.getMostInnerWest());
+//		leftValGraphic.getMostInnerEast().setEast(this);
+//		this.setWest(leftValGraphic.getMostInnerEast());
+//		
+//		setMostInnerEast(rightValGraphic.getMostInnerEast());
+//		rightValGraphic.getMostInnerWest().setWest(this);
+//		this.setEast(rightValGraphic.getMostInnerWest());
 		
 		symbolSize[0] = getCompExGraphic().getStringWidth(getValue().getOp().getSymbol(), f) + 2 * space;
 		symbolSize[1] = getCompExGraphic().getFontHeight(f);
@@ -94,9 +103,10 @@ public class BinExpressionGraphic extends ExpressionGraphic{
 		symbolX1 = x1 + leftSize[0];
 		symbolX2 = x1 + leftSize[0] + symbolSize[0];
 		
-		//do not mess up the order of these adds!!!, look at methods getLeftGraphic to find out why
-		super.getComponents().add(leftValGraphic);
-		super.getComponents().add(rightValGraphic);
+		//do not mess up the order of these adds!!!, look at method getLeftGraphic to find out why
+		super.getComponents().setSize(2);
+		super.getComponents().set(0, leftValGraphic);
+		super.getComponents().set(1, rightValGraphic);
 		
 		totalSize[0] = symbolX2 + rightSize[0] - x1;
 		totalSize[1] = height;

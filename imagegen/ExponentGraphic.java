@@ -59,15 +59,26 @@ public class ExponentGraphic extends BinExpressionGraphic {
 			leftValGraphic = makeValueGraphic(tempLeft);
 			
 			leftSize = leftValGraphic.requestSize(g, f, x1, y1);
-			super.getCompExGraphic().components.add(leftValGraphic);
+			super.getCompExGraphic().getComponents().add(leftValGraphic);
 			
 			rightValGraphic = makeValueGraphic(tempRight);
 			
 			rightSize = rightValGraphic.requestSize(g, getCompExGraphic().getSmallFont(), x1, y1);
-			super.getCompExGraphic().components.add(rightValGraphic);
+			super.getCompExGraphic().getComponents().add(rightValGraphic);
 			
-			super.getComponents().add(leftValGraphic);
-			super.getComponents().add(rightValGraphic);
+			//set the west and east fields for inside an outside of the expression
+//			setMostInnerWest(leftValGraphic.getMostInnerWest());
+//			leftValGraphic.getMostInnerEast().setEast(rightValGraphic.getMostInnerWest());
+//			this.setWest(leftValGraphic.getMostInnerEast());
+//			
+//			setMostInnerEast(rightValGraphic.getMostInnerEast());
+//			rightValGraphic.getMostInnerWest().setWest(leftValGraphic.getMostInnerEast());
+//			this.setEast(rightValGraphic.getMostInnerWest());
+			
+			//do not mess up the order of these adds!!!, look at method getLeftGraphic to find out why
+			super.getComponents().setSize(2);
+			super.getComponents().set(0, leftValGraphic);
+			super.getComponents().set(1, rightValGraphic);
 			
 			rightValGraphic.shiftToX1(x1 + leftSize[0] + spaceBetweenBaseAndSuper);
 			

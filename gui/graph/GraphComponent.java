@@ -16,6 +16,13 @@ public abstract class GraphComponent {
 		return (int) Math.round(((x - graph.X_MIN) / graph.X_PIXEL));
 	}
 	
+	protected double ScreenXPtToGrid(int x){
+		return x * graph.X_PIXEL + graph.X_MIN;
+	}
+	
+	protected double ScreenYToGrid(int y){
+		return y * graph.Y_PIXEL + graph.Y_MIN;
+	}
 	protected int gridYPtToScreen(double y){
 		return (graph.Y_SIZE - graph.LINE_SIZE) - (int)Math.round((y - graph.Y_MIN) / graph.Y_PIXEL);
 	}
@@ -72,11 +79,11 @@ public abstract class GraphComponent {
 				g.setColor(color.brighter());
 			}
 			
-			if (x1 == x2){//the line is horizontal
+			if (x1 == x2){//the line is vertical
 				g.drawLine(gridXPtToScreen(x1) - 1, gridYPtToScreen(y1), gridXPtToScreen(x2) - 1, gridYPtToScreen(y2));
 				g.drawLine(gridXPtToScreen(x1) + 1, gridYPtToScreen(y1), gridXPtToScreen(x2) + 1, gridYPtToScreen(y2));
 			}
-			else if (y1 == y2){
+			else if (y1 == y2){//the line is horizontal
 				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1) - 1, gridXPtToScreen(x2), gridYPtToScreen(y2) - 1);
 				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1) + 1, gridXPtToScreen(x2), gridYPtToScreen(y2) + 1);
 			}

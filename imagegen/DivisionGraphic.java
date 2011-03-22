@@ -70,7 +70,7 @@ public class DivisionGraphic extends BinExpressionGraphic {
 			
 			leftValGraphic = makeValueGraphic(tempLeft);
 			
-			super.getCompExGraphic().components.add(leftValGraphic);
+			super.getCompExGraphic().getComponents().add(leftValGraphic);
 			leftSize = leftValGraphic.requestSize(g, f, x1, y1);
 			symbolSize[0] = getCompExGraphic().getStringWidth(getValue().getOp().getSymbol(), f);
 			symbolSize[1] = getCompExGraphic().getFontHeight(f);
@@ -83,7 +83,7 @@ public class DivisionGraphic extends BinExpressionGraphic {
 			rightValGraphic = makeValueGraphic(tempRight);
 			
 			rightSize = rightValGraphic.requestSize(g, f, symbolX2, y1);
-			super.getCompExGraphic().components.add(rightValGraphic);
+			super.getCompExGraphic().getComponents().add(rightValGraphic);
 			
 			super.getComponents().add(leftValGraphic);
 			super.getComponents().add(rightValGraphic);
@@ -103,14 +103,14 @@ public class DivisionGraphic extends BinExpressionGraphic {
 			leftValGraphic = makeValueGraphic(tempLeft);
 			
 			leftSize = leftValGraphic.requestSize(g, f, x1, y1);
-			super.getCompExGraphic().components.add(leftValGraphic);
+			super.getCompExGraphic().getComponents().add(leftValGraphic);
 			
 			//other if statements for checking the left, decimal, imaginary, other val types
 			
 			rightValGraphic = makeValueGraphic(tempRight);
 			
 			rightSize = rightValGraphic.requestSize(g, f, symbolX2, y1);
-			super.getCompExGraphic().components.add(rightValGraphic);
+			super.getCompExGraphic().getComponents().add(rightValGraphic);
 			setHeightNumer(leftSize[1]);
 			setHeightDenom(rightSize[1]);
 			

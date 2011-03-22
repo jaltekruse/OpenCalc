@@ -4,20 +4,26 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import tree.Operator;
 import tree.UrinaryExpression;
 import tree.Value;
 
-public class ParenGraphic extends UnaryExpressionGraphic {
+public class AbsoluteValueGraphic extends UnaryExpressionGraphic {
 
 	private int space;
 	private int overhang;
-	private int widthParens;
+	private int widthSpaceAndLines;
 	
-	public ParenGraphic(UrinaryExpression v, CompleteExpressionGraphic compExGraphic) {
+	public AbsoluteValueGraphic(UrinaryExpression v, CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
 		space = 2;
-		overhang = 3;
-		widthParens = 3;
+		overhang = 1;
+		widthSpaceAndLines = 3;
+		if (v.getChild() instanceof UrinaryExpression){
+			if (((UrinaryExpression)v.getChild()).getOp() == Operator.PAREN){
+				v.setChild(((UrinaryExpression)v.getChild()).getChild());
+			}
+		}
 		// TODO Auto-generated constructor stub
 	}
 
@@ -29,10 +35,10 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 //		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
 //		super.getCompExGraphic().getGraphics().setColor(Color.black);
 		
-		super.getCompExGraphic().getGraphics().drawArc(getX1(), getY1(),
-				widthParens * 2, getY2() - getY1(), 90, 180);
-		super.getCompExGraphic().getGraphics().drawArc(getX2() - widthParens * 2,
-				getY1(), widthParens * 2, getY2() - getY1(), 270, 180);
+		super.getCompExGraphic().getGraphics().drawLine(symbolX1 + (int) Math.round(widthSpaceAndLines/2.0), 
+				getY1(), getX1() + (int) Math.round(widthSpaceAndLines/2.0), getY2());
+		super.getCompExGraphic().getGraphics().drawLine(getX2() - (int) Math.round(widthSpaceAndLines/2.0),
+				getY1(), getX2() - (int) Math.round(widthSpaceAndLines/2.0), getY2());
 	}
 
 	@Override
@@ -50,18 +56,16 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		//to draw this element later, the font must be the same, so its stored in this object
 		setFont(f);
 		
-		// The call to getChild() skips the first paren inside of the operator, the parens are needed to have
-		// an expression inside of a UrinaryOp, but they are not usually displayed
-		// if a user wants to show parens, the can use  two pairs of parens: sqrt((5/6))
-		Value tempChild = ((UrinaryExpression)super.getValue()).getChild();
-		ValueGraphic childValGraphic = null;
-		
-		
 		int[] childSize = {0,0};
 		int[] symbolSize = {0, 0};
 		int[] totalSize = {0, 0};
+
+		// The call to getChild() skips the first paren inside of the operator, the parens are needed to have
+		// an expression inside of a UrinaryOp, but they are not usually displayed
+		// if a user wants to show parens, the can use  two pairs of parens: abs((5/6))
+		Value tempChild = ((UrinaryExpression)super.getValue()).getChild();
 		
-		childValGraphic = makeValueGraphic(tempChild);
+		ValueGraphic childValGraphic = makeValueGraphic(tempChild);
 		
 		//set the west and east fields for inside an outside of the expression
 //		setMostInnerWest(this);
@@ -73,11 +77,11 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		super.getComponents().add(childValGraphic);
 		super.getCompExGraphic().getComponents().add(childValGraphic);
 		
-		childSize = childValGraphic.requestSize(g, f, x1 + widthParens + space, y1 + overhang);
-		widthParens += (int) Math.round(childSize[1]/14.0);
-		childValGraphic.shiftToX1(x1 + widthParens + space);
+		childSize = childValGraphic.requestSize(g, f, x1 + widthSpaceAndLines + space, y1 + overhang);
+		widthSpaceAndLines += (int) Math.round(childSize[1]/14.0);
+		childValGraphic.shiftToX1(x1 + widthSpaceAndLines + space);
 		
-		symbolSize[0] = childSize[0] + space * 2 + widthParens * 2;
+		symbolSize[0] = childSize[0] + space * 2 + widthSpaceAndLines * 2;
 		symbolSize[1] = childSize[1] + overhang * 2;
 		
 		symbolY1 = y1;
@@ -99,5 +103,4 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		
 		return totalSize;
 	}
-
 }

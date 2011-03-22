@@ -36,10 +36,12 @@ public class GraphWindow extends SubPanel{
 	private int textHeight;
 	private Graph largeGraph;
 	private JPanel graph;
+	private Selection selection;
 	private BufferedImage buffer;
 	private double mouseX,
 	mouseY, mouseRefX, mouseRefY;
-	boolean refPoint, justFinishedPic, isTimeToRedraw;
+	boolean refPoint, dragSelection, justFinishedPic, isTimeToRedraw, movingSelectionEnd,
+			draggingGraph, dragDiskShowing;
 	private int heightInfoBar = 40;
 	private Runnable current;
 	private Object currObj;
@@ -49,6 +51,10 @@ public class GraphWindow extends SubPanel{
 		this.setPreferredSize(new Dimension(xSize, ySize));
 		this.mainApp = mainApp;
 		largeGraph = new Graph(this, mainApp);
+		selection = new Selection(largeGraph, Color.orange);
+		dragSelection = false;
+		movingSelectionEnd = false;
+		largeGraph.AddComponent(selection);
 		buffer = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
 		repaint();
 		
@@ -80,14 +86,55 @@ public class GraphWindow extends SubPanel{
 			
 			public void mousePressed(MouseEvent e) {
 				// TODO Auto-generated method stub
-				mouseX = e.getX();
-				mouseY = e.getY();
+				
+				if (Math.sqrt(Math.pow(e.getX() - largeGraph.X_SIZE/2.0, 2) + 
+						Math.pow(e.getY() - largeGraph.Y_SIZE/2.0, 2)) <= largeGraph.getDragDisk().getPixelRadius()){
+					if (largeGraph.getDragDisk().isShowingDisk()){
+						draggingGraph = true;
+						dragSelection = false;
+						mouseX = e.getX();
+						mouseY = e.getY();
+						return;
+					}
+				}
+				if (selection.getStart() != selection.EMPTY){
+					if (Math.abs(e.getX() - selection.gridXPtToScreen(selection.getEnd())) < 10){
+						movingSelectionEnd = true;
+						dragSelection = true;
+						return;
+					}
+					else if (Math.abs(e.getX() - selection.gridXPtToScreen(selection.getStart())) < 10){
+						if (selection.getEnd() == selection.EMPTY){
+							movingSelectionEnd = true;
+							dragSelection = true;
+							return;
+						}
+						movingSelectionEnd = false;
+						dragSelection = true;
+						return;
+					}
+				}
+				selection.setStart(e.getX() * largeGraph.X_PIXEL + largeGraph.X_MIN);
+				
+				//snap if close to a notch on the grid
+				if (Math.abs((selection.getStart() - Math.round(selection.getStart() / 
+						largeGraph.X_STEP) * largeGraph.X_STEP) / largeGraph.X_PIXEL) < 8){
+					selection.setStart(Math.round(selection.getStart() / largeGraph.X_STEP) * largeGraph.X_STEP);
+				}
+				
+				selection.setEnd(selection.EMPTY);
+				movingSelectionEnd = true;
+				dragSelection = true;
+				repaint();
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
+				largeGraph.getDragDisk().setShowingDisk(false);
 				repaint();
+				dragSelection = false;
+				draggingGraph = false;
 			}
 			
 		});
@@ -98,18 +145,57 @@ public class GraphWindow extends SubPanel{
 			public void mouseDragged(MouseEvent e) {
 				// TODO Auto-generated method stub
 				
-				largeGraph.shiftGraph(mouseX - e.getX(), e.getY() - mouseY);
-				mouseX = e.getX();
-				mouseY = e.getY();
+				if (draggingGraph){
+					largeGraph.shiftGraph(mouseX - e.getX(), e.getY() - mouseY);
+					mouseX = e.getX();
+					mouseY = e.getY();
+				}
+				if (dragSelection){
+					if (movingSelectionEnd){
+						if (e.getX() < selection.gridXPtToScreen(selection.getStart())){
+							selection.setEnd(selection.getStart());
+							selection.setStart(selection.ScreenXPtToGrid(e.getX()));
+							movingSelectionEnd = !movingSelectionEnd;
+							return;
+						}
+						
+						selection.setEnd(selection.ScreenXPtToGrid(e.getX()));
+						if (Math.abs((selection.getEnd() - Math.round(selection.getEnd() / 
+								largeGraph.X_STEP) * largeGraph.X_STEP) / largeGraph.X_PIXEL) < 8){
+							selection.setEnd(Math.round(selection.getEnd() / largeGraph.X_STEP) * largeGraph.X_STEP);
+						}
+					}
+					else{
+						
+						if (e.getX() > selection.gridXPtToScreen(selection.getEnd())){
+							selection.setStart(selection.getEnd());
+							selection.setEnd(selection.ScreenXPtToGrid(e.getX()));
+							movingSelectionEnd = !movingSelectionEnd;
+							return;
+						}
+						
+						selection.setStart(selection.ScreenXPtToGrid(e.getX()));
+						if (Math.abs((selection.getStart() - Math.round(selection.getStart() / 
+								largeGraph.X_STEP) * largeGraph.X_STEP) / largeGraph.X_PIXEL) < 8){
+							selection.setStart(Math.round(selection.getStart() / largeGraph.X_STEP) * largeGraph.X_STEP);
+						}
+					}
+				}
+				
 				repaint();
 			}
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				// TODO Auto-generated method stub
-				mouseRefX = e.getX();
-				mouseRefY= e.getY();
-				//repaintAxis();
+				if (Math.sqrt(Math.pow(e.getX() - largeGraph.X_SIZE/2.0, 2) + 
+						Math.pow(e.getY() - largeGraph.Y_SIZE/2.0, 2)) <= largeGraph.getDragDisk().getPixelRadius()){
+					largeGraph.getDragDisk().setShowingDisk(true);
+				}
+				else{
+					largeGraph.getDragDisk().setShowingDisk(false);
+				}
+				repaint();	
 			}
 			
 		});

@@ -9,10 +9,11 @@ import tree.ExpressionParser;
 import tree.Value;
 import tree.Var;
 
-public class GraphedCartFunction extends GraphedFunction{
+public class GraphedCartFunction extends SingleGraph{
 
 /**
  * A Function stores all of the data necessary for graphing.
+ * 
  * @author jason
  *
  */
@@ -269,7 +270,7 @@ public class GraphedCartFunction extends GraphedFunction{
 		double lastX, lastY, currX, currY;
 		g.setColor(color);
 		try{
-			System.out.println(funcEqtn);
+			//System.out.println(funcEqtn);
 			Value expression = parser.ParseExpression(funcEqtn);
 			independentVar.setValue(new Decimal(graph.X_MIN));
 			expression.eval();

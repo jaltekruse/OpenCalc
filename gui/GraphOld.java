@@ -126,7 +126,7 @@ public class GraphOld extends SubPanel {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				//drawPolarAxis(g);
+				drawPolarAxis(g);
 				
 				Function f = null;
 				for (int i = 0; i < NUM_GRAPHS; i++){
@@ -294,6 +294,8 @@ public class GraphOld extends SubPanel {
 		if (X_MIN < -7E8 || X_MAX > 7E8 || Y_MIN < -7E8 || Y_MAX > 7E8){
 			if (rate < 100)
 			{//if the user is trying to zoom out farther, do nothing
+				//there was an issue with crashing, I never did actually figure out what line
+				//caused it, but this fixes it for now
 				return;
 			}
 		}
@@ -303,92 +305,6 @@ public class GraphOld extends SubPanel {
 		varList.updateVarVal("yMin", -1 * (Y_MAX-Y_MIN)*(100-rate)/100);
 		varList.updateVarVal("yMax", (Y_MAX-Y_MIN)*(100-rate)/100);
 		
-		repaint();
-		//System.out.println("finished zoom");
-	}
-	
-	public Function[] getFunctions(){
-		return functions;
-	}
-
-	public void setLineSize(int sizeInPixels) {
-		LINE_SIZE = sizeInPixels;
-	}
-
-	private void drawMousePlacement(Graphics g){
-		float currX = (float) ((mouseRefX * X_PIXEL) + X_MIN);
-		float currY = (float) (Y_MAX - (mouseRefY * Y_PIXEL));
-		String ptText = "(" + currX + ", " + currY + ")";
-		int width = g.getFontMetrics().stringWidth(ptText);
-		g.setColor(Color.white);
-		g.fillRect( X_SIZE - width - 5, Y_SIZE - 20, width, 12);
-		g.setColor(Color.black);
-		g.drawString(ptText, X_SIZE - width - 5, Y_SIZE - 10);
-	}
-	
-	private void ptOn(double a, double b, Graphics g) {
-		if (a <= X_MAX && a >= X_MIN && b <= Y_MAX && b >= Y_MIN) {
-			g.fillRect(roundDouble((a - X_MIN) / X_PIXEL - LINE_SIZE/2.0),
-					roundDouble((Y_SIZE - LINE_SIZE/2.0) - (b - Y_MIN) / Y_PIXEL),
-					LINE_SIZE, LINE_SIZE);
-			// g.fillOval(roundDouble((a - X_MIN)/X_PIXEL), Y_SIZE -
-			// roundDouble((b - Y_MIN)/Y_PIXEL),
-			// 2*LINE_SIZE, 2*LINE_SIZE);
-			// System.out.println("(" + a + "," + b + ")");
-			// System.out.println("(" + roundDouble(a/X_PIXEL) + "," +
-			// roundDouble(b/Y_PIXEL) + ")" + "\n");
-		}
-	}
-	
-	private int gridXPtToScreen(double x){
-		return roundDouble((x - X_MIN) / X_PIXEL);
-	}
-	
-	private int gridYPtToScreen(double y){
-		return (Y_SIZE - LINE_SIZE) - roundDouble((y - Y_MIN) / Y_PIXEL);
-	}
-	
-	private void polPtOn(double r, double theta, Graphics g){
-		ptOn(r*Math.cos(theta), r*Math.sin(theta), g);
-	}
-
-	private void drawPolarAxis(Graphics g){
-		
-		setLineSize(1);
-		int numCircles = 0; 
-		int startNum = 0;
-		
-		if (X_MIN < Y_MIN)
-		{
-			startNum = (int) (((X_MIN % X_STEP) + 1) * X_STEP);
-		}
-		POL_AX_STEP = X_STEP;
-		if (X_MAX > Y_MAX || X_MAX > Math.abs(Y_MIN))
-			numCircles = (int) (Math.abs(X_MAX - X_MIN)/POL_AX_STEP);
-		else if (Y_MAX > X_MAX || Y_MAX > Math.abs(X_MIN)){
-			numCircles = (int) (Math.abs(Y_MAX - Y_MIN)/POL_AX_STEP);
-		}
-		else
-			numCircles = (int) (X_MAX/POL_AX_STEP);
-//		int i = roundDouble(Y_MIN);
-		for (int i = 0 ; i <= numCircles; i++){
-			double currT = 0;
-			double lastX = i * POL_AX_STEP;
-			double lastY = 0, currX, currY;
-			for(int j = 1; j < 360; j++){
-				currT += POL_STEP * 2;
-				currX = i * POL_AX_STEP * Math.cos(currT);
-				currY = i * POL_AX_STEP * Math.sin(currT);
-				drawLineSeg(lastX, lastY, currX, currY, Color.gray, g);
-				lastX = currX;
-				lastY = currY;
-			}
-		}
-	}
-
-	private void drawAxis(Graphics g) throws EvalException {
-
-		//System.out.println("axis");
 		
 		try {
 			//these four statements are for resizing the grid after zooming
@@ -486,6 +402,149 @@ public class GraphOld extends SubPanel {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+		
+		repaint();
+		//System.out.println("finished zoom");
+	}
+	
+	public Function[] getFunctions(){
+		return functions;
+	}
+
+	public void setLineSize(int sizeInPixels) {
+		LINE_SIZE = sizeInPixels;
+	}
+
+	private void drawMousePlacement(Graphics g){
+		float currX = (float) ((mouseRefX * X_PIXEL) + X_MIN);
+		float currY = (float) (Y_MAX - (mouseRefY * Y_PIXEL));
+		String ptText = "(" + currX + ", " + currY + ")";
+		int width = g.getFontMetrics().stringWidth(ptText);
+		g.setColor(Color.white);
+		g.fillRect( X_SIZE - width - 5, Y_SIZE - 20, width, 12);
+		g.setColor(Color.black);
+		g.drawString(ptText, X_SIZE - width - 5, Y_SIZE - 10);
+	}
+	
+	private void ptOn(double a, double b, Graphics g) {
+		if (a <= X_MAX && a >= X_MIN && b <= Y_MAX && b >= Y_MIN) {
+			g.fillRect(roundDouble((a - X_MIN) / X_PIXEL - LINE_SIZE/2.0),
+					roundDouble((Y_SIZE - LINE_SIZE/2.0) - (b - Y_MIN) / Y_PIXEL),
+					LINE_SIZE, LINE_SIZE);
+			// g.fillOval(roundDouble((a - X_MIN)/X_PIXEL), Y_SIZE -
+			// roundDouble((b - Y_MIN)/Y_PIXEL),
+			// 2*LINE_SIZE, 2*LINE_SIZE);
+			// System.out.println("(" + a + "," + b + ")");
+			// System.out.println("(" + roundDouble(a/X_PIXEL) + "," +
+			// roundDouble(b/Y_PIXEL) + ")" + "\n");
+		}
+	}
+	
+	private int gridXPtToScreen(double x){
+		return roundDouble((x - X_MIN) / X_PIXEL);
+	}
+	
+	private int gridYPtToScreen(double y){
+		return (Y_SIZE - LINE_SIZE) - roundDouble((y - Y_MIN) / Y_PIXEL);
+	}
+	
+	private void polPtOn(double r, double theta, Graphics g){
+		ptOn(r*Math.cos(theta), r*Math.sin(theta), g);
+	}
+
+	private void drawPolarAxis(Graphics g){
+		
+		setLineSize(1);
+		int numCircles = 0; 
+		int startNum = 0;
+		
+		if (X_MIN < Y_MIN)
+		{
+			startNum = (int) (((X_MIN % X_STEP) + 1) * X_STEP);
+		}
+		POL_AX_STEP = X_STEP;
+		
+		double maxYmagnitude = 0;
+		if (Math.abs(Y_MIN) > Math.abs(Y_MAX)){
+			maxYmagnitude = Math.abs(Y_MIN);
+		}
+		else{
+			//don't need to worry about negative, if the magnitude of
+			//the Y_MAX is greater, than it has to be positive, because
+			//the Y_MIN is always less
+			maxYmagnitude = Y_MAX;
+		}
+		
+		double minYmagnitude = 0;
+		if (Y_MAX < 0){
+			minYmagnitude = Math.abs(Y_MAX);
+		}
+		else if (Y_MIN > 0){
+			minYmagnitude = Y_MIN;
+		}
+		else{
+			minYmagnitude = Double.MAX_VALUE;
+		}
+		
+		double maxXmagnitude = 0;
+		if (Math.abs(X_MIN) > Math.abs(X_MAX)){
+			maxYmagnitude = Math.abs(X_MIN);
+		}
+		else{
+			//don't need to worry about negative, if the magnitude of
+			//the X_MAX is greater, than it has to be positive, because
+			//the X_MIN is always less
+			maxYmagnitude = X_MAX;
+		}
+		
+		double minXmagnitude = 0;
+		if (X_MAX < 0){
+			minXmagnitude = X_MAX;
+		}
+		else if (X_MIN > 0){
+			minXmagnitude = X_MIN;
+		}
+		else{
+			minXmagnitude = Double.MAX_VALUE;
+		}
+		
+		
+		numCircles = (int) (Math.abs(X_MAX - X_MIN)/POL_AX_STEP);
+
+		double closestNotchToOrigin = 0;
+		
+		if (minYmagnitude < minXmagnitude){
+			closestNotchToOrigin = minYmagnitude;
+		}
+		else{
+			closestNotchToOrigin = minXmagnitude;
+		}
+		
+		//System.out.println("minX: " + minXmagnitude);
+		//System.out.println("minY: " + minYmagnitude);
+		//System.out.println("closestNotchToOrigin: " + closestNotchToOrigin);
+		
+		for (int i = 0 ; i <= numCircles; i++){
+			double currT = 0;
+			double lastX = (closestNotchToOrigin + i) * POL_AX_STEP;
+//			System.out.println("lastX: " + lastX);
+			double lastY = 0, currX, currY;
+			for(int j = 1; j < 360; j++){
+				currT += POL_STEP * 2;
+				currX = (closestNotchToOrigin + i) * POL_AX_STEP * Math.cos(currT);
+				currY = (closestNotchToOrigin + i) * POL_AX_STEP * Math.sin(currT);
+				drawLineSeg(lastX, lastY, currX, currY, Color.gray, g);
+				lastX = currX;
+				lastY = currY;
+			}
+		}
+	}
+
+	private void drawAxis(Graphics g) throws EvalException {
+
+		//System.out.println("axis");
+		
+		
 		
 		X_STEP = varList.getVarVal("xStep").toDec().getValue();
 		Y_STEP = varList.getVarVal("yStep").toDec().getValue();
