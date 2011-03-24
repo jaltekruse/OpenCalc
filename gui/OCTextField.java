@@ -144,7 +144,7 @@ public class OCTextField extends SubPanel {
 		this.add(field, tCon);
 		this.setBorder(BorderFactory.createLineBorder(Color.gray));
 		if (editable){
-			OCButton dropDown = new OCButton(false,"v", 1, 1, 1, 0, this, mainApp){
+			OCButton dropDown = new OCButton(true,"v", 1, 1, 1, 0, this, mainApp){
 				public void associatedAction() throws ParseException, ValueNotStoredException, EvalException{
 					if (getTopLevelContainer().getGlassPanel().historyIsVisible()){
 						getTopLevelContainer().getGlassPanel().setHistoryVisible(false);
@@ -172,7 +172,7 @@ public class OCTextField extends SubPanel {
 			};
 		}
 		
-		tCon.fill = GridBagConstraints.BOTH;
+		tCon.fill = GridBagConstraints.HORIZONTAL;
 		tCon.weightx = 1;
 		tCon.gridheight = 1;
 		tCon.gridwidth = gridWidth;

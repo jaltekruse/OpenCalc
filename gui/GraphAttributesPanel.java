@@ -162,6 +162,7 @@ public class GraphAttributesPanel extends SubPanel {
 		
 		
 		GridBagConstraints pCon = new GridBagConstraints();
+		pCon.fill = GridBagConstraints.BOTH;
 		pCon.gridx = 0;
 		pCon.gridy = 0;
 		pCon.gridheight = 1;
@@ -180,7 +181,7 @@ public class GraphAttributesPanel extends SubPanel {
 		depVar = new OCLabel(func.getDependentVar().getName() + " =", 1, 1, 3, 0, 
 				.1, .1, this, mainApp);
 		
-		pCon.fill = GridBagConstraints.HORIZONTAL;
+		pCon.fill = GridBagConstraints.BOTH;
 		pCon.gridx = 4;
 		pCon.gridy = 0;
 		pCon.gridheight = 1;
@@ -195,7 +196,7 @@ public class GraphAttributesPanel extends SubPanel {
 			public void associatedAction() {
 				
 				if (funcCalcPanel == null || !funcCalcPanel.isShowing()){
-					OCFrame calcs = new OCFrame(mainApp);
+					OCFrame calcs = new OCFrame(mainApp, "Advanced Graph Options");
 					funcCalcPanel = new FuncCalcPanel(mainApp, calcs, func, color);
 					calcs.add(funcCalcPanel);
 					calcs.setPreferredSize(new Dimension(600, 160));

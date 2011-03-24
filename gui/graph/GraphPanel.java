@@ -19,7 +19,7 @@ public class GraphPanel extends SubPanel{
 		this.mainApp = mainApp;
 		
 		graphWindow = new GraphWindow(mainApp, getTopLevelContainer(), width, height);
-		toolbar = new GraphToolbar(mainApp, getTopLevelContainer());
+		toolbar = new GraphToolbar(mainApp, getTopLevelContainer(), graphWindow);
 		
 		GridBagConstraints bCon = new GridBagConstraints();
 		bCon.fill = GridBagConstraints.BOTH;
@@ -32,13 +32,13 @@ public class GraphPanel extends SubPanel{
 		this.add(graphWindow, bCon);
 		
 		
-		bCon.fill = GridBagConstraints.BOTH;
+		bCon.fill = GridBagConstraints.VERTICAL;
 		bCon.weightx = .1;
 		bCon.weighty = .1;
 		bCon.gridheight = 1;
 		bCon.gridwidth = 2;
-		bCon.gridx = 0;
-		bCon.gridy = 1;
+		bCon.gridx = 1;
+		bCon.gridy = 0;
 		this.add(toolbar, bCon);
 		
 	}

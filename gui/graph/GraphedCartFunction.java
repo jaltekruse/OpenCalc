@@ -4,73 +4,23 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import tree.Decimal;
-import tree.Number;
 import tree.ExpressionParser;
+import tree.Number;
 import tree.Value;
-import tree.Var;
 
-public class GraphedCartFunction extends SingleGraph{
+public class GraphedCartFunction extends GraphWithFunction {
 
-/**
- * A Function stores all of the data necessary for graphing.
- * 
- * @author jason
- *
- */
-	private String funcEqtn;
-	private boolean takeIntegral;
-	private boolean tracingPt;
-	private boolean graphing;
-	private boolean connected;
-	private double point2Trace;
-	private double startIntegral;
-	private double endIntegral;
-	private double derivative;
-	private boolean deriving;
-	private Color color;
-	private Var independentVar;
-	private Var dependentVar;
-	private ExpressionParser parser;
-	private int graphType;
-	//graphTypes: 1-Cartesian   2-Polar    3-parametric    4-Sequential
-	
 	/**
 	 * The default constructor, set the equation equal to an empty string,
 	 * makes it not currently graphing, integral and tracing values are
 	 * false.
 	 */
 	public GraphedCartFunction(ExpressionParser ep, Graph g) {
-		super(g);
-		parser = ep;
-		funcEqtn = "";
-		graphing = false;
-		connected = true;
-		setIsTakingIntegral(false);
-		setTracingPt(false);
-		point2Trace = 0;
-		setStartIntegral(0);
-		setEndIntegral(0);
-		setColor(Color.blue);
-		setGraphType(1);
-		setIndependentVar("x");
-		setDependentVar("y");
+		super(ep, g);
 	}
 	
-	public GraphedCartFunction(String s, ExpressionParser ep, Graph g) {
-		super(g);
-		parser = ep;
-		funcEqtn = s;
-		graphing = false;
-		connected = true;
-		setIsTakingIntegral(false);
-		setTracingPt(false);
-		point2Trace = 0;
-		setStartIntegral(0);
-		setEndIntegral(0);
-		setColor(Color.blue);
-		setGraphType(1);
-		setIndependentVar("x");
-		setDependentVar("y");
+	public GraphedCartFunction(String s, ExpressionParser ep, Graph g, Color c) {
+		super(s, ep, g, c);
 	}
 	
 	/**
@@ -89,173 +39,13 @@ public class GraphedCartFunction extends SingleGraph{
 	 * @param c - a color to display the function with
 	 */
 	public GraphedCartFunction(ExpressionParser exParser, Graph g, String eqtn, String ind, String dep, 
-			boolean connected,boolean trace, double tracePt, boolean integral,
+			boolean connected, boolean trace, double tracePt, boolean integral,
 			double startInt, double endInt, boolean derive, double derivative, Color c) {
-		super(g);
-		parser = exParser;
-		setIndependentVar(ind);
-		setDependentVar(dep);
-		setGraphType(1);
-		graphing = true;
-		this.connected = connected;
-		funcEqtn = eqtn;
-		setTracingPt(trace);
-		point2Trace = tracePt;
-		setDeriving(true);
-		setDerivative(derivative);
-		setIsTakingIntegral(integral);
-		setStartIntegral(startInt);
-		setEndIntegral(endInt);
-		setColor(c);
-	}
+		super(exParser, g, eqtn, ind, dep, connected, trace, tracePt, integral, startInt, 
+				endInt, derive, derivative, c);
 
-	public void setFuncEqtn(String s) {
-		funcEqtn = s;
-	}
-
-	public String getFuncEqtn() {
-		return funcEqtn;
-	}
-
-	/**
-	 * Sets the values for integral. If both params are zero then set to false.
-	 * Else, values are set and integral is set to true.
-	 * @param a
-	 * @param b
-	 */
-	public void setIntegral(double a, double b) {
-		if (a == 0 && b == 0) {
-			setIsTakingIntegral(false);
-		} else {
-			setStartIntegral(a);
-			setEndIntegral(b);
-			setIsTakingIntegral(true);
-		}
-	}
-
-	/**
-	 * Sets the value to trace. If Double.MAX_VALUE passed, makes false.
-	 * Else, double is stored and tracing is true.
-	 * @param val - the value to be traced.
-	 */
-	public void setTrace(double val) {
-		if (val == Double.MAX_VALUE) {
-			setTracingPt(false);
-		} else {
-			setTracingPt(true);
-			point2Trace = val;
-		}
-	}
-
-	public double getTraceVal() {
-		return point2Trace;
-	}
-
-	public void setIsTakingIntegral(boolean takeIntegral) {
-		this.takeIntegral = takeIntegral;
-	}
-
-	public boolean isTakingIntegral() {
-		return takeIntegral;
-	}
-
-	public void setTracingPt(boolean tracingPt) {
-		this.tracingPt = tracingPt;
-	}
-
-	public boolean isTracingPt() {
-		return tracingPt;
-	}
-
-	public void setGraphing(boolean graphing) {
-		this.graphing = graphing;
-	}
-
-	public boolean isGraphing() {
-		return graphing;
-	}
-
-	public void setStartIntegral(double startIntegral) {
-		this.startIntegral = startIntegral;
-	}
-
-	public double getStartIntegral() {
-		return startIntegral;
-	}
-
-	public void setEndIntegral(double endIntegral) {
-		this.endIntegral = endIntegral;
-	}
-
-	public double getEndIntegral() {
-		return endIntegral;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setIndependentVar(Var independentVar) {
-		this.independentVar = independentVar;
 	}
 	
-	public void setIndependentVar(String varName) {
-		independentVar = parser.getVarList().storeVar(varName);
-	}
-	
-	public void setDependentVar(String varName) {
-		dependentVar = parser.getVarList().storeVar(varName);
-	}
-
-
-	public Var getIndependentVar() {
-		return independentVar;
-	}
-
-	public void setDependentVar(Var dependentVar) {
-		this.dependentVar = dependentVar;
-	}
-
-	public Var getDependentVar() {
-		return dependentVar;
-	}
-
-	public void setConneted(boolean conneted) {
-		this.connected = conneted;
-	}
-
-	public boolean isConneted() {
-		return connected;
-	}
-
-	public void setGraphType(int graphType) {
-		this.graphType = graphType;
-	}
-
-	public int getGraphType() {
-		return graphType;
-	}
-
-	public void setDerivative(double derivative) {
-		this.derivative = derivative;
-	}
-
-	public double getDerivative() {
-		return derivative;
-	}
-
-	public void setDeriving(boolean deriving) {
-		this.deriving = deriving;
-	}
-
-	public boolean isDeriving() {
-		return deriving;
-	}
-
 	@Override
 	public void draw(Graphics g) {
 		// TODO Auto-generated method stub
@@ -263,75 +53,112 @@ public class GraphedCartFunction extends SingleGraph{
 		//used to temporarily store the value stored in the independent and dependent vars,
 		//this will allow it to be restored after graphing, so that if in the terminal a
 		//value was assingned to x, it will not be overriden by the action of graphing
+		Number xVal = getIndependentVar().getValue();
+		Number yVal = getDependentVar().getValue();
 		
-		Number xVal = independentVar.getValue();
-		Number yVal = dependentVar.getValue();
+		super.clearPts();
+		
+		g.setColor(getColor());
+		if (hasFocus()){
+			graph.LINE_SIZE = 3;
+		}
+		else{
+			graph.LINE_SIZE = 2;
+		}
+		
+		int tempLineSize = graph.LINE_SIZE;
 		
 		double lastX, lastY, currX, currY;
-		g.setColor(color);
 		try{
 			//System.out.println(funcEqtn);
-			Value expression = parser.ParseExpression(funcEqtn);
-			independentVar.setValue(new Decimal(graph.X_MIN));
+			Value expression = getParser().ParseExpression(getFuncEqtn());
+			getIndependentVar().setValue(new Decimal(graph.X_MIN));
 			expression.eval();
-			lastX = independentVar.getValue().toDec().getValue();
-			lastY = dependentVar.getValue().toDec().getValue();
+			lastX = getIndependentVar().getValue().toDec().getValue();
+			lastY = getDependentVar().getValue().toDec().getValue();
+			addPt(gridxToScreen(lastX), gridyToScreen(lastY));
 			for (int i = 1; i < graph.X_SIZE; i += 2) {
-				independentVar.updateValue(2 * graph.X_PIXEL);
+				getIndependentVar().updateValue(2 * graph.X_PIXEL);
 				expression.eval();
-				currX = independentVar.getValue().toDec().getValue();
-				currY = dependentVar.getValue().toDec().getValue();
-	
-				if (connected){
-					drawLineSeg(lastX, lastY, currX, currY, color, g);
+				currX = getIndependentVar().getValue().toDec().getValue();
+				currY = getDependentVar().getValue().toDec().getValue();
+				
+				if (gridxToScreen(currX) <= graph.X_SIZE &&  gridxToScreen(currX) >= 0
+						&& gridyToScreen(currY) <= graph.Y_SIZE && gridyToScreen(currY) >= 0)
+				{//if the current point is on the screen, add it to the list of points
+					addPt(gridxToScreen(currX), gridyToScreen(currY));
+				}
+				else if (gridyToScreen(lastY) >= graph.Y_SIZE && gridyToScreen(currY) <= 0)
+				{//if the last point was off the the bottom of the screen, and this one is off
+					//the top, add the two to the list of points
+					addPt(gridxToScreen(lastX), graph.Y_SIZE);
+					addPt(gridxToScreen(currX), 0);
+				}
+				else if (gridyToScreen(currY) >= graph.Y_SIZE && gridyToScreen(lastY) <= 0)
+				{//if the last point was off the the top of the screen, and this one is off
+					//the bottom, add the two to the list of points
+					addPt(gridxToScreen(lastX), 0);
+					addPt(gridxToScreen(currX), graph.Y_SIZE);
+				}
+				
+				if (isConnected()){
+					drawLineSeg(lastX, lastY, currX, currY, getColor(), g);
 				}
 	
-				if (takeIntegral) {
-					if (currX >= startIntegral && currX <= endIntegral) {
-						color = color.brighter();
+				if (isTakingIntegral()) {
+					if (currX >= getStartIntegral() && currX <= getEndIntegral()) {
+						setColor(getColor().brighter());
+						graph.LINE_SIZE = 1;
 						if (currY < graph.Y_MAX && currY > graph.Y_MAX)
-							drawLineSeg(currX, 0, currX, graph.Y_MAX, color, g);
+							drawLineSeg(currX, 0, currX, graph.Y_MAX, getColor(), g);
 						else if (currY < graph.Y_MAX && currY > graph.Y_MIN)
-							drawLineSeg(currX, 0, currX, currY, color, g);
+							drawLineSeg(currX, 0, currX, currY, getColor(), g);
 						else if (currY <= graph.Y_MIN)
-							drawLineSeg(currX, 0, currX, graph.Y_MIN, color, g);
+							drawLineSeg(currX, 0, currX, graph.Y_MIN, getColor(), g);
 						else if (currY >= graph.Y_MAX)
-							drawLineSeg(currX, 0, currX, graph.Y_MAX, color, g);
+							drawLineSeg(currX, 0, currX, graph.Y_MAX, getColor(), g);
 						else
 							;// do nothing
-						color = color.darker();
+						setColor(getColor().darker());
+						graph.LINE_SIZE = tempLineSize;
 					}
 				}
-				lastX = independentVar.getValue().toDec().getValue();
-				lastY = dependentVar.getValue().toDec().getValue();
+
+				lastX = currX;
+				lastY = currY;
 			}
-			if (tracingPt) {
+			if (isTracingPt()) {
 				g.setColor(Color.black);
-				independentVar.setValue(new Decimal(point2Trace));
-				
-				//replace line below with new class of objects drawn on screen, or place the method in this class
-				//graph.drawTracer(point2Trace, expression.eval().toDec().getValue(), g);
+				getIndependentVar().setValue(new Decimal(getTraceVal()));
+				super.drawTracer(super.getTraceVal(), expression.eval().toDec().getValue(), g);
+				super.ptOn(10, 10, g);
+				super.ptOn(5, 5, g);
 			}
 			//draws a line that is always 20 pixels in length, this is broken, will fix later
-			if (deriving)
+			if (isDeriving())
 			{//this will be redone later
-				/*
-				CURRCALC.parse(eqtn);
-				double slope = CURRCALC.deriveAtPoint(derivative);
-				independentVar.setValue(derivative);
-				double depVal = CURRCALC.solve();
-				double xChange = Math.sin(Math.atan(slope))*20;
-				double yChange = 20 - xChange;
-				if(slope > 1)
-					yChange = -1*yChange;
-				drawLineSeg(derivative - xChange*graph.X_PIXEL, depVal - yChange*graph.Y_PIXEL, 
-						derivative + xChange*graph.X_PIXEL, depVal + yChange*graph.Y_PIXEL, new Color(255, 69, 0), g);
-				*/
+				
+				
+				getIndependentVar().setValue(new Decimal(getDerivative()));
+//				System.out.println(super.getTraceVal() + " deriving"+ expression.eval().toDec().getValue());
+				super.drawTangent(super.getDerivative(), expression.eval().toDec().getValue(), 
+						expression.deriveAtPt(super.getDerivative(), "x", "y").toDec().getValue(), Color.BLACK, g);
+				
+//				double slope = CURRCALC.deriveAtPoint(derivative);
+//				getIndependentVar().setValue(derivative);
+//				double depVal = CURRCALC.solve();
+//				double xChange = Math.sin(Math.atan(slope))*20;
+//				double yChange = 20 - xChange;
+//				if(slope > 1)
+//					yChange = -1*yChange;
+//				drawLineSeg(derivative - xChange*graph.X_PIXEL, depVal - yChange*graph.Y_PIXEL, 
+//						derivative + xChange*graph.X_PIXEL, depVal + yChange*graph.Y_PIXEL, new Color(255, 69, 0), g);
+				
 			}
 			
 			//restore the previous values of x and y
-			independentVar.setValue(xVal);
-			dependentVar.setValue(yVal);
+			getIndependentVar().setValue(xVal);
+			getDependentVar().setValue(yVal);
 			
 		}
 		catch(Exception e)
@@ -339,5 +166,8 @@ public class GraphedCartFunction extends SingleGraph{
 			e.printStackTrace();
 		}
 		
+		graph.LINE_SIZE = 2;
+		
 	}
+
 }

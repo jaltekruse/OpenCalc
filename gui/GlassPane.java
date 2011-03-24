@@ -273,7 +273,7 @@ public class GlassPane extends JComponent{
 		if (topLevelContainer.getJMenuBar() != null){
 			y += topLevelContainer.getJMenuBar().getHeight();
 		}
-		width = 200;
+		width = 300;
 
 		historyPane.setBorder(new LineBorder(Color.BLACK, 1));
 		historyPane.setBounds(x, y, width, height);

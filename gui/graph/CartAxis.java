@@ -67,7 +67,6 @@ public class CartAxis extends GraphComponent{
 			
 			if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP >= 24){
 //				System.out.println("too many y");
-				graph.varList.setVarVal("yStep", new Decimal((graph.Y_MAX-graph.Y_MIN)/20));
 				if ((graph.Y_MAX-graph.Y_MIN)/20 > 1)
 				{
 	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
@@ -121,8 +120,10 @@ public class CartAxis extends GraphComponent{
 		int width;
 		int height;
 
-		if (graph.X_MIN <= 0 && graph.X_MAX >= 0) {
-			while (tempY < graph.Y_MAX) {
+		if (graph.X_MIN <= 0 && graph.X_MAX >= 0) 
+		{//the y axis is showing
+			while (tempY < graph.Y_MAX) 
+			{//there are still more dashes to draw
 				setLineSize(1);
 				drawLineSeg(graph.X_MIN, tempY, graph.X_MAX, tempY, Color.GRAY, g);
 				setLineSize(graph.LINE_SIZE_DEFAULT);
@@ -133,15 +134,15 @@ public class CartAxis extends GraphComponent{
 					width = g.getFontMetrics().stringWidth(ptText);
 					height = g.getFontMetrics().getHeight();
 					g.setColor(Color.white);
-					g.fillRect(gridXPtToScreen(0) - width - 2*graph.LINE_SIZE, gridYPtToScreen(tempY)- 2*graph.LINE_SIZE, width, 11);
+					g.fillRect(gridxToScreen(0) - width - 2*graph.LINE_SIZE, gridyToScreen(tempY)- 2*graph.LINE_SIZE, width, 11);
 					g.setColor(Color.black);
-					g.drawString(ptText, gridXPtToScreen(0) - width - 2*graph.LINE_SIZE, gridYPtToScreen(tempY)+ 2*graph.LINE_SIZE);
+					g.drawString(ptText, gridxToScreen(0) - width - 2*graph.LINE_SIZE, gridyToScreen(tempY)+ 2*graph.LINE_SIZE);
 				} 
 				tempY += graph.Y_STEP;
 			}
 		}
 		else
-		{
+		{//the y axis is not showing
 			if(graph.X_MIN >= 0)
 			{
 				while (tempY < graph.Y_MAX)
@@ -157,9 +158,9 @@ public class CartAxis extends GraphComponent{
 						width = g.getFontMetrics().stringWidth(ptText);
 						height = g.getFontMetrics().getHeight();
 						g.setColor(Color.white);
-						g.fillRect(gridXPtToScreen(graph.X_MIN) + 8, gridYPtToScreen(tempY)- 4, width, 11);
+						g.fillRect(gridxToScreen(graph.X_MIN) + 8, gridyToScreen(tempY)- 4, width, 11);
 						g.setColor(Color.black);
-						g.drawString(ptText, gridXPtToScreen(graph.X_MIN) + 8, gridYPtToScreen(tempY)+ 6);
+						g.drawString(ptText, gridxToScreen(graph.X_MIN) + 8, gridyToScreen(tempY)+ 6);
 					} 
 					tempY += graph.Y_STEP;
 				}
@@ -176,9 +177,9 @@ public class CartAxis extends GraphComponent{
 						width = g.getFontMetrics().stringWidth(ptText);
 						height = g.getFontMetrics().getHeight();
 						g.setColor(Color.white);
-						g.fillRect(gridXPtToScreen(graph.X_MAX) - width - 4, gridYPtToScreen(tempY)- 4, width, 11);
+						g.fillRect(gridxToScreen(graph.X_MAX) - width - 4, gridyToScreen(tempY)- 4, width, 11);
 						g.setColor(Color.black);
-						g.drawString(ptText, gridXPtToScreen(graph.X_MAX)- width - 4, gridYPtToScreen(tempY)+ 6);
+						g.drawString(ptText, gridxToScreen(graph.X_MAX)- width - 4, gridyToScreen(tempY)+ 6);
 					}
 					tempY += graph.Y_STEP;
 					}
@@ -209,9 +210,9 @@ public class CartAxis extends GraphComponent{
 					width = g.getFontMetrics().stringWidth(ptText);
 					height = g.getFontMetrics().getHeight();
 					g.setColor(Color.white);
-					g.fillRect(gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(0) - 18, width + 2, height - 4);
+					g.fillRect(gridxToScreen(tempX) - (width/2), gridyToScreen(0) - 18, width + 2, height - 4);
 					g.setColor(Color.black);
-					g.drawString(ptText, gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(0) - 8);
+					g.drawString(ptText, gridxToScreen(tempX) - (width/2), gridyToScreen(0) - 8);
 				} 
 				tempX += graph.X_STEP;
 			}
@@ -228,9 +229,9 @@ public class CartAxis extends GraphComponent{
 						width = g.getFontMetrics().stringWidth(ptText);
 						height = g.getFontMetrics().getHeight();
 						g.setColor(Color.white);
-						g.fillRect(gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MIN) - 18, width + 2, height - 4);
+						g.fillRect(gridxToScreen(tempX) - (width/2), gridyToScreen(graph.Y_MIN) - 18, width + 2, height - 4);
 						g.setColor(Color.black);
-						g.drawString(ptText, gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MIN) - 8);
+						g.drawString(ptText, gridxToScreen(tempX) - (width/2), gridyToScreen(graph.Y_MIN) - 8);
 					} 
 					tempX += graph.X_STEP;
 				}
@@ -247,9 +248,9 @@ public class CartAxis extends GraphComponent{
 						width = g.getFontMetrics().stringWidth(ptText);
 						height = g.getFontMetrics().getHeight();
 						g.setColor(Color.white);
-						g.fillRect(gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MAX) + 12, width + 2, height - 4);
+						g.fillRect(gridxToScreen(tempX) - (width/2), gridyToScreen(graph.Y_MAX) + 12, width + 2, height - 4);
 						g.setColor(Color.black);
-						g.drawString(ptText, gridXPtToScreen(tempX) - (width/2), gridYPtToScreen(graph.Y_MAX) + 22);
+						g.drawString(ptText, gridxToScreen(tempX) - (width/2), gridyToScreen(graph.Y_MAX) + 22);
 					} 
 					tempX += graph.X_STEP;
 				}

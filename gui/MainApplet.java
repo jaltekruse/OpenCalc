@@ -22,6 +22,7 @@ package gui;
 
 
 
+import gui.graph.GraphPanel;
 import gui.graph.GraphWindow;
 
 import java.awt.Container;
@@ -77,10 +78,10 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 	private static JFrame frame;
 	private JMenuBar menuBar;
 	private JMenuItem help;
-	private JFrame tutorialFrame, licenseFrame;
+	private OCFrame tutorialFrame, licenseFrame, calcFrame, drawFrame, graphFrame;
 	static GlassPane glassPane;
 	private Container contentPane;
-	private GraphWindow graphWindow;
+	private GraphPanel graphPanel;
 	private static RenderPanel render;
 	
 	/**
@@ -139,8 +140,11 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		
 		graphTabs = new JTabbedPane(JTabbedPane.TOP);
 
-		NumsAndOppsPanel Nums = new NumsAndOppsPanel(this, this);
-
+		
+		OCFrame calcFrame = new OCFrame(this, "Calculator");
+		text = new CalcPanel(this, calcFrame);
+		NumsAndOppsPanel Nums = new NumsAndOppsPanel(this, calcFrame);
+		
 		mathFunc = new JTabbedPane();
 		varPanel = new ValStoragePanel(this, this, parser.getVarList());
 		parser.getVarList().setStorageGUI(varPanel);
@@ -152,8 +156,28 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		mathFunc.add(Nums, "Math");
 		mathFunc.add(varScrollPane, "Vars");
 		mathFunc.add(constScrollPane, "Const");
-
-		text = new CalcPanel(this, this);
+		
+		GridBagConstraints pCon = new GridBagConstraints();
+		pCon.fill = GridBagConstraints.BOTH;
+		pCon.insets = new Insets(2, 2, 2, 2);
+		pCon.weightx = 1;
+		pCon.weighty = 1;
+		pCon.gridheight = 1;
+		pCon.gridwidth = 1;
+		pCon.weightx = 1;
+		pCon.weighty = 1;
+		pCon.gridx = 0;
+		pCon.gridy = 0;
+		calcFrame.setLayout(new GridBagLayout());
+		calcFrame.add(text, pCon);
+		calcFrame.setVisible(true);
+		
+		pCon.weighty = .1;
+		pCon.gridy = 1;
+		pCon.fill = GridBagConstraints.HORIZONTAL;
+		calcFrame.add(mathFunc, pCon);
+		calcFrame.setPreferredSize(new Dimension(450, 700));
+		calcFrame.pack();
 
 		g = new GraphOld(this, this, 360, 360);
 		graphTabs.add("Graph", g);
@@ -166,8 +190,8 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 
 		graphTabs.add(new DrawPad(this, this, 300, 300), "Draw");
 		
-		graphWindow = new GraphWindow(this, this, 200, 200);
-		graphTabs.add(graphWindow, "newGraph");
+		graphPanel = new GraphPanel(this, this, 200, 200);
+		graphTabs.add(graphPanel, "newGraph");
 		
 		graphTabs.add(new Graph3DPanel(this, this, 200, 200), "3Dgraph");
 		
@@ -177,20 +201,18 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		graphTabs.setSelectedIndex(0);
 
 		graphTabs.addChangeListener(graphTabsListener());
-		
-		GridBagConstraints pCon = new GridBagConstraints();
 
-		pCon.fill = GridBagConstraints.BOTH;
-		pCon.insets = new Insets(2, 2, 2, 2);
-		pCon.weightx = 1;
-		pCon.weighty = 1;
-		pCon.gridheight = 1;
-		pCon.gridwidth = 1;
-		pCon.weightx = .01;
-		pCon.weighty = 1;
-		pCon.gridx = 0;
-		pCon.gridy = 0;
-		contentPane.add(text, pCon);
+//		pCon.fill = GridBagConstraints.BOTH;
+//		pCon.insets = new Insets(2, 2, 2, 2);
+//		pCon.weightx = 1;
+//		pCon.weighty = 1;
+//		pCon.gridheight = 1;
+//		pCon.gridwidth = 1;
+//		pCon.weightx = .01;
+//		pCon.weighty = 1;
+//		pCon.gridx = 0;
+//		pCon.gridy = 0;
+//		contentPane.add(text, pCon);
 		
 		pCon.fill = GridBagConstraints.BOTH;
 		pCon.insets = new Insets(2, 2, 2, 2);
@@ -204,18 +226,24 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		pCon.gridy = 0;
 		contentPane.add(graphTabs, pCon);
 
-		pCon.fill = GridBagConstraints.HORIZONTAL;
-
-		pCon.insets = new Insets(2, 2, 2, 2);
-		pCon.gridheight = 1;
-		pCon.gridwidth = 1;
-		pCon.weightx = .01;
-		pCon.weighty = .1;
-		pCon.gridx = 0;
-		pCon.gridy = 1;
-		contentPane.add(mathFunc, pCon);
+//		pCon.fill = GridBagConstraints.HORIZONTAL;
+//
+//		pCon.insets = new Insets(2, 2, 2, 2);
+//		pCon.gridheight = 1;
+//		pCon.gridwidth = 1;
+//		pCon.weightx = .01;
+//		pCon.weighty = .1;
+//		pCon.gridx = 0;
+//		pCon.gridy = 1;
+//		contentPane.add(mathFunc, pCon);
 		
 		this.repaint();
+	}
+	
+	public void showCalc(){
+		if (!calcFrame.isShowing()){
+			calcFrame.setVisible(true);
+		}
 	}
 
 	public void setGlassVisible(boolean b){
@@ -230,8 +258,8 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		return glassPane;
 	}
 	
-	protected JFrame makeTextViewer(String string) {
-		JFrame newFrame = new JFrame(string);
+	protected OCFrame makeTextViewer(String string) {
+		OCFrame newFrame = new OCFrame(this, string);
 		newFrame.setPreferredSize(new Dimension(640, 400));
 		JTextArea terminal = new JTextArea(14, 20);
 
@@ -280,7 +308,7 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 					}
 				}
 				if (nameSelected.equals("newGraph")){
-					graphWindow.repaint();
+					graphPanel.repaint();
 				}
 				if (nameSelected.equals("render")){
 					try {
@@ -394,7 +422,11 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 
 	public static void setCurrTextField(OCTextField focused) throws ParseException, ValueNotStoredException, EvalException {
 		if (!textWithFocus.equals(focused)) {
-			textWithFocus.primaryAction();
+			if (textWithFocus != text.getEntryLine())
+			{//if the focus changes to a textfield other than the calculators entryline
+				//perform the associatedAction of the last field
+				textWithFocus.primaryAction();
+			}
 			glassPane.setHistoryVisible(false);
 			textWithFocus = focused;
 		}
@@ -424,7 +456,7 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 	private static void createAndShowGUI() throws ParseException, ValueNotStoredException, EvalException {
 
 		frame = new JFrame("OpenCalc");
-		Dimension frameDim = new Dimension(950, 700);
+		Dimension frameDim = new Dimension(600, 600);
 		frame.setPreferredSize(frameDim);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);

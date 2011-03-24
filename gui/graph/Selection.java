@@ -25,13 +25,13 @@ public class Selection extends GraphComponent {
 		g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
 		if (start != EMPTY){
 			if (end != EMPTY){
-				g2d.fillRect(gridXPtToScreen(start) + 3, 0, gridXPtToScreen(end) - gridXPtToScreen(start) - 6, graph.Y_SIZE);
+				g2d.fillRect(gridxToScreen(start) + 3, 0, gridxToScreen(end) - gridxToScreen(start) - 6, graph.Y_SIZE);
 				g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 180));
-				g2d.fillRect(gridXPtToScreen(start), 0, 3, graph.Y_SIZE);
-				g2d.fillRect(gridXPtToScreen(end) - 3, 0, 3, graph.Y_SIZE);
+				g2d.fillRect(gridxToScreen(start), 0, 3, graph.Y_SIZE);
+				g2d.fillRect(gridxToScreen(end) - 3, 0, 3, graph.Y_SIZE);
 			}
 			else{
-				g2d.fillRect(gridXPtToScreen(start) - 3, 0, 5, graph.Y_SIZE);
+				g2d.fillRect(gridxToScreen(start) - 3, 0, 5, graph.Y_SIZE);
 			}
 		}
 		

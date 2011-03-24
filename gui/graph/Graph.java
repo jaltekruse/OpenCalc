@@ -22,8 +22,8 @@ public class Graph {
 	private MainApplet mainApp;
 	VarStorage varList;
 	private BufferedImage graphPic;
-	private Vector<GraphComponent> comp;
-	private CartAxis axis;
+	private Vector<SingleGraph> singleGraphs;
+	private CartAxis cartAxis;
 	private Selection selection;
 	private DragDisk dragDisk;
 	
@@ -34,14 +34,18 @@ public class Graph {
 		X_SIZE = graphWindow.getGraphWidth();
 		Y_SIZE = graphWindow.getGraphHeight();
 		graphPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
-		axis = new CartAxis(this);
+		cartAxis = new CartAxis(this);
 		dragDisk = new DragDisk(this, Color.magenta);
-		comp = new Vector<GraphComponent>();
+		singleGraphs = new Vector<SingleGraph>();
 		
-		comp.add(axis);
-		for (int i = 0; i < 5; i++){
-			comp.add(new GraphedCartFunction("y = x +5 - 6x^4 + 3x^2", mainApp.getParser(), this));
-		}
+		singleGraphs.add(new GraphedCartFunction("y = x +5 - 6x^4 + 3x^2", 
+				mainApp.getParser(), this, Color.GREEN));
+		singleGraphs.add(new GraphedCartFunction("y = 2x", 
+				mainApp.getParser(), this, Color.BLUE));
+		singleGraphs.add(new GraphedCartFunction("y = 1/x", 
+				mainApp.getParser(), this, Color.MAGENTA));
+		singleGraphs.add(new GraphedCartFunction("y = tan(x)", 
+				mainApp.getParser(), this, Color.RED));
 	}
 	
 	public void repaint(Graphics g){
@@ -81,12 +85,12 @@ public class Graph {
 		float[] scales = { 1f, 1f, 1f, 0.9f };
 		float[] offsets = new float[4];
 		RescaleOp rop = new RescaleOp(scales, offsets, null);
+		cartAxis.draw(g);
 		
-		for (GraphComponent c : comp){
-			//System.out.println("draw comp  " + c.toString());
+		for (SingleGraph sg : singleGraphs){
 			//graphCompPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 			//c.draw(graphCompPic.getGraphics());
-			c.draw(g);
+			sg.draw(g);
 			//g.drawImage(c.getImage(), 0, 0, null);
 			//Graphics2D g2d = (Graphics2D) g;
 
@@ -102,6 +106,7 @@ public class Graph {
 		if (dragDisk != null){
 			dragDisk.draw(g);
 		}
+		
 		g.dispose();
 		//graphCompPic.flush();
 	}
@@ -153,8 +158,8 @@ public class Graph {
 		return graphPic;
 	}
 	
-	public void AddComponent(GraphComponent p){
-		comp.add(p);
+	public void AddGraph(SingleGraph graph){
+		singleGraphs.add(graph);
 	}
 
 	public void setSelection(Selection selection) {
@@ -167,5 +172,9 @@ public class Graph {
 	
 	public DragDisk getDragDisk(){
 		return dragDisk;
+	}
+	
+	public Vector<SingleGraph> getGraphs(){
+		return singleGraphs;
 	}
 }

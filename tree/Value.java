@@ -34,6 +34,36 @@ public abstract class Value {
 		return parent;
 	}
 	
+	public Value deriveAtPt(double d, String indVar, String depVar){
+		Number tempX = new Decimal(0);
+		Number tempY = new Decimal(0);
+		try {
+			tempX = parser.getVarList().getVarVal(indVar);
+			tempY = parser.getVarList().getVarVal(depVar);
+		} catch (EvalException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		double xChange = .0001;
+		try {
+			parser.getVarList().setVarVal(indVar, (new Decimal(d)));
+			eval();
+			double firstY = parser.getVarList().getVarVal(depVar).toDec().getValue();
+			parser.getVarList().setVarVal(indVar, (new Decimal(d + xChange)));
+			eval();
+			double secondY = parser.getVarList().getVarVal(depVar).toDec().getValue();
+			
+			parser.getVarList().setVarVal(indVar, tempX);
+			parser.getVarList().setVarVal(depVar, tempY);
+			return new Decimal( (secondY - firstY) /  xChange);
+			
+		} catch (EvalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public abstract Value multiply(Decimal d) throws EvalException;
 	
 	public abstract Value multiply(Fraction f) throws EvalException;

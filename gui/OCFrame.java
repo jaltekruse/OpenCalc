@@ -6,8 +6,9 @@ public class OCFrame extends JFrame implements TopLevelContainer{
 
 	private GlassPane glassPane;
 	
-	public OCFrame(MainApplet mainApp){
+	public OCFrame(MainApplet mainApp, String s){
 		glassPane = new GlassPane(mainApp, this);
+		this.setTitle(s);
 		this.setGlassPane(glassPane);
 	}
 	

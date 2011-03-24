@@ -146,7 +146,6 @@ public class Graph3DPanel extends SubPanel
 			}
 		};
 
-
         setPreferredSize(new Dimension(xSize, ySize));
     }
     

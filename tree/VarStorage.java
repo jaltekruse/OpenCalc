@@ -66,7 +66,7 @@ public class VarStorage extends ValueStorage {
 		return newVar;
 	}
 	
-	public Value getVarVal(String s) throws EvalException{
+	public Number getVarVal(String s) throws EvalException{
 		ValueWithName tempElm = findIfStored(s);
 		if (tempElm instanceof Var){
 			return ((Var) tempElm).getValue().toDec();

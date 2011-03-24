@@ -92,15 +92,15 @@ public class FuncCalcPanel extends SubPanel{
 			slopeVal.getField().setText("no eqtn");
 		}
 		else if (!indVarVal.getField().getText().equals("")){
+			System.out.println("got to int");
 			Value temp = mainApp.getParser().ParseExpression((indVarVal.getField().getText()));
 			double x = temp.eval().toDec().getValue();
 			func.setDerivative(x);
 			func.setDeriving(true);
 			graphOld.repaint();
-			//mainApp.getBasicmainApp().parse(func.getFuncEqtn());
 			String derivative = new String();
-			//derivative += (float) mainApp.getBasicmainApp().deriveAtPoint(x);
-			slopeVal.getField().setText(derivative);
+			slopeVal.getField().setText(mainApp.getParser().ParseExpression(
+					func.getFuncEqtn()).deriveAtPt(x, "x", "y").toString());
 		}
 		else{
 			func.setDeriving(false);

@@ -12,23 +12,28 @@ public abstract class GraphComponent {
 		graph = g;
 	}
 	
-	protected int gridXPtToScreen(double x){
+	protected int gridxToScreen(double x){
 		return (int) Math.round(((x - graph.X_MIN) / graph.X_PIXEL));
 	}
 	
-	protected double ScreenXPtToGrid(int x){
+	protected double screenxToGrid(int x){
 		return x * graph.X_PIXEL + graph.X_MIN;
 	}
 	
-	protected double ScreenYToGrid(int y){
+	protected double screenyToGrid(int y){
 		return y * graph.Y_PIXEL + graph.Y_MIN;
 	}
-	protected int gridYPtToScreen(double y){
+	protected int gridyToScreen(double y){
 		return (graph.Y_SIZE - graph.LINE_SIZE) - (int)Math.round((y - graph.Y_MIN) / graph.Y_PIXEL);
 	}
 	
 	protected void setLineSize(int sizeInPixels) {
 		graph.LINE_SIZE = sizeInPixels;
+	}
+	
+	protected void drawTracer(double x, double y, Graphics g) {
+		g.drawOval(gridxToScreen(x) - 5, gridyToScreen(y) - 5, 10, 10);
+		g.fillOval(gridxToScreen(x) - 3, gridyToScreen(y) - 3, 6, 6);
 	}
 	
 	protected void ptOn(double a, double b, Graphics g) {
@@ -53,6 +58,29 @@ public abstract class GraphComponent {
 					1, 1);
 		}
 	}
+	
+	protected void drawTangent(double x, double y, double m, Color c, Graphics g){
+		int length = 15;
+		int screenX = gridxToScreen(x);
+		int screenY = gridyToScreen(y);
+		int xChange = 0, yChange = 0;
+		
+		double angle = Math.atan( Math.abs(m));
+		
+		xChange = (int) (Math.cos(angle) * length);
+		yChange = (int) (Math.sin(angle) * length);
+		
+		graph.LINE_SIZE = 3;
+		
+		if (m > 0){
+			drawLineSeg(x, y, x + xChange * graph.X_PIXEL, y + yChange * graph.Y_PIXEL, c , g);
+			drawLineSeg(x, y, x - xChange * graph.X_PIXEL, y - yChange * graph.Y_PIXEL, c , g);
+		}
+		else{
+			drawLineSeg(x, y, x + xChange * graph.X_PIXEL, y - yChange * graph.Y_PIXEL, c , g);
+			drawLineSeg(x, y, x - xChange * graph.X_PIXEL, y + yChange * graph.Y_PIXEL, c , g);
+		}
+	}
 
 	protected void drawLineSeg(double x1, double y1, double x2, double y2,
 			Color color, Graphics g) {
@@ -71,32 +99,30 @@ public abstract class GraphComponent {
 		if (y1 < graph.Y_MIN && y2 < graph.Y_MIN){
 			return;
 		}
-		if (graph.LINE_SIZE == 2){
+		if (graph.LINE_SIZE > 1){
 			if (color.equals(Color.black)){
 				g.setColor(Color.gray.brighter());
 			}
 			else{
 				g.setColor(color.brighter());
 			}
+
+			g.drawLine(gridxToScreen(x1), gridyToScreen(y1)-1, gridxToScreen(x2), gridyToScreen(y2)-1);
+			g.drawLine(gridxToScreen(x1), gridyToScreen(y1)+1, gridxToScreen(x2), gridyToScreen(y2)+1);
 			
-			if (x1 == x2){//the line is vertical
-				g.drawLine(gridXPtToScreen(x1) - 1, gridYPtToScreen(y1), gridXPtToScreen(x2) - 1, gridYPtToScreen(y2));
-				g.drawLine(gridXPtToScreen(x1) + 1, gridYPtToScreen(y1), gridXPtToScreen(x2) + 1, gridYPtToScreen(y2));
-			}
-			else if (y1 == y2){//the line is horizontal
-				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1) - 1, gridXPtToScreen(x2), gridYPtToScreen(y2) - 1);
-				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1) + 1, gridXPtToScreen(x2), gridYPtToScreen(y2) + 1);
-			}
-			else{
-				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1)-1, gridXPtToScreen(x2), gridYPtToScreen(y2)-1);
-				g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1)+1, gridXPtToScreen(x2), gridYPtToScreen(y2)+1);
+			g.drawLine(gridxToScreen(x1) - 1, gridyToScreen(y1), gridxToScreen(x2) - 1, gridyToScreen(y2));
+			g.drawLine(gridxToScreen(x1) + 1, gridyToScreen(y1), gridxToScreen(x2) + 1, gridyToScreen(y2));
+			
+			if (graph.LINE_SIZE > 2){
+				g.drawLine(gridxToScreen(x1), gridyToScreen(y1)-2, gridxToScreen(x2), gridyToScreen(y2)-2);
+				g.drawLine(gridxToScreen(x1), gridyToScreen(y1)+2, gridxToScreen(x2), gridyToScreen(y2)+2);
 				
-				g.drawLine(gridXPtToScreen(x1) - 1, gridYPtToScreen(y1), gridXPtToScreen(x2) - 1, gridYPtToScreen(y2));
-				g.drawLine(gridXPtToScreen(x1) + 1, gridYPtToScreen(y1), gridXPtToScreen(x2) + 1, gridYPtToScreen(y2));
+				g.drawLine(gridxToScreen(x1) - 2, gridyToScreen(y1), gridxToScreen(x2) - 2, gridyToScreen(y2));
+				g.drawLine(gridxToScreen(x1) + 2, gridyToScreen(y1), gridxToScreen(x2) + 2, gridyToScreen(y2));
 			}
 		}
 		g.setColor(color);
-		g.drawLine(gridXPtToScreen(x1), gridYPtToScreen(y1), gridXPtToScreen(x2), gridYPtToScreen(y2));
+		g.drawLine(gridxToScreen(x1), gridyToScreen(y1), gridxToScreen(x2), gridyToScreen(y2));
 	}
 	
 	public abstract void draw(Graphics g);
