@@ -40,14 +40,14 @@ public abstract class GraphComponent {
 		if (a <= graph.X_MAX && a >= graph.X_MIN && b <= graph.Y_MAX && b >= graph.Y_MIN) {
 			if (graph.LINE_SIZE == 2){
 				Color c = g.getColor();
-				if (g.getColor().equals(Color.black))
-				{
-					g.setColor(Color.gray.brighter());
-				}
-				else
-				{
-					g.setColor(g.getColor().brighter().brighter().brighter());
-				}
+//				if (g.getColor().equals(Color.black))
+//				{
+//					g.setColor(Color.gray.brighter());
+//				}
+//				else
+//				{
+					g.setColor(g.getColor().brighter());
+//				}
 				g.fillRect((int)Math.round((a - graph.X_MIN) / graph.X_PIXEL - graph.LINE_SIZE/2.0) - 1,
 						(int)Math.round((graph.Y_SIZE - graph.LINE_SIZE/2.0) - (b - graph.Y_MIN) / graph.Y_PIXEL) - 1,
 						3, 3);
@@ -63,12 +63,16 @@ public abstract class GraphComponent {
 		int length = 15;
 		int screenX = gridxToScreen(x);
 		int screenY = gridyToScreen(y);
-		int xChange = 0, yChange = 0;
+		double xChange = 0, yChange = 0;
 		
 		double angle = Math.atan( Math.abs(m));
 		
-		xChange = (int) (Math.cos(angle) * length);
-		yChange = (int) (Math.sin(angle) * length);
+		System.out.println();
+		System.out.println("class graphComponent (drawTan):");
+		System.out.println("angle (radians): " + angle);
+		
+		xChange = (Math.cos(angle) * length);
+		yChange = (Math.sin(angle) * length);
 		
 		graph.LINE_SIZE = 3;
 		
@@ -100,12 +104,12 @@ public abstract class GraphComponent {
 			return;
 		}
 		if (graph.LINE_SIZE > 1){
-			if (color.equals(Color.black)){
-				g.setColor(Color.gray.brighter());
-			}
-			else{
+//			if (color.equals(Color.black)){
+//				g.setColor(Color.gray.brighter());
+//			}
+//			else{
 				g.setColor(color.brighter());
-			}
+//			}
 
 			g.drawLine(gridxToScreen(x1), gridyToScreen(y1)-1, gridxToScreen(x2), gridyToScreen(y2)-1);
 			g.drawLine(gridxToScreen(x1), gridyToScreen(y1)+1, gridxToScreen(x2), gridyToScreen(y2)+1);

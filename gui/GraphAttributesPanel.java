@@ -82,21 +82,18 @@ public class GraphAttributesPanel extends SubPanel {
 			}
 		};
 		
-		graphing = new JCheckBox();
-		graphing.setSelected(true);
-		graphing.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				if(func.isGraphing() == false)
-					func.setGraphing(true);
-				else
-					func.setGraphing(false);
-				mainApp.getGraphObj().repaint();
-			}
-			
-		});
+//		graphing = new JCheckBox();
+//		graphing.setSelected(true);
+//		graphing.addActionListener(new ActionListener(){
+//
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				// TODO Auto-generated method stub
+//				func.setGraphing( ! func.isGraphing() );
+//				mainApp.getGraphObj().repaint();
+//			}
+//			
+//		});
 		
 		graphType = new JComboBox(graphTypes);
 		
@@ -162,14 +159,14 @@ public class GraphAttributesPanel extends SubPanel {
 		
 		
 		GridBagConstraints pCon = new GridBagConstraints();
-		pCon.fill = GridBagConstraints.BOTH;
-		pCon.gridx = 0;
-		pCon.gridy = 0;
-		pCon.gridheight = 1;
-		pCon.gridwidth = 1;
-		pCon.ipadx = 1;
-		pCon.ipady = 3;
-		this.add(graphing, pCon);
+//		pCon.fill = GridBagConstraints.BOTH;
+//		pCon.gridx = 0;
+//		pCon.gridy = 0;
+//		pCon.gridheight = 1;
+//		pCon.gridwidth = 1;
+//		pCon.ipadx = 1;
+//		pCon.ipady = 3;
+//		this.add(graphing, pCon);
 		
 		pCon.ipadx = 2;
 		pCon.gridx = 1;
@@ -192,19 +189,19 @@ public class GraphAttributesPanel extends SubPanel {
 		pCon.weighty = 1;
 		this.add(graphEntry, pCon);
 		
-		OCButton advanced = new OCButton("adv.", 1, 1, 10, 0, this, mainApp){
-			public void associatedAction() {
-				
-				if (funcCalcPanel == null || !funcCalcPanel.isShowing()){
-					OCFrame calcs = new OCFrame(mainApp, "Advanced Graph Options");
-					funcCalcPanel = new FuncCalcPanel(mainApp, calcs, func, color);
-					calcs.add(funcCalcPanel);
-					calcs.setPreferredSize(new Dimension(600, 160));
-					calcs.pack();
-					calcs.setVisible(true);
-				}
-			}
-		};
+//		OCButton advanced = new OCButton("adv.", 1, 1, 10, 0, this, mainApp){
+//			public void associatedAction() {
+//				
+//				if (funcCalcPanel == null || !funcCalcPanel.isShowing()){
+//					OCFrame calcs = new OCFrame(mainApp, "Advanced Graph Options");
+//					funcCalcPanel = new FuncCalcPanel(mainApp, calcs, func, color);
+//					calcs.add(funcCalcPanel);
+//					calcs.setPreferredSize(new Dimension(600, 160));
+//					calcs.pack();
+//					calcs.setVisible(true);
+//				}
+//			}
+//		};
 		
 		this.revalidate();
 		this.repaint();

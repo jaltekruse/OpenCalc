@@ -32,7 +32,7 @@ public class DragDisk extends GraphComponent {
 		}
 		else{
 			Graphics2D g2d = (Graphics2D)g;
-			g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 25));
+			g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
 			g2d.fillOval(graph.X_SIZE/2 - pixelRadius, graph.Y_SIZE/2 - pixelRadius, pixelRadius * 2, pixelRadius * 2);
 		}
 	}

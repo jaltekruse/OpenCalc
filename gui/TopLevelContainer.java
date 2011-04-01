@@ -14,4 +14,8 @@ public interface TopLevelContainer {
 	public Container getContentPane();
 	
 	public JMenuBar getJMenuBar();
+	
+	public int getHeight();
+	
+	public int getWidth();
 }

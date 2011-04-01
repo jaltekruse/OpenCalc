@@ -4,7 +4,9 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
@@ -36,6 +38,41 @@ public class OCButton extends JButton {
 		super(str);
 		this.comp = comp;
 		s = str;
+		mainApp = currmainApp;
+		bCon = new GridBagConstraints();
+		bCon.fill = GridBagConstraints.BOTH;
+		bCon.weightx = .1;
+		bCon.weighty = .2;
+		bCon.gridheight = gridheight;
+		bCon.gridwidth = gridwidth;
+		bCon.gridx = gridx;
+		bCon.gridy = gridy;
+		bCon.insets = new Insets(2, 2, 2, 2);
+		this.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					associatedAction();
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ValueNotStoredException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (EvalException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+
+		comp.add(this, bCon);
+	}
+	
+	public OCButton(Icon bi, int gridwidth, int gridheight, int gridx,
+			int gridy, JComponent comp, final MainApplet currmainApp) {
+
+		super(bi);
+		this.comp = comp;
 		mainApp = currmainApp;
 		bCon = new GridBagConstraints();
 		bCon.fill = GridBagConstraints.BOTH;

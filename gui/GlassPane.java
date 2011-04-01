@@ -254,7 +254,7 @@ public class GlassPane extends JComponent{
 		
 		if (history.size() == 0){
 			height = 16;
-			historyPane.append("empty");
+			historyPane.append("empty history");
 		}
 		else{
 	
@@ -270,10 +270,17 @@ public class GlassPane extends JComponent{
 		y = mainApp.getCurrTextField().getField().getLocationOnScreen().y
 			- topLevelContainer.getContentPane().getLocationOnScreen().y 
 			+ mainApp.getCurrTextField().getField().getHeight();
+		width = 200;
+		
+		if (y + mainApp.getCurrTextField().getField().getHeight() + height > topLevelContainer.getHeight())
+		{//if the history is going to hang out of the window
+			//make it instead above the field
+			y = mainApp.getCurrTextField().getField().getLocationOnScreen().y
+			- topLevelContainer.getContentPane().getLocationOnScreen().y - height;
+		}
 		if (topLevelContainer.getJMenuBar() != null){
 			y += topLevelContainer.getJMenuBar().getHeight();
 		}
-		width = 300;
 
 		historyPane.setBorder(new LineBorder(Color.BLACK, 1));
 		historyPane.setBounds(x, y, width, height);

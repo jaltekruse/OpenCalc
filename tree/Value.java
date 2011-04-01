@@ -34,6 +34,30 @@ public abstract class Value {
 		return parent;
 	}
 	
+	public Value integrate(double a, double b,  String indVar, String depVar) throws EvalException{
+		double lastY, currY, aveY, result = 0;
+		int numTraps = 500;
+		parser.getVarList().setVarVal(indVar, (new Decimal(a)));
+		eval();
+		lastY = parser.getVarList().getVarVal(depVar).toDec().getValue();
+		double xStep = (b - a) / numTraps;
+		int trapCount = 0;
+
+		for(int i = 0; i < numTraps; i++){
+			//System.out.println(currX);
+//			System.out.println(i);
+			parser.getVarList().updateVarVal(indVar, xStep);
+			eval();
+			currY = parser.getVarList().getVarVal(depVar).toDec().getValue();
+			aveY = (lastY + currY) / 2;
+			result += aveY * xStep;
+//			trapCount++;
+			lastY = currY;
+		}
+		//System.out.println("num trapizoids: " + trapCount);
+		return new Decimal(result);
+	}
+	
 	public Value deriveAtPt(double d, String indVar, String depVar){
 		Number tempX = new Decimal(0);
 		Number tempY = new Decimal(0);
@@ -44,7 +68,7 @@ public abstract class Value {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		double xChange = .0001;
+		double xChange = .0000001;
 		try {
 			parser.getVarList().setVarVal(indVar, (new Decimal(d)));
 			eval();

@@ -18,9 +18,9 @@ public class Graph3D2
     private GraphFunc[] functions;
     private final double[][] AXES = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
     double[] viewAngles = {.8, .8, 0}; // Euler angles between view plane basis and XY plane
-    private double[] viewCenter = {0, 0, -11}; // Center of view plane
+    public double[] viewCenter = {0, 0, -11}; // Center of view plane
     // NOTE: View basis must be orthonormal.
-    private double[] focus = {0, 0, -9};
+    public double[] focus = {0, 0, -9};
     private enum Mode
     {
         MESH, CONTOUR, GLOSSY;
@@ -245,7 +245,7 @@ public class Graph3D2
 
         return u;
     }
-    private double[] add(double[] a, double[] b)
+    public double[] add(double[] a, double[] b)
     {
         double[] s = new double[a.length];
         int i;
@@ -253,7 +253,7 @@ public class Graph3D2
             s[i] = a[i] + b[i];
         return s;
     }
-    private double[] mult(double a, double[] x)
+    public double[] mult(double a, double[] x)
     {
         double[] y = new double[x.length];
         int i;
@@ -270,7 +270,7 @@ public class Graph3D2
             s += a[i] * b[i];
         return s;
     }
-    private double mag(double[] v)
+    public double mag(double[] v)
     {
         double mag = 0;
         int i;

@@ -1,13 +1,9 @@
 package gui.graph;
 
 import gui.MainApplet;
-import gui.SubPanel;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
 import java.util.Vector;
 
 import tree.EvalException;
@@ -20,32 +16,34 @@ public class Graph {
 	public int X_SIZE, Y_SIZE, LINE_SIZE, LINE_SIZE_DEFAULT = 2, NUM_FREQ;
 	private GraphWindow graphWindow;
 	private MainApplet mainApp;
-	VarStorage varList;
-	private BufferedImage graphPic;
+	public VarStorage varList;
+//	private BufferedImage graphPic;
 	private Vector<SingleGraph> singleGraphs;
 	private CartAxis cartAxis;
-	private Selection selection;
+	private SelectionGraphic selectionGraphic;
 	private DragDisk dragDisk;
+	private GraphCalculationGraphics graphCalcGraphics;
 	
 	public Graph(GraphWindow window, MainApplet app){
 		mainApp = app;
 		graphWindow = window;
 		varList = mainApp.getParser().getVarList();
-		X_SIZE = graphWindow.getGraphWidth();
-		Y_SIZE = graphWindow.getGraphHeight();
-		graphPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
+		X_SIZE = graphWindow.getWidth();
+		Y_SIZE = graphWindow.getHeight();
+		//graphPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 		cartAxis = new CartAxis(this);
-		dragDisk = new DragDisk(this, Color.magenta);
+		dragDisk = new DragDisk(this, new Color(0, 220, 220));
+		graphCalcGraphics = new GraphCalculationGraphics(this);
 		singleGraphs = new Vector<SingleGraph>();
-		
-		singleGraphs.add(new GraphedCartFunction("y = x +5 - 6x^4 + 3x^2", 
-				mainApp.getParser(), this, Color.GREEN));
-		singleGraphs.add(new GraphedCartFunction("y = 2x", 
-				mainApp.getParser(), this, Color.BLUE));
-		singleGraphs.add(new GraphedCartFunction("y = 1/x", 
-				mainApp.getParser(), this, Color.MAGENTA));
-		singleGraphs.add(new GraphedCartFunction("y = tan(x)", 
-				mainApp.getParser(), this, Color.RED));
+//		
+//		singleGraphs.add(new GraphedCartFunction("y = x +5 - 6x^4 + 3x^2", 
+//				mainApp.getParser(), this, Color.GREEN));
+//		singleGraphs.add(new GraphedCartFunction("y = x^4", 
+//				mainApp.getParser(), this, Color.BLUE));
+//		singleGraphs.add(new GraphedCartFunction("y = 1/x", 
+//				mainApp.getParser(), this, Color.MAGENTA));
+//		singleGraphs.add(new GraphedCartFunction("y = sin(x)", 
+//				mainApp.getParser(), this, Color.RED));
 	}
 	
 	public void repaint(Graphics g){
@@ -74,7 +72,7 @@ public class Graph {
 		}
 		
 		//System.out.println("reapaint garph!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		graphPic.flush();
+//		graphPic.flush();
 		//graphPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 		//BufferedImage graphCompPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 		//Graphics g = graphPic.getGraphics();
@@ -82,15 +80,17 @@ public class Graph {
 		g.fillRect(0, 0, X_SIZE, Y_SIZE);
 		
 		// Create a rescale filter op that makes the image 90% opaque
-		float[] scales = { 1f, 1f, 1f, 0.9f };
-		float[] offsets = new float[4];
-		RescaleOp rop = new RescaleOp(scales, offsets, null);
+//		float[] scales = { 1f, 1f, 1f, 0.9f };
+//		float[] offsets = new float[4];
+//		RescaleOp rop = new RescaleOp(scales, offsets, null);
 		cartAxis.draw(g);
 		
 		for (SingleGraph sg : singleGraphs){
 			//graphCompPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 			//c.draw(graphCompPic.getGraphics());
-			sg.draw(g);
+			if ( ! sg.hasFocus() ){
+				sg.draw(g);
+			}
 			//g.drawImage(c.getImage(), 0, 0, null);
 			//Graphics2D g2d = (Graphics2D) g;
 
@@ -100,12 +100,25 @@ public class Graph {
 			//g.drawImage(c.getImage(), 0, 0, new Color(250, 250, 250, 20), null);
 			//graphCompPic.flush();
 		}
-		if (selection != null){
-			selection.draw(g);
+		graphCalcGraphics.drawIntegrals(g);
+		
+		//this loop is to draw the graphs that currently have focus, so they appear over
+		//the integrals that are drawn with the line above
+		for (SingleGraph sg : singleGraphs){
+			if ( sg.hasFocus() ){
+				sg.draw(g);
+			}
+		}
+		
+		graphCalcGraphics.draw(g);
+		
+		if (selectionGraphic != null){
+			selectionGraphic.draw(g);
 		}
 		if (dragDisk != null){
 			dragDisk.draw(g);
 		}
+		graphCalcGraphics.drawInfoBoxes(g);
 		
 		g.dispose();
 		//graphCompPic.flush();
@@ -121,6 +134,15 @@ public class Graph {
 			;
 		}
 		graphWindow.repaint();
+	}
+	
+	public void removeSingleGraph(SingleGraph s){
+		for (SingleGraph sg : singleGraphs){
+			if (s.equals(sg)){
+				graphCalcGraphics.removeAllWithGraph(s);
+			}
+		}
+		singleGraphs.remove(s);
 	}
 	
 	public void zoom(double rate) throws EvalException{
@@ -149,25 +171,17 @@ public class Graph {
 	public void setLineSize(int sizeInPixels) {
 		LINE_SIZE = sizeInPixels;
 	}
-
-	public void setGraphPic(BufferedImage graphPic) {
-		this.graphPic = graphPic;
-	}
-
-	public BufferedImage getGraphPic() {
-		return graphPic;
-	}
 	
 	public void AddGraph(SingleGraph graph){
 		singleGraphs.add(graph);
 	}
 
-	public void setSelection(Selection selection) {
-		this.selection = selection;
+	public void setSelection(SelectionGraphic selectionGraphic) {
+		this.selectionGraphic = selectionGraphic;
 	}
 
-	public Selection getSelection() {
-		return selection;
+	public SelectionGraphic getSelection() {
+		return selectionGraphic;
 	}
 	
 	public DragDisk getDragDisk(){
@@ -176,5 +190,17 @@ public class Graph {
 	
 	public Vector<SingleGraph> getGraphs(){
 		return singleGraphs;
+	}
+
+	public void setGraphCalcGrpahics(GraphCalculationGraphics graphCalcGraphics) {
+		this.graphCalcGraphics = graphCalcGraphics;
+	}
+
+	public GraphCalculationGraphics getGraphCalcGraphics() {
+		return graphCalcGraphics;
+	}
+	
+	public MainApplet getMainApplet(){
+		return mainApp;
 	}
 }

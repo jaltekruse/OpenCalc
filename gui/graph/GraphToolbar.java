@@ -2,6 +2,9 @@ package gui.graph;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
 
 import gui.FuncCalcPanel;
 import gui.MainApplet;
@@ -19,14 +22,24 @@ public class GraphToolbar extends SubPanel{
 		super(topLevelComp);
 		this.mainApp = mainApp;
 		graphWindow = g;
-		OCButton integral = new OCButton("Int", 1, 1, 0, 0, this, mainApp){
+		
+		this.setBorder(BorderFactory.createTitledBorder("Calc"));
+		
+		OCButton integral = new OCButton("Integral", 1, 1, 0, 0, this, mainApp){
 			public void associatedAction() {
-				for (SingleGraph s : graphWindow.getGraph().getGraphs()){
-					if (s.hasFocus()){
-						if (graphWindow.hasValidSelection()){
-							if (s instanceof GraphedCartFunction){
-								((GraphedCartFunction)s).setIntegral(graphWindow.getGraph().getSelection().getStart()
-										, graphWindow.getGraph().getSelection().getEnd());
+				for (SingleGraph sg : graphWindow.getGraph().getGraphs()){
+					if (sg.hasFocus()){
+						if (graphWindow.hasRangeSelection()){
+							if (sg instanceof GraphedCartFunction){
+								Vector<SingleGraph> tempList = new Vector<SingleGraph>();
+								tempList.add(sg);
+								graphWindow.getGraph().getGraphCalcGraphics().addIntegral(
+										new Integral(graphWindow.getGraph(), tempList, new Selection(
+										graphWindow.getGraph().getSelection().getStart(),
+										graphWindow.getGraph().getSelection().getEnd())));
+								
+//								((GraphedCartFunction)s).setIntegral(graphWindow.getGraph().getSelection().getStart()
+//										, graphWindow.getGraph().getSelection().getEnd());
 								graphWindow.repaint();
 							}
 						}
@@ -37,15 +50,27 @@ public class GraphToolbar extends SubPanel{
 		
 		OCButton derivative = new OCButton("Derive", 1, 1, 0, 1, this, mainApp){
 			public void associatedAction() {
-				for (SingleGraph s : graphWindow.getGraph().getGraphs()){
-					if (s.hasFocus()){
+				for (SingleGraph sg : graphWindow.getGraph().getGraphs()){
+					if (sg.hasFocus()){
 						if (graphWindow.getGraph().getSelection().getStart() != Selection.EMPTY &&
 								graphWindow.getGraph().getSelection().getEnd() == Selection.EMPTY ){
-							if (s instanceof GraphedCartFunction){
-								((GraphedCartFunction)s).setDerivative(graphWindow.getGraph().getSelection().getStart());
-								((GraphedCartFunction)s).setDeriving(true);
-								graphWindow.repaint();
+							if (sg instanceof GraphedCartFunction){
+								System.out.println();
+								System.out.println("--------------------------------------");
+								System.out.println("Been having problems with derivatives");
+								System.out.println("drawing horizontal, going to be printing data from");
+								System.out.println("various involved classes, staritng with GraphToolbar:");
+								System.out.println("graph: " + ((GraphedCartFunction)sg).getExpression().toString());
+								System.out.println("selectionStart: " + graphWindow.getGraph().getSelection().getStart());
+								Vector<SingleGraph> tempList = new Vector<SingleGraph>();
+								tempList.add(sg);
+								graphWindow.getGraph().getGraphCalcGraphics().addDerivative(
+										new Derivative(graphWindow.getGraph(), tempList, new Selection(
+										graphWindow.getGraph().getSelection().getStart())));
 							}
+//							((GraphedCartFunction)s).setDerivative(graphWindow.getGraph().getSelection().getStart());
+//							((GraphedCartFunction)s).setDeriving(true);
+							graphWindow.repaint();
 						}
 					}
 				}
@@ -54,13 +79,20 @@ public class GraphToolbar extends SubPanel{
 		
 		OCButton trace = new OCButton("Trace", 1, 1, 0, 2, this, mainApp){
 			public void associatedAction() {
-				for (SingleGraph s : graphWindow.getGraph().getGraphs()){
-					if (s.hasFocus()){
+				for (SingleGraph sg : graphWindow.getGraph().getGraphs()){
+					if (sg.hasFocus()){
 						if (graphWindow.getGraph().getSelection().getStart() != Selection.EMPTY &&
 								graphWindow.getGraph().getSelection().getEnd() == Selection.EMPTY ){
-							if (s instanceof GraphedCartFunction){
-								((GraphedCartFunction)s).setTrace(graphWindow.getGraph().getSelection().getStart());
-								((GraphedCartFunction)s).setTracingPt(true);
+							if (sg instanceof GraphedCartFunction){
+								if (sg instanceof GraphedCartFunction){
+									Vector<SingleGraph> tempList = new Vector<SingleGraph>();
+									tempList.add(sg);
+									graphWindow.getGraph().getGraphCalcGraphics().addTracer(
+											new Tracer(graphWindow.getGraph(), tempList, new Selection(
+											graphWindow.getGraph().getSelection().getStart())));
+								}
+//								((GraphedCartFunction)s).setTrace(graphWindow.getGraph().getSelection().getStart());
+//								((GraphedCartFunction)s).setTracingPt(true);
 								graphWindow.repaint();
 							}
 						}
@@ -69,5 +101,12 @@ public class GraphToolbar extends SubPanel{
 			}
 		};
 		
+		OCButton clear = new OCButton("Clear", 1, 1, 0, 3, this, mainApp){
+			public void associatedAction() {
+				graphWindow.getGraph().getGraphCalcGraphics().clearAll();
+				graphWindow.repaint();
+			}
+			
+		};
 	}
 }

@@ -36,37 +36,44 @@ public class GraphWindow extends SubPanel{
 	private MainApplet mainApp;
 	private int textHeight;
 	private Graph graph;
-	private JPanel graphPanel;
-	private Selection selection;
+	private JPanel graphPane;
+	private SelectionGraphic selectionGraphic;
 	private BufferedImage buffer;
-	private double mouseX,
-	mouseY, mouseRefX, mouseRefY;
-	boolean refPoint, dragSelection, justFinishedPic, isTimeToRedraw, movingSelectionEnd,
-			draggingGraph, dragDiskShowing;
+	private int mouseX, mouseY;
+	
+	//used to keep track of how far off from the top left corner of a box a user clicked
+	//allows for smoother dragging
+	private int boxOffsetX, boxOffsetY;
+	boolean refPoint, dragxSelectionRange, dragxSinglePt, justFinishedPic, isTimeToRedraw, movingSelectionEnd,
+			draggingGraph, dragDiskShowing, draggingInfoBox;
+	private CalcInfoBox boxToDrag;
 	private int heightInfoBar = 40;
 	private Runnable current;
 	private Object currObj;
+	private GraphPanel graphPanel;
 	
-	public GraphWindow(MainApplet mainApp, TopLevelContainer topLevelComp, int xSize, int ySize){
+	public GraphWindow(MainApplet mainApp, TopLevelContainer topLevelComp, GraphPanel gp, int xSize, int ySize){
 		super(topLevelComp);
+		graphPanel = gp;
 		this.setPreferredSize(new Dimension(xSize, ySize));
 		this.mainApp = mainApp;
 		graph = new Graph(this, mainApp);
-		selection = new Selection(graph, Color.orange);
-		dragSelection = false;
+		selectionGraphic = new SelectionGraphic(graph, Color.orange);
+		dragxSelectionRange = false;
 		movingSelectionEnd = false;
-		graph.setSelection(selection);
+		draggingInfoBox = false;
+		graph.setSelection(selectionGraphic);
 		buffer = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
 		repaint();
 		
-		graphPanel = new JPanel(){
+		graphPane = new JPanel(){
 			
 			public void paint(Graphics g) {
 				graph.repaint(g);
 			}
 		};
 		
-		graphPanel.addMouseListener(new MouseListener(){
+		graphPane.addMouseListener(new MouseListener(){
 			
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
@@ -75,25 +82,43 @@ public class GraphWindow extends SubPanel{
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
 				refPoint = true;
-				mouseRefX = e.getX();
-				mouseRefY = e.getY();
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
 				// TODO Auto-generated method stub
+				mouseX = e.getX();
+				mouseY = e.getY();
 				refPoint = false;
 			}
 			
 			public void mousePressed(MouseEvent e) {
 				// TODO Auto-generated method stub
 				
+				
+				//check if the user clicked a CalcInfoBox
+				CalcInfoBox tempBox = graph.getGraphCalcGraphics().boxContains(e.getX(), e.getY());
+				if (tempBox != null){
+					graph.getDragDisk().setShowingDisk(false);
+					dragxSinglePt = false;
+					dragxSelectionRange = false;
+					draggingGraph = false;
+					draggingInfoBox = true;
+					boxToDrag = tempBox;
+					boxOffsetX = e.getX() - tempBox.getX();
+					boxOffsetY = e.getY() - tempBox.getY();
+					repaint();
+					return;
+				}
+				
 				//check if the user clicked on the dragDisk in the center of the screen
 				if (Math.sqrt(Math.pow(e.getX() - graph.X_SIZE/2.0, 2) + 
 						Math.pow(e.getY() - graph.Y_SIZE/2.0, 2)) <= graph.getDragDisk().getPixelRadius()){
 					if (graph.getDragDisk() != null && graph.getDragDisk().isShowingDisk()){
 						draggingGraph = true;
-						dragSelection = false;
+						dragxSelectionRange = false;
+						dragxSinglePt = false;
+						draggingInfoBox = false;
 						mouseX = e.getX();
 						mouseY = e.getY();
 						return;
@@ -105,34 +130,42 @@ public class GraphWindow extends SubPanel{
 					return;
 				}
 				
-				if (selection.getStart() != selection.EMPTY){
-					if (Math.abs(e.getX() - selection.gridxToScreen(selection.getEnd())) < 10){
+				if (selectionGraphic.getStart() != Selection.EMPTY){
+					if (Math.abs(e.getX() - selectionGraphic.gridxToScreen(selectionGraphic.getEnd())) < 5){
 						movingSelectionEnd = true;
-						dragSelection = true;
+						dragxSelectionRange = true;
 						return;
 					}
-					else if (Math.abs(e.getX() - selection.gridxToScreen(selection.getStart())) < 10){
-						if (selection.getEnd() == selection.EMPTY){
-							movingSelectionEnd = true;
-							dragSelection = true;
+					else if (Math.abs(e.getX() - selectionGraphic.gridxToScreen(
+							selectionGraphic.getStart())) < 5){
+						if (selectionGraphic.getEnd() == Selection.EMPTY){
+							graph.getDragDisk().setShowingDisk(false);
+							repaint();
+							dragxSinglePt = true;
+							dragxSelectionRange = false;
+							draggingGraph = false;
 							return;
 						}
-						movingSelectionEnd = false;
-						dragSelection = true;
-						return;
+						else{
+							movingSelectionEnd = false;
+							dragxSelectionRange = true;
+							return;
+						}
 					}
 				}
-				selection.setStart(e.getX() * graph.X_PIXEL + graph.X_MIN);
+				selectionGraphic.setStart(e.getX() * graph.X_PIXEL + graph.X_MIN);
 				
 				//snap if close to a notch on the grid
-				if (Math.abs((selection.getStart() - Math.round(selection.getStart() / 
+				if (Math.abs((selectionGraphic.getStart() - Math.round(selectionGraphic.getStart() / 
 						graph.X_STEP) * graph.X_STEP) / graph.X_PIXEL) < 8){
-					selection.setStart(Math.round(selection.getStart() / graph.X_STEP) * graph.X_STEP);
+					selectionGraphic.setStart(Math.round(selectionGraphic.getStart() / graph.X_STEP)
+							* graph.X_STEP);
 				}
 				
-				selection.setEnd(selection.EMPTY);
+				selectionGraphic.setEnd(Selection.EMPTY);
 				movingSelectionEnd = true;
-				dragSelection = true;
+				dragxSelectionRange = true;
+				graphPanel.getBottomToolbar().getSelection().refreshFields();
 				repaint();
 			}
 
@@ -140,62 +173,98 @@ public class GraphWindow extends SubPanel{
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
 				graph.getDragDisk().setShowingDisk(false);
-				repaint();
-				dragSelection = false;
+				dragxSinglePt = false;
+				dragxSelectionRange = false;
 				draggingGraph = false;
+				draggingInfoBox = false;
+				repaint();
 			}
 			
 		});
 		
-		graphPanel.addMouseMotionListener(new MouseMotionListener(){
+		graphPane.addMouseMotionListener(new MouseMotionListener(){
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				// TODO Auto-generated method stub
+				graphPanel.getBottomToolbar().updateMouse(
+						graph.getSelection().screenxToGrid(e.getX()), graph.getSelection().screenyToGrid(e.getY()));
 				
 				if (draggingGraph){
-					graph.shiftGraph(mouseX - e.getX(), e.getY() - mouseY);
+					graph.shiftGraph(2 * (e.getX() - mouseX), 2 * (mouseY - e.getY()));
 					mouseX = e.getX();
 					mouseY = e.getY();
 				}
-				if (dragSelection){
+				
+				if (draggingInfoBox){
+					boxToDrag.setX(e.getX() - boxOffsetX);
+					boxToDrag.setY(e.getY() - boxOffsetY);
+					graph.getGraphCalcGraphics().bringBoxIntoWindow(boxToDrag);
+					repaint();
+				}
+				
+				if (dragxSinglePt){
+					selectionGraphic.setStart(selectionGraphic.screenxToGrid(e.getX()));
+					if (Math.abs((selectionGraphic.getStart() - Math.round(selectionGraphic.getStart() / 
+							graph.X_STEP) * graph.X_STEP) / graph.X_PIXEL) < 8)
+					{//if within 7 pixels of a tick mark on grid, snap to it
+						selectionGraphic.setStart(Math.round(selectionGraphic.getStart() / graph.X_STEP) * graph.X_STEP);
+					}
+				}
+				
+				if (dragxSelectionRange){
+					if (selectionGraphic.getEnd() == Selection.EMPTY)
+					{//only the start of the selection has been set, check if mouse has moved enough
+						//before creating a range selection, prevents small mouse movements from turning
+						//intended point selections into very small range selections
+						if (Math.abs(selectionGraphic.gridxToScreen(selectionGraphic.getStart()) - e.getX()) < 3){
+							return;
+						}
+					}
+					
 					if (movingSelectionEnd){
-						if (e.getX() < selection.gridxToScreen(selection.getStart())){
-							selection.setEnd(selection.getStart());
-							selection.setStart(selection.screenxToGrid(e.getX()));
+						if (e.getX() < selectionGraphic.gridxToScreen(selectionGraphic.getStart())){
+							selectionGraphic.setEnd(selectionGraphic.getStart());
+							selectionGraphic.setStart(selectionGraphic.screenxToGrid(e.getX()));
 							movingSelectionEnd = !movingSelectionEnd;
+							graphPanel.getBottomToolbar().getSelection().refreshFields();
 							return;
 						}
 						
-						selection.setEnd(selection.screenxToGrid(e.getX()));
-						if (Math.abs((selection.getEnd() - Math.round(selection.getEnd() / 
+						selectionGraphic.setEnd(selectionGraphic.screenxToGrid(e.getX()));
+						if (Math.abs((selectionGraphic.getEnd() - Math.round(selectionGraphic.getEnd() / 
 								graph.X_STEP) * graph.X_STEP) / graph.X_PIXEL) < 8){
-							selection.setEnd(Math.round(selection.getEnd() / graph.X_STEP) * graph.X_STEP);
+							selectionGraphic.setEnd(Math.round(selectionGraphic.getEnd() / graph.X_STEP) * graph.X_STEP);
 						}
 					}
 					else{
 						
-						if (e.getX() > selection.gridxToScreen(selection.getEnd())){
-							selection.setStart(selection.getEnd());
-							selection.setEnd(selection.screenxToGrid(e.getX()));
+						if (e.getX() > selectionGraphic.gridxToScreen(selectionGraphic.getEnd())){
+							selectionGraphic.setStart(selectionGraphic.getEnd());
+							selectionGraphic.setEnd(selectionGraphic.screenxToGrid(e.getX()));
 							movingSelectionEnd = !movingSelectionEnd;
+							graphPanel.getBottomToolbar().getSelection().refreshFields();
 							return;
 						}
 						
-						selection.setStart(selection.screenxToGrid(e.getX()));
-						if (Math.abs((selection.getStart() - Math.round(selection.getStart() / 
-								graph.X_STEP) * graph.X_STEP) / graph.X_PIXEL) < 8){
-							selection.setStart(Math.round(selection.getStart() / graph.X_STEP) * graph.X_STEP);
+						selectionGraphic.setStart(selectionGraphic.screenxToGrid(e.getX()));
+						if (Math.abs((selectionGraphic.getStart() - Math.round(selectionGraphic.getStart() / 
+								graph.X_STEP) * graph.X_STEP) / graph.X_PIXEL) < 8)
+						{//if within 7 pixels of a tick mark on grid, snap to it
+							selectionGraphic.setStart(Math.round(selectionGraphic.getStart() / graph.X_STEP) * graph.X_STEP);
 						}
 					}
 				}
 				
+				graphPanel.getBottomToolbar().getSelection().refreshFields();
 				repaint();
 			}
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				// TODO Auto-generated method stub
+				graphPanel.getBottomToolbar().updateMouse(
+						graph.getSelection().screenxToGrid(e.getX()), graph.getSelection().screenyToGrid(e.getY()));
 				if (Math.sqrt(Math.pow(e.getX() - graph.X_SIZE/2.0, 2) + 
 						Math.pow(e.getY() - graph.Y_SIZE/2.0, 2)) <= graph.getDragDisk().getPixelRadius()){
 					if ( ! graph.getDragDisk().isShowingDisk()){
@@ -209,15 +278,16 @@ public class GraphWindow extends SubPanel{
 						repaint();
 					}
 				}
-			}
-			
+			}	
 		});
 		
-		this.addMouseWheelListener(new MouseWheelListener(){
+		graphPane.addMouseWheelListener(new MouseWheelListener(){
 
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				// TODO Auto-generated method stu
+				graphPanel.getBottomToolbar().updateMouse(
+						graph.getSelection().screenxToGrid(e.getX()), graph.getSelection().screenyToGrid(e.getY()));
+				
 				try {
 					graph.zoom(100 - e.getWheelRotation() * 5);
 					Runnable timer = new Runnable(){
@@ -246,7 +316,7 @@ public class GraphWindow extends SubPanel{
 		bCon.gridwidth = 1;
 		bCon.gridx = 0;
 		bCon.gridy = 0;
-		this.add(graphPanel, bCon);
+		this.add(graphPane, bCon);
 		this.setPreferredSize(new Dimension(xSize, ySize));
 	}
 	
@@ -254,8 +324,9 @@ public class GraphWindow extends SubPanel{
 		return graph;
 	}
 	
-	public boolean hasValidSelection(){
-		if (selection.getStart() != selection.EMPTY && selection.getEnd() != selection.EMPTY){
+	public boolean hasRangeSelection(){
+		if (selectionGraphic.getStart() != Selection.EMPTY 
+				&& selectionGraphic.getEnd() != Selection.EMPTY){
 			return true;
 		}
 		return false;
@@ -307,28 +378,6 @@ public class GraphWindow extends SubPanel{
 //
 //	}
 	
-	public int getGraphWidth(){
-		if (this.getWidth() == 0){
-			return 400;
-		}
-		return this.getWidth();
-	}
-	
-	public int getGraphHeight(){
-		if (this.getWidth() == 0){
-			return 400;
-		}
-		return this.getHeight() - getInfoBarHeight();
-	}
-	
-	public int getInfoBarHeight(){
-		return 5 + 2 * textHeight;
-	}
-
-	public int getHeightInfoBar() {
-		return heightInfoBar;
-	}
-	
 	public boolean selectClosestGraph(int x, int y){
 		
 		if (graph.getGraphs().size() > 0){
@@ -339,15 +388,17 @@ public class GraphWindow extends SubPanel{
 			}
 			SingleGraph sg;
 			for (int i = 0 ; i < graph.getGraphs().size(); i++ )
-			{//cedcle through all of the graphs on the screen
+			{//cycle through all of the graphs on the screen
 				sg = graph.getGraphs().get(i);
 				shortestDistToGraphs.set(graph.getGraphs().indexOf(sg), Double.MAX_VALUE);
 				Vector<Integer> xVals = sg.getxVals();
 				Vector<Integer> yVals = sg.getyVals();
-				if (sg instanceof GraphWithFunction)
+				if (sg instanceof GraphWithFunction && xVals.size() > 0 && yVals.size() > 0)
 				{//if the current graph is associated with a function
+					//and if there are points used to draw the graph currently being displayed
+					//some graphs will not be showing any points if zooming in on parts of the screen
 					double tempDist;
-					double lastX = xVals.get(0), lastY = yVals.get(0);
+					int lastX = xVals.get(0), lastY = yVals.get(0);
 					for (int j = 1; j < xVals.size(); j++)
 					{//go through all of the points that were used to draw the graph
 						//determine the shortest distance from the click to any of them
@@ -355,45 +406,48 @@ public class GraphWindow extends SubPanel{
 								Math.pow(yVals.get(j) - lastY,2));
 						int distanceThreshold = 3;
 						if (distBetweenLast2Pts > distanceThreshold)
-						{//the distance between this point and the last one checked is greater than 4
+						{//the distance between this point and the last one checked is greater than 3
 							//some points between the two must be checked
-							double slope = (yVals.get(j) - lastY)/(xVals.get(j) - lastX);
-							if (Math.abs(slope) > 50)
-							{//this segment of the line is almost vertical, it doesn't need
-								//all of its segments searched
-								
-								//the y value to be used to determine the distance from this point
-								//if the y value from the click is above the entire segment
-								//the maximun y is used, if it is below the lower point, the smaller y is used
-								double yValOnSegment;
-								double largerY, smallerY;
-								if (lastY > yVals.get(j)){
-									largerY = lastY;
-									smallerY = yVals.get(j);
-								}
-								else{
-									largerY = yVals.get(j);
-									smallerY = lastY;
-								}
-								if (y < smallerY){
-									yValOnSegment = smallerY;
-								}
-								else if (y > largerY){
-									yValOnSegment = largerY;
-								}
-								else{
-									yValOnSegment = y;
-								}
-								
-								tempDist = Math.sqrt(Math.pow(xVals.get(j) - x, 2) 
-										+ Math.pow(yValOnSegment - y, 2)/2);
-								if (tempDist < shortestDistToGraphs.get(i)){
-									shortestDistToGraphs.set(i, tempDist);
-								}
-								lastX = xVals.get(j);
-								lastY = yVals.get(j);
+							if ((xVals.get(j) - lastX) == 0){
 								continue;
 							}
+							double slope = (yVals.get(j) - lastY)/(xVals.get(j) - lastX);
+//							if (Math.abs(slope) > 50)
+//							{//this segment of the line is almost vertical, it doesn't need
+//								//all of its segments searched
+//								
+//								//the y value to be used to determine the distance from this point
+//								//if the y value from the click is above the entire segment
+//								//the maximum y is used, if it is below the lower point, the smaller y is used
+//								double yValOnSegment;
+//								double largerY, smallerY;
+//								if (lastY > yVals.get(j)){
+//									largerY = lastY;
+//									smallerY = yVals.get(j);
+//								}
+//								else{
+//									largerY = yVals.get(j);
+//									smallerY = lastY;
+//								}
+//								if (y < smallerY){
+//									yValOnSegment = smallerY;
+//								}
+//								else if (y > largerY){
+//									yValOnSegment = largerY;
+//								}
+//								else{
+//									yValOnSegment = y;
+//								}
+//								
+//								tempDist = Math.sqrt(Math.pow(xVals.get(j) - x, 2) 
+//										+ Math.pow(yValOnSegment - y, 2)/2);
+//								if (tempDist < shortestDistToGraphs.get(i)){
+//									shortestDistToGraphs.set(i, tempDist);
+//								}
+//								lastX = xVals.get(j);
+//								lastY = yVals.get(j);
+//								continue;
+//							}
 							double xStep = Math.abs(distanceThreshold/slope);
 							double currSubX = lastX;
 							double currSubY;
@@ -409,6 +463,7 @@ public class GraphWindow extends SubPanel{
 						}
 						tempDist = Math.sqrt(Math.pow(xVals.get(j) - x,2) 
 								+ Math.pow(yVals.get(j) - y, 2));
+						
 						if (tempDist < shortestDistToGraphs.get(i)){
 							shortestDistToGraphs.set(i, tempDist);
 						}
@@ -420,18 +475,37 @@ public class GraphWindow extends SubPanel{
 			
 			double shortestDist = Double.MAX_VALUE;
 			int indexShortestDist = 0;
-			for (SingleGraph s : graph.getGraphs()){
-				s.setfocus(false);
-			}
+			
+//			de-selects all of the graphs
+//			for (SingleGraph s : graph.getGraphs()){
+//				s.setfocus(false);
+//			}
 			for (int i = 0; i < shortestDistToGraphs.size(); i++){
 				if (shortestDistToGraphs.get(i) < shortestDist){
 					shortestDist = shortestDistToGraphs.get(i);
 					indexShortestDist = i;
 				}
 			}
-			if (shortestDist < 5){
-				graph.getGraphs().get(indexShortestDist).setfocus(true);
+			if (shortestDist < 10){
+				
+				//flip focus from on to off with each click on a graph
+				graph.getGraphs().get(indexShortestDist).setfocus( 
+						! graph.getGraphs().get(indexShortestDist).hasFocus);
+				
+				if (graph.getGraphs().get(indexShortestDist).hasFocus)
+				{//if the graph gain focus bring it and its integrations to the front
+					//add this graph to the end of the list so it graphs last and shows on the top
+					graph.getGraphs().add(graph.getGraphs().remove(indexShortestDist));
+					
+					//move this graph's integrals to the top of the display
+					graph.getGraphCalcGraphics().bringGraphToFront(
+							graph.getGraphs().get(graph.getGraphs().size() - 1));
+				}
+				
 				repaint();
+//				if (graphPanel.getBottomToolbar().getSelection() != null){
+//					graphPanel.getBottomToolbar().getSelection().repaintGraphSelection();
+//				}
 				return true;
 			}
 			else{

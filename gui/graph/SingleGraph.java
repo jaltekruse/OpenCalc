@@ -1,5 +1,6 @@
 package gui.graph;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Vector;
 
@@ -8,6 +9,7 @@ public abstract class SingleGraph extends GraphComponent {
 	private Vector<Integer> xVals;
 	private Vector<Integer> yVals;
 	boolean hasFocus;
+	private Color color;
 	
 	public SingleGraph(Graph g){
 		super(g);
@@ -18,6 +20,14 @@ public abstract class SingleGraph extends GraphComponent {
 	@Override
 	public abstract void draw(Graphics g);
 
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+	
 	public void setxVals(Vector<Integer> xVals) {
 		this.xVals = xVals;
 	}

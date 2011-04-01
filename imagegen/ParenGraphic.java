@@ -85,8 +85,8 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		symbolX1 = x1;
 		symbolX2 = x1 + symbolSize[0];
 		
-		setUpperHeight(childValGraphic.getUpperHeight() + overhang);
-		setLowerHeight(childValGraphic.getLowerHeight() + overhang);
+		setUpperHeight((symbolY2 - symbolY1)/2);
+		setLowerHeight(getUpperHeight());
 		
 		totalSize[0] = symbolSize[0];
 		totalSize[1] = symbolSize[1];

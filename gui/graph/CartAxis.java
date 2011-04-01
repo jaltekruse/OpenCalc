@@ -3,6 +3,7 @@ package gui.graph;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.Vector;
 
 import tree.Decimal;
 
@@ -21,15 +22,10 @@ public class CartAxis extends GraphComponent{
 			//these four statements are for resizing the grid after zooming
 			if((graph.X_MAX-graph.X_MIN)/graph.X_STEP >= 24)
 			{
-//				System.out.println("too many x");
 				if ((graph.X_MAX-graph.X_MIN)/20 > 1)
 				{
-//					System.out.println("greater than 1");
 					graph.varList.setVarVal("xStep", new Decimal((int)(graph.X_MAX-graph.X_MIN)/20));
 					graph.X_STEP = graph.varList.getVarVal("xStep").toDec().getValue();
-					
-	//				varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
-	//				Y_STEP = varList.getVarVal("yStep").toDec().getValue();
 				}
 				else
 				{
@@ -43,19 +39,13 @@ public class CartAxis extends GraphComponent{
 			}
 			
 			else if((graph.X_MAX-graph.X_MIN)/graph.X_STEP <= 16){
-//				System.out.println("too few x");
 				if ((graph.X_MAX-graph.X_MIN)/20 > 1)
 				{
-//					System.out.println("greater than 1");
 					graph.varList.setVarVal("xStep", new Decimal((int)(graph.X_MAX-graph.X_MIN)/20));
 					graph.X_STEP = graph.varList.getVarVal("xStep").toDec().getValue();
-					
-	//				varList.setVarVal("yStep", new Decimal((int)(Y_MAX-Y_MIN)/20));
-	//				Y_STEP = varList.getVarVal("yStep").toDec().getValue();
 				}
 				else
 				{
-//					System.out.println("do loop to find dec");
 					for (int i = 0; i < 25; i ++){
 						if ((graph.X_MAX-graph.X_MIN)/20 < Math.pow(.5, i)){
 							graph.varList.setVarVal("xStep", new Decimal(Math.pow(.5, i)));
@@ -65,14 +55,10 @@ public class CartAxis extends GraphComponent{
 				}
 			}
 			
-			if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP >= 24){
-//				System.out.println("too many y");
+			if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP >= 24)
+			{
 				if ((graph.Y_MAX-graph.Y_MIN)/20 > 1)
 				{
-	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
-	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
-					
-//					System.out.println("greater than 1");
 					graph.varList.setVarVal("yStep", new Decimal((int)(graph.Y_MAX-graph.Y_MIN)/20));
 					graph.Y_STEP = graph.varList.getVarVal("yStep").toDec().getValue();
 				}
@@ -88,20 +74,14 @@ public class CartAxis extends GraphComponent{
 			}
 			
 			else if((graph.Y_MAX-graph.Y_MIN)/graph.Y_STEP <= 16){
-//				System.out.println("too few y");
 				if ((graph.Y_MAX-graph.Y_MIN)/20 > 1)
 				{
-	//				varList.setVarVal("xStep", new Decimal((int)(X_MAX-X_MIN)/20));
-	//				X_STEP = varList.getVarVal("xStep").toDec().getValue();
-//					System.out.println("greater than 1");
 					graph.varList.setVarVal("yStep", new Decimal((int)(graph.Y_MAX-graph.Y_MIN)/20));
 					graph.Y_STEP = graph.varList.getVarVal("yStep").toDec().getValue();
 				}
 				else
 				{
-//					System.out.println("do loop to find dec");
-					for (int i = 0; i < 25
-					; i ++){
+					for (int i = 0; i < 25; i ++){
 						if ((graph.Y_MAX-graph.Y_MIN)/20 < Math.pow(.5, i)){
 							graph.varList.setVarVal("yStep", new Decimal(Math.pow(.5, i)));
 							graph.Y_STEP = graph.varList.getVarVal("xStep").toDec().getValue();
@@ -119,6 +99,7 @@ public class CartAxis extends GraphComponent{
 		tempY *= graph.Y_STEP;
 		int width;
 		int height;
+		Vector<Double> yNumbers = new Vector<Double>();
 
 		if (graph.X_MIN <= 0 && graph.X_MAX >= 0) 
 		{//the y axis is showing
@@ -130,13 +111,7 @@ public class CartAxis extends GraphComponent{
 				drawLineSeg(2 * graph.LINE_SIZE * graph.X_PIXEL, tempY, -2 * graph.LINE_SIZE
 						* graph.X_PIXEL, tempY, Color.BLACK, g);
 				if(tempY%(2 * graph.Y_STEP) == 0 && tempY != 0){
-					String ptText = Double.toString(tempY);
-					width = g.getFontMetrics().stringWidth(ptText);
-					height = g.getFontMetrics().getHeight();
-					g.setColor(Color.white);
-					g.fillRect(gridxToScreen(0) - width - 2*graph.LINE_SIZE, gridyToScreen(tempY)- 2*graph.LINE_SIZE, width, 11);
-					g.setColor(Color.black);
-					g.drawString(ptText, gridxToScreen(0) - width - 2*graph.LINE_SIZE, gridyToScreen(tempY)+ 2*graph.LINE_SIZE);
+					yNumbers.add(tempY);
 				} 
 				tempY += graph.Y_STEP;
 			}
@@ -154,13 +129,7 @@ public class CartAxis extends GraphComponent{
 					ptOn(graph.X_MIN + 1 * graph.X_PIXEL, tempY, g);
 					if(tempY%(2 * graph.Y_STEP) == 0 && tempY != 0)
 					{
-						String ptText = Double.toString(tempY);
-						width = g.getFontMetrics().stringWidth(ptText);
-						height = g.getFontMetrics().getHeight();
-						g.setColor(Color.white);
-						g.fillRect(gridxToScreen(graph.X_MIN) + 8, gridyToScreen(tempY)- 4, width, 11);
-						g.setColor(Color.black);
-						g.drawString(ptText, gridxToScreen(graph.X_MIN) + 8, gridyToScreen(tempY)+ 6);
+						yNumbers.add(tempY);
 					} 
 					tempY += graph.Y_STEP;
 				}
@@ -173,13 +142,7 @@ public class CartAxis extends GraphComponent{
 					g.setColor(Color.BLACK);
 					ptOn(graph.X_MAX - 1 * graph.X_PIXEL, tempY, g);
 					if(tempY%(2 * graph.Y_STEP) == 0 && tempY != 0){
-						String ptText = Double.toString(tempY);
-						width = g.getFontMetrics().stringWidth(ptText);
-						height = g.getFontMetrics().getHeight();
-						g.setColor(Color.white);
-						g.fillRect(gridxToScreen(graph.X_MAX) - width - 4, gridyToScreen(tempY)- 4, width, 11);
-						g.setColor(Color.black);
-						g.drawString(ptText, gridxToScreen(graph.X_MAX)- width - 4, gridyToScreen(tempY)+ 6);
+						yNumbers.add(tempY);
 					}
 					tempY += graph.Y_STEP;
 					}
@@ -192,7 +155,7 @@ public class CartAxis extends GraphComponent{
 		tempX *= graph.X_STEP;
 		height = g.getFontMetrics().getHeight();
 
-		int tempWidth = g.getFontMetrics().stringWidth(Double.toString(tempX)) + 20;
+		int tempWidth = g.getFontMetrics().stringWidth(Double.toString(tempX)) + 30;
 		if(tempWidth > (int) ((graph.X_MAX-graph.X_MIN)/(graph.X_STEP * graph.NUM_FREQ))){
 			graph.NUM_FREQ = (int) (((graph.X_MAX-graph.X_MIN)/(graph.X_STEP))/((graph.X_SIZE)/tempWidth)) + 1;
 		}
@@ -255,6 +218,39 @@ public class CartAxis extends GraphComponent{
 					tempX += graph.X_STEP;
 				}
 			}
+		}
+		
+		//draw y numbers on top, so the x lines don't draw over them
+		for (Double d : yNumbers){
+			if(graph.X_MAX <= 0){
+				String ptText = Double.toString(d);
+				width = g.getFontMetrics().stringWidth(ptText);
+				height = g.getFontMetrics().getHeight();
+				g.setColor(Color.white);
+				g.fillRect(gridxToScreen(graph.X_MAX) - width - 4, gridyToScreen(d)- 4, width, 11);
+				g.setColor(Color.black);
+				g.drawString(ptText, gridxToScreen(graph.X_MAX)- width - 4, gridyToScreen(d)+ 6);
+			}
+			else if (graph.X_MIN >= 0){
+				String ptText = Double.toString(d);
+				width = g.getFontMetrics().stringWidth(ptText);
+				height = g.getFontMetrics().getHeight();
+				g.setColor(Color.white);
+				g.fillRect(gridxToScreen(graph.X_MIN) + 8, gridyToScreen(d)- 4, width, 11);
+				g.setColor(Color.black);
+				g.drawString(ptText, gridxToScreen(graph.X_MIN) + 8, gridyToScreen(d)+ 6);
+			}
+			
+			else if (graph.X_MIN <= 0 && graph.X_MAX >= 0) {
+				String ptText = Double.toString(d);
+				width = g.getFontMetrics().stringWidth(ptText);
+				height = g.getFontMetrics().getHeight();
+				g.setColor(Color.white);
+				g.fillRect(gridxToScreen(0) - width - 2*graph.LINE_SIZE, gridyToScreen(d)- 2*graph.LINE_SIZE - 2, width, 11);
+				g.setColor(Color.black);
+				g.drawString(ptText, gridxToScreen(0) - width - 2*graph.LINE_SIZE, gridyToScreen(d)+ 2*graph.LINE_SIZE);
+			}
+				
 		}
 
 		if (graph.X_MIN <= 0 && graph.X_MAX >= 0)

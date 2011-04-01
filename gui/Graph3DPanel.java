@@ -58,7 +58,6 @@ public class Graph3DPanel extends SubPanel
 			@Override
 			public void keyReleased(KeyEvent k) {
 				// TODO Auto-generated method stub
-	            System.out.println("MOO!");
 	            int key = k.getKeyCode();
 
 	            boolean r = true;
@@ -70,6 +69,16 @@ public class Graph3DPanel extends SubPanel
 	                case KeyEvent.VK_4: graph.viewAngles[0] -= .2; break;
 	                case KeyEvent.VK_5: graph.viewAngles[1] -= .2; break;
 	                case KeyEvent.VK_6: graph.viewAngles[2] -= .2; break;
+	                case KeyEvent.VK_0:
+	                	System.out.println("0");
+	                	graph.focus = graph.add(graph.focus, graph.mult(1 / graph.mag(graph.focus), graph.focus));
+	                	graph.viewCenter = graph.add(graph.viewCenter, graph.mult(1 / graph.mag(graph.viewCenter), graph.viewCenter));
+	                	break;
+	                case KeyEvent.VK_9:
+	                	System.out.println("9");
+	                	graph.focus = graph.add(graph.focus, graph.mult(-1 / graph.mag(graph.focus), graph.focus));
+	                	graph.viewCenter = graph.add(graph.viewCenter, graph.mult(-1 / graph.mag(graph.viewCenter), graph.viewCenter));
+	                	break;
 	                default: r = false;
 	            }
 	            if(r)
@@ -131,13 +140,16 @@ public class Graph3DPanel extends SubPanel
 			public void associatedAction(){
 		        try
 		        {
-		            Expression[] expressions = new Expression[1];
-		            parser = new ExpressionParser();
-		            String expression = field.getText();
-		            expressions[0] = (Expression)parser.ParseExpression(expression);
-		            varList = parser.getVarList();
-		            graph = new Graph3D2(thisPanel, expressions);
-		            panel3d.repaint();
+		        	if( ! field.getText().equals(""))
+		        	{
+			            Expression[] expressions = new Expression[1];
+			            parser = new ExpressionParser();
+			            String expression = field.getText();
+			            expressions[0] = (Expression)parser.ParseExpression(expression);
+			            varList = parser.getVarList();
+			            graph = new Graph3D2(thisPanel, expressions);
+			            panel3d.repaint();
+		        	}
 		        }
 		        catch(ParseException e)
 		        {

@@ -146,10 +146,10 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		NumsAndOppsPanel Nums = new NumsAndOppsPanel(this, calcFrame);
 		
 		mathFunc = new JTabbedPane();
-		varPanel = new ValStoragePanel(this, this, parser.getVarList());
+		varPanel = new ValStoragePanel(this, calcFrame, parser.getVarList());
 		parser.getVarList().setStorageGUI(varPanel);
 		varScrollPane = new JScrollPane(varPanel);
-		constPanel = new ValStoragePanel(this, this, parser.getConstantList());
+		constPanel = new ValStoragePanel(this, calcFrame, parser.getConstantList());
 		parser.getConstantList().setStorageGUI(constPanel);
 		constScrollPane = new JScrollPane(constPanel);
 
@@ -176,7 +176,7 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		pCon.gridy = 1;
 		pCon.fill = GridBagConstraints.HORIZONTAL;
 		calcFrame.add(mathFunc, pCon);
-		calcFrame.setPreferredSize(new Dimension(450, 700));
+		calcFrame.setPreferredSize(new Dimension(460, 700));
 		calcFrame.pack();
 
 		g = new GraphOld(this, this, 360, 360);
@@ -456,10 +456,10 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 	private static void createAndShowGUI() throws ParseException, ValueNotStoredException, EvalException {
 
 		frame = new JFrame("OpenCalc");
-		Dimension frameDim = new Dimension(600, 600);
+		Dimension frameDim = new Dimension(1000, 700);
 		frame.setPreferredSize(frameDim);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(false);
+//		frame.setResizable(false);
 
 		MainApplet currCalc = new MainApplet();
 		frame.add(currCalc);
