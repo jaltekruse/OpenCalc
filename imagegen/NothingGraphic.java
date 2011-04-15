@@ -23,6 +23,10 @@ public class NothingGraphic extends ValueGraphic {
 		// TODO Auto-generated method stub
 		getCompExGraphic().getGraphics().drawRect(getX1(), getY1(), getX2() - getX1(), getY2() - getY1());
 	}
+	
+	public void drawCursor(int pos){
+		
+	}
 
 	@Override
 	public int[] requestSize(Graphics g, Font f) {

@@ -24,6 +24,7 @@ package gui;
 
 import gui.graph.GraphPanel;
 import gui.graph.GraphWindow;
+import gui.graph.GridPropsPanel;
 
 import java.awt.Container;
 import java.awt.Dimension;
@@ -179,26 +180,17 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 		calcFrame.setPreferredSize(new Dimension(460, 700));
 		calcFrame.pack();
 
-		g = new GraphOld(this, this, 360, 360);
-		graphTabs.add("Graph", g);
-
-		graphFunctions = new FunctionsPane(this, this);
-		graphTabs.add("Func", graphFunctions);
-
-		gridProps = new GridPropsPanel(this, this);
-		graphTabs.add("Grid", gridProps);
-
-		graphTabs.add(new DrawPad(this, this, 300, 300), "Draw");
-		
 		graphPanel = new GraphPanel(this, this, 200, 200);
-		graphTabs.add(graphPanel, "newGraph");
+		graphTabs.add(graphPanel, "Graph");
+		
+		graphTabs.add(new DrawPad(this, this, 300, 300), "Draw");
 		
 		graphTabs.add(new Graph3DPanel(this, this, 200, 200), "3Dgraph");
 		
 		render = new RenderPanel(this, this);
 		graphTabs.add(render,"render");
 		
-		graphTabs.setSelectedIndex(0);
+		graphTabs.setSelectedIndex(3);
 
 		graphTabs.addChangeListener(graphTabsListener());
 
@@ -405,7 +397,7 @@ public class MainApplet extends JApplet implements TopLevelContainer{
 	}
 
 	public void updateGraph() {
-		g.repaint();
+		graphPanel.repaint();
 	}
 
 	public void updateGraph(String func) {

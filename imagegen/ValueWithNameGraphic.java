@@ -2,6 +2,7 @@ package imagegen;
 
 import imagegen.FractionGraphic.Style;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -13,16 +14,28 @@ public class ValueWithNameGraphic extends ValueGraphic {
 
 	public ValueWithNameGraphic(Value v, CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
+		setMostInnerWest(this);
+		setMostInnerEast(this);
+		setMostInnerNorth(this);
+		setMostInnerSouth(this);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void draw() {
-		// TODO Auto-generated method stub
+		if (isSelected()){
+			super.getCompExGraphic().getGraphics().setColor(getSelectedColor());
+			super.getCompExGraphic().getGraphics().fillRect(getX1() - 1, getY1() - 1, getX2() - getX1()+ 2, getY2() - getY1() + 2);
+			super.getCompExGraphic().getGraphics().setColor(Color.black);
+		}
 		getCompExGraphic().getGraphics().setFont(getFont());
 		getCompExGraphic().getGraphics().drawString(getValue().toString(), getX1(), getY2());
 	}
 
+	public void drawCursor(int pos){
+		
+	}
+	
 	@Override
 	public int[] requestSize(Graphics g, Font f) {
 		// TODO Auto-generated method stub

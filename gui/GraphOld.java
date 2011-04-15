@@ -148,7 +148,7 @@ public class GraphOld extends SubPanel {
 				}
 				if(refPoint)
 					drawMousePlacement(g);
-				mainApp.getGridProps().refreshAttributes();
+//				mainApp.getGridProps().refreshAttributes();
 			}
 		};
 

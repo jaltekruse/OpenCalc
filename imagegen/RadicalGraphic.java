@@ -6,7 +6,7 @@ import java.awt.Graphics;
 
 import tree.Expression;
 import tree.Operator;
-import tree.UrinaryExpression;
+import tree.UnaryExpression;
 import tree.Value;
 
 public class RadicalGraphic extends ExpressionGraphic {
@@ -16,27 +16,32 @@ public class RadicalGraphic extends ExpressionGraphic {
 	private int heightLeadingTail;
 	private int lengthLittleTail;
 	
-	public RadicalGraphic(UrinaryExpression v, CompleteExpressionGraphic compExGraphic) {
+	public RadicalGraphic(UnaryExpression v, CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
 		space = 4;
 		widthFront = 8;
 		heightLeadingTail = 8;
 		lengthLittleTail = 3;
-		if (v.getChild() instanceof UrinaryExpression){
-			if (((UrinaryExpression)v.getChild()).getOp() == Operator.PAREN){
-				v.setChild(((UrinaryExpression)v.getChild()).getChild());
+		if (v.getChild() instanceof UnaryExpression){
+			if (((UnaryExpression)v.getChild()).getOp() == Operator.PAREN)
+			{//if there is a set of parenthesis inside, remove them
+				v.setChild(((UnaryExpression)v.getChild()).getChild());
 			}
 		}
+		setMostInnerSouth(this);
+		setMostInnerNorth(this);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void draw() {
-		// TODO Auto-generated method stub
 		
-//		super.getCompExGraphic().getGraphics().setColor(Color.gray);
-//		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
-//		super.getCompExGraphic().getGraphics().setColor(Color.black);
+		
+		if (isSelected()){
+			super.getCompExGraphic().getGraphics().setColor(getSelectedColor());
+			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
+			super.getCompExGraphic().getGraphics().setColor(Color.black);
+		}
 		
 		super.getCompExGraphic().getGraphics().drawLine(symbolX1, symbolY2 - heightLeadingTail + lengthLittleTail,
 				symbolX1 + 3, symbolY2 - heightLeadingTail);
@@ -47,6 +52,10 @@ public class RadicalGraphic extends ExpressionGraphic {
 		super.getCompExGraphic().getGraphics().drawLine(symbolX1 + widthFront, symbolY1, 
 				symbolX2, symbolY1);
 		super.getCompExGraphic().getGraphics().drawLine(symbolX2, symbolY1, symbolX2, symbolY1 + 5);
+	}
+	
+	public void drawCursor(int pos){
+		
 	}
 
 	@Override
@@ -60,19 +69,24 @@ public class RadicalGraphic extends ExpressionGraphic {
 			throws Exception {
 		g.setFont(f);
 		setFont(f);
-		Value tempChild = ((UrinaryExpression)super.getValue()).getChild();
-		System.out.println(tempChild.toString());
+		Value tempChild = ((UnaryExpression)super.getValue()).getChild();
 		ValueGraphic childValGraphic = null;
 		int[] childSize = {0,0};
 		int[] symbolSize = {0, 0};
 		int[] totalSize = {0, 0};
 		
 		childValGraphic = makeValueGraphic(tempChild);
+		childSize = childValGraphic.requestSize(g, f, x1 + widthFront + space, y1 + space);
+		
+		//set the west and east fields for inside an outside of the expression
+		setMostInnerWest(this);
+		setEast(childValGraphic.getMostInnerWest());
+		childValGraphic.getMostInnerWest().setWest(this);
+		setMostInnerEast(childValGraphic.getMostInnerEast());
 		
 		super.getComponents().add(childValGraphic);
 		super.getCompExGraphic().getComponents().add(childValGraphic);
 		
-		childSize = childValGraphic.requestSize(g, f, x1 + widthFront + space, y1 + space);
 		widthFront += (int) Math.round(childSize[1]/14.0);
 		
 		if (widthFront > 20)

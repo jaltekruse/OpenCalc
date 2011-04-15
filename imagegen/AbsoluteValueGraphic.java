@@ -5,7 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import tree.Operator;
-import tree.UrinaryExpression;
+import tree.UnaryExpression;
 import tree.Value;
 
 public class AbsoluteValueGraphic extends UnaryExpressionGraphic {
@@ -14,14 +14,16 @@ public class AbsoluteValueGraphic extends UnaryExpressionGraphic {
 	private int overhang;
 	private int widthSpaceAndLines;
 	
-	public AbsoluteValueGraphic(UrinaryExpression v, CompleteExpressionGraphic compExGraphic) {
+	public AbsoluteValueGraphic(UnaryExpression v, CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
 		space = 2;
 		overhang = 1;
 		widthSpaceAndLines = 3;
-		if (v.getChild() instanceof UrinaryExpression){
-			if (((UrinaryExpression)v.getChild()).getOp() == Operator.PAREN){
-				v.setChild(((UrinaryExpression)v.getChild()).getChild());
+		setMostInnerNorth(this);
+		setMostInnerSouth(this);
+		if (v.getChild() instanceof UnaryExpression){
+			if (((UnaryExpression)v.getChild()).getOp() == Operator.PAREN){
+				v.setChild(((UnaryExpression)v.getChild()).getChild());
 			}
 		}
 		// TODO Auto-generated constructor stub
@@ -30,15 +32,20 @@ public class AbsoluteValueGraphic extends UnaryExpressionGraphic {
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
-		
-//		super.getCompExGraphic().getGraphics().setColor(Color.gray);
-//		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
-//		super.getCompExGraphic().getGraphics().setColor(Color.black);
+		if (isSelected()){
+			super.getCompExGraphic().getGraphics().setColor(getSelectedColor());
+			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
+			super.getCompExGraphic().getGraphics().setColor(Color.black);
+		}
 		
 		super.getCompExGraphic().getGraphics().drawLine(symbolX1 + (int) Math.round(widthSpaceAndLines/2.0), 
 				getY1(), getX1() + (int) Math.round(widthSpaceAndLines/2.0), getY2());
 		super.getCompExGraphic().getGraphics().drawLine(getX2() - (int) Math.round(widthSpaceAndLines/2.0),
 				getY1(), getX2() - (int) Math.round(widthSpaceAndLines/2.0), getY2());
+	}
+	
+	public void drawCursor(int pos){
+		
 	}
 
 	@Override
@@ -63,21 +70,21 @@ public class AbsoluteValueGraphic extends UnaryExpressionGraphic {
 		// The call to getChild() skips the first paren inside of the operator, the parens are needed to have
 		// an expression inside of a UrinaryOp, but they are not usually displayed
 		// if a user wants to show parens, the can use  two pairs of parens: abs((5/6))
-		Value tempChild = ((UrinaryExpression)super.getValue()).getChild();
+		Value tempChild = ((UnaryExpression)super.getValue()).getChild();
 		
 		ValueGraphic childValGraphic = makeValueGraphic(tempChild);
+		childSize = childValGraphic.requestSize(g, f, x1 + widthSpaceAndLines + space, y1 + overhang);
 		
 		//set the west and east fields for inside an outside of the expression
-//		setMostInnerWest(this);
-//		childValGraphic.getMostInnerEast().setEast(this);
-//		
-//		setMostInnerEast(this);
-//		childValGraphic.getMostInnerWest().setWest(this);
+		setMostInnerWest(this);
+		childValGraphic.getMostInnerEast().setEast(this);
+		
+		setMostInnerEast(this);
+		childValGraphic.getMostInnerWest().setWest(this);
 		
 		super.getComponents().add(childValGraphic);
 		super.getCompExGraphic().getComponents().add(childValGraphic);
 		
-		childSize = childValGraphic.requestSize(g, f, x1 + widthSpaceAndLines + space, y1 + overhang);
 		widthSpaceAndLines += (int) Math.round(childSize[1]/14.0);
 		childValGraphic.shiftToX1(x1 + widthSpaceAndLines + space);
 		

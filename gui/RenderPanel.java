@@ -41,6 +41,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
@@ -131,8 +132,7 @@ public class RenderPanel extends SubPanel {
 		render = new JPanel(){
 			public void paint(Graphics g){
 				try {
-					System.out.println("repaint, justParsed: " + justParsed);
-					if (!entryLine.getField().getText().equals(""))
+						if (!entryLine.getField().getText().equals(""))
 					{
 						render((Graphics2D)g);
 					}
@@ -159,32 +159,67 @@ public class RenderPanel extends SubPanel {
 		
 		tCon.fill = GridBagConstraints.BOTH;
 		tCon.weightx = 1;
-		tCon.weighty = 1;
+		tCon.weighty = .1;
 		tCon.gridx = 0;
 		tCon.gridy = 13;
 		tCon.gridheight = 2;
 		tCon.gridwidth = 7;
 		this.add(termScrollPane, tCon);
 		
+		//this is just to prevent having to type input each time the applet is run
+		entryLine.getField().setText("1234.342-2343.234/223.23/4.3/34.5/345.45+234.3");
+		justParsed = true;
+		render.repaint();
+		
 		render.addMouseListener(new MouseListener(){
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-//				render.requestFocus();
-//				if (ceg == null){
-//					return;
-//				}
-//				int mouseX = e.getX();
-//				int mouseY = e.getY();
-//				selected.setText("");
-//				mousePos.getField().setText("x: " + mouseX + "   y: " + mouseY);
-//				for (ValueGraphic vg : ceg.getComponents()){
-//					if (mouseX >= vg.getX1() && mouseX <= vg.getX2() && mouseY >= vg.getY1() && mouseY <= vg.getY2())
-//					{
-//						selected.append(vg.toString() + '\n' + vg.getValue().toString() + "\nUpperHeight: "+ vg.getUpperHeight() + "\n\n");
-//					}
-//				}
+
+				render.requestFocus();
+				if (ceg == null){
+					return;
+				}
+				int mouseX = e.getX();
+				int mouseY = e.getY();
+				selected.setText("");
+				mousePos.getField().setText("x: " + mouseX + "   y: " + mouseY);
+				Vector<ValueGraphic> temp = new Vector<ValueGraphic>();
+				ValueGraphic smallest = null;
+				for (ValueGraphic vg : ceg.getComponents()){
+					if (mouseX >= vg.getX1() && mouseX <= vg.getX2() && mouseY >= vg.getY1() && mouseY <= vg.getY2())
+					{
+						temp.add(vg);
+						selected.append(vg.toString() + '\n' + vg.getValue().toString() + "\nUpperHeight: "+ vg.getUpperHeight() + "\n\n");
+					}
+				}
+				if (temp.size() != 0){
+					smallest = temp.get(0);
+				}
+				else{
+					if (e.getX() < 30){
+						temp.add(ceg.getRoot().getMostInnerWest());
+					}
+					else if (e.getX() > 30 + ceg.getRoot().getX2() - ceg.getRoot().getX1()){
+						temp.add(ceg.getRoot().getMostInnerEast());
+					}
+				}
+				if (smallest == null)
+				{
+					smallest = ceg.getComponents().get(0);
+				}
+				for (ValueGraphic vg : temp){
+					if (vg.getX2() - vg.getX1() < smallest.getX2() - smallest.getX1() &&
+							vg.getY2() - vg.getY1() <= smallest.getY2() - smallest.getY1()){
+						smallest = vg;
+					}
+				}
+				
+				smallest.setCursorPos(e.getX());
+				ceg.getSelectedVals().get(0).setSelected(false);
+				ceg.getSelectedVals().set(0, smallest);
+				ceg.getSelectedVals().get(0).setSelected(true);
+				render.repaint();
 				
 			}
 
@@ -220,20 +255,55 @@ public class RenderPanel extends SubPanel {
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
 				if (e.getKeyCode() == KeyEvent.VK_LEFT){
-					if (ceg.getSelectedVals().get(0).getWest() != null){
-						ceg.getSelectedVals().get(0).setSelected(false);
-						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getWest());
-						ceg.getSelectedVals().get(0).setSelected(true);
-						System.out.println(ceg.getSelectedVals().get(0).getValue());
+//					if (ceg.getSelectedVals().get(0).getWest() != null){
+					if (true){
+						if (ceg.getCursor().getValueGraphic() != null){
+							ceg.getCursor().getValueGraphic().moveCursorWest();
+						}
+						
+//						ceg.getSelectedVals().get(0).setSelected(false);
+//						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getWest());
+//						ceg.getSelectedVals().get(0).setSelected(true);
+//						System.out.println(ceg.getSelectedVals().get(0).getValue());
 					}
 					render.repaint();
 				}
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT){
-					if (ceg.getSelectedVals().get(0).getEast() != null){
-						ceg.getSelectedVals().get(0).setSelected(false);
-						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getEast());
-						ceg.getSelectedVals().get(0).setSelected(true);
-						System.out.println(ceg.getSelectedVals().get(0).getValue());
+//					if (ceg.getSelectedVals().get(0).getEast() != null){
+					if (true){
+						if (ceg.getCursor().getValueGraphic() != null){
+							ceg.getCursor().getValueGraphic().moveCursorEast();
+						}
+//						ceg.getSelectedVals().get(0).setSelected(false);
+//						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getEast());
+//						ceg.getSelectedVals().get(0).setSelected(true);
+//						System.out.println(ceg.getSelectedVals().get(0).getValue());
+					}
+					render.repaint();
+				}
+				if (e.getKeyCode() == KeyEvent.VK_UP){
+					if (ceg.getCursor().getValueGraphic() != null){
+						System.out.println("renderPanel: north not null:" + 
+								ceg.getCursor().getValueGraphic().getValue().toString());
+						ceg.getCursor().getValueGraphic().moveCursorNorth();
+					}
+					if (ceg.getSelectedVals().get(0).getNorth() != null){
+//						ceg.getSelectedVals().get(0).setSelected(false);
+//						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getNorth());
+//						ceg.getSelectedVals().get(0).setSelected(true);
+//						System.out.println(ceg.getSelectedVals().get(0).getValue());
+					}
+					render.repaint();
+				}
+				if (e.getKeyCode() == KeyEvent.VK_DOWN){
+					if (ceg.getCursor().getValueGraphic() != null){
+						ceg.getCursor().getValueGraphic().moveCursorSouth();
+					}
+					if (ceg.getSelectedVals().get(0).getSouth() != null){
+//						ceg.getSelectedVals().get(0).setSelected(false);
+//						ceg.getSelectedVals().set(0, ceg.getSelectedVals().get(0).getSouth());
+//						ceg.getSelectedVals().get(0).setSelected(true);
+//						System.out.println(ceg.getSelectedVals().get(0).getValue());
 					}
 					render.repaint();
 				}

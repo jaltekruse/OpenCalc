@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.Vector;
 
 import tree.Decimal;
+import tree.EvalException;
 import tree.Expression;
 import tree.Number;
 import tree.ExpressionParser;
@@ -12,7 +13,7 @@ import tree.ParseException;
 import tree.Value;
 import tree.Var;
 
-public class GraphWithFunction extends SingleGraph{
+public class GraphWithExpression extends SingleGraph{
 
 /**
  * A Function stores all of the data necessary for graphing.
@@ -33,7 +34,7 @@ public class GraphWithFunction extends SingleGraph{
 	 * makes it not currently graphing, integral and tracing values are
 	 * false.
 	 */
-	public GraphWithFunction(ExpressionParser ep, Graph g, Color c) {
+	public GraphWithExpression(ExpressionParser ep, Graph g, Color c) {
 		super(g);
 		setParser(ep);
 		funcEqtn = "";
@@ -44,7 +45,7 @@ public class GraphWithFunction extends SingleGraph{
 		setDependentVar("y");
 	}
 	
-	public GraphWithFunction(String s, ExpressionParser ep, Graph g, Color c) {
+	public GraphWithExpression(String s, ExpressionParser ep, Graph g, Color c) {
 		super(g);
 		setParser(ep);
 		funcEqtn = s;
@@ -78,7 +79,7 @@ public class GraphWithFunction extends SingleGraph{
 	 * @param dervative - the point to derive at
 	 * @param c - a color to display the function with
 	 */
-	public GraphWithFunction(ExpressionParser exParser, Graph g, String eqtn, String ind, String dep, 
+	public GraphWithExpression(ExpressionParser exParser, Graph g, String eqtn, String ind, String dep, 
 			boolean connected, Color c) {
 		super(g);
 		setParser(exParser);
@@ -146,7 +147,7 @@ public class GraphWithFunction extends SingleGraph{
 	}
 
 	@Override
-	public void draw(Graphics g) {
+	public void draw(Graphics g) throws EvalException, ParseException {
 		// TODO Auto-generated method stub
 		
 	}

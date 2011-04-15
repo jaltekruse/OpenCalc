@@ -34,6 +34,106 @@ public class BinExpressionGraphic extends ExpressionGraphic{
 		super.getCompExGraphic().getGraphics().drawString(getValue().getOp().getSymbol(),
 				symbolX1 + space, symbolY2);
 	}
+	
+	public void drawCursor(){
+		String opString = getValue().getOp().getSymbol();
+		
+		int xPos = symbolX1 + super.getCompExGraphic().getGraphics().getFontMetrics().stringWidth(
+				opString.substring(0, super.getCompExGraphic().getCursor().getPos()));
+		
+		if ( super.getCompExGraphic().getCursor().getPos() == getMaxCursorPos()){
+			xPos += space;
+		}
+		super.getCompExGraphic().getGraphics().setColor(Color.BLACK);
+		super.getCompExGraphic().getGraphics().fillRect(xPos, super.symbolY1 - 3, 2, super.symbolY2 - super.symbolY1 + 5);
+		
+	}
+	
+	public int getMaxCursorPos(){
+		return getValue().getOp().getSymbol().length();
+	}
+	
+	public void setCursorPos(int xPixelPos){
+		
+		String numberString = getValue().getOp().getSymbol();
+		
+		if (xPixelPos < getX1()){
+			super.getCompExGraphic().getCursor().setPos(0);
+			super.getCompExGraphic().getCursor().setValueGraphic(this);
+			return;
+		}
+			
+		else if (xPixelPos > getX2()){
+			super.getCompExGraphic().getCursor().setPos(numberString.length());
+			super.getCompExGraphic().getCursor().setValueGraphic(this);
+			return;
+		}
+		
+		int startX, endX, xWidth;
+		
+		startX = super.getCompExGraphic().getGraphics().getFontMetrics().stringWidth(
+				numberString.substring(0, 0)) + symbolX1 - space;
+		endX = super.getCompExGraphic().getGraphics().getFontMetrics().stringWidth(
+				numberString.substring(0, 1)) + symbolX1 + space;
+		xWidth = endX - startX;
+		
+		if (startX < xPixelPos && endX > xPixelPos)
+		{//if the x position is inside of a character, check if it is on the first or second
+			//half of the character and set the cursor accordingly
+			if (endX - xPixelPos > xWidth/2){
+				super.getCompExGraphic().getCursor().setPos( 0 );
+			}
+			else{
+				super.getCompExGraphic().getCursor().setPos( 1 );
+			}
+			super.getCompExGraphic().getCursor().setValueGraphic(this);
+			return;
+		}
+	}
+	
+	public void moveCursorWest(){
+		if (super.getCompExGraphic().getCursor().getPos() > 0){
+			super.getCompExGraphic().getCursor().setPos( super.getCompExGraphic().getCursor().getPos() - 1); 
+		}
+		else{
+			if (getWest() == null)
+			{
+				return;
+			}
+			else
+			{
+				getWest().sendCursorInFromEast((getY2() - getY1())/2, this);
+				return;
+			}
+		}
+	}
+	
+	public void moveCursorEast(){
+		if (super.getCompExGraphic().getCursor().getPos() < getMaxCursorPos()){
+			super.getCompExGraphic().getCursor().setPos( super.getCompExGraphic().getCursor().getPos() + 1); 
+		}
+		else{
+			if (getEast() == null)
+			{
+				return;
+			}
+			else
+			{
+				getEast().sendCursorInFromWest((getY2() - getY1())/2, this);
+				return;
+			}
+		}
+	}
+	
+	public void sendCursorInFromEast(int yPos, ValueGraphic vg){
+		super.getCompExGraphic().getCursor().setValueGraphic(this);
+		super.getCompExGraphic().getCursor().setPos(getMaxCursorPos() - 1);
+	}
+	
+	public void sendCursorInFromWest(int yPos, ValueGraphic vg){
+		super.getCompExGraphic().getCursor().setValueGraphic(this);
+		super.getCompExGraphic().getCursor().setPos(1);
+	}
 
 	@Override
 	public int[] requestSize(Graphics g, Font f, int x1, int y1) throws Exception {
@@ -61,13 +161,14 @@ public class BinExpressionGraphic extends ExpressionGraphic{
 		super.getCompExGraphic().getComponents().add(rightValGraphic);
 		
 		//set the west and east fields for inside an outside of the expression
-//		setMostInnerWest(leftValGraphic.getMostInnerWest());
-//		leftValGraphic.getMostInnerEast().setEast(this);
-//		this.setWest(leftValGraphic.getMostInnerEast());
-//		
-//		setMostInnerEast(rightValGraphic.getMostInnerEast());
-//		rightValGraphic.getMostInnerWest().setWest(this);
-//		this.setEast(rightValGraphic.getMostInnerWest());
+		setMostInnerWest(leftValGraphic.getMostInnerWest());
+		leftValGraphic.getMostInnerEast().setEast(this);
+		this.setWest(leftValGraphic.getMostInnerEast());
+		setMostInnerNorth(this);
+		setMostInnerSouth(this);
+		setMostInnerEast(rightValGraphic.getMostInnerEast());
+		rightValGraphic.getMostInnerWest().setWest(this);
+		this.setEast(rightValGraphic.getMostInnerWest());
 		
 		symbolSize[0] = getCompExGraphic().getStringWidth(getValue().getOp().getSymbol(), f) + 2 * space;
 		symbolSize[1] = getCompExGraphic().getFontHeight(f);

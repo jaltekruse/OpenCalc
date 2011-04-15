@@ -127,6 +127,7 @@ public class ExpressionParser {
 		elementCount = 0;
 		currChar = eqtn.charAt(currCharNum);
 		vals = new ArrayList<Value>();
+		Value root;
 
 		//the main loop
 		while (currCharNum <= eqtn.length() - 1) {
@@ -136,8 +137,13 @@ public class ExpressionParser {
 			currCharNum += lengthLast;
 			//uncomment the next two lines to print out the expression 
 			//as the loop executes
-//			if (e != null)
-//				System.out.println(e.toString());
+			if (e != null){
+				root = e;
+				while (root.hasParent()){
+					root = root.getParent();
+				}
+				System.out.println(root.toString());
+			}
 		}
 		if (matchedParens == 1)
 		{//there was one open paren that did not get close, assume one at the end
@@ -163,8 +169,8 @@ public class ExpressionParser {
 				addValue(new Nothing());
 			}
 		}
-		if (e instanceof UrinaryExpression){
-			if (((UrinaryExpression)e).getChild() == null){
+		if (e instanceof UnaryExpression){
+			if (((UnaryExpression)e).getChild() == null){
 				addValue(new Nothing());
 			}
 		}
@@ -215,17 +221,17 @@ public class ExpressionParser {
 			addBinOp(Operator.POWER);
 			break;
 		case '!':
-			if(vals.size() == 1)
-				addUrinaryOp(Operator.FACT);
+			if(vals.size() == 1 || (e instanceof UnaryExpression) && ((UnaryExpression)e).hasChild())
+				addUnaryOp(Operator.FACT);
 			else
-				addUrinaryOp(Operator.NOT);
+				addUnaryOp(Operator.NOT);
 			break;
 		case '(':
 			matchedParens++;
 			if (vals.size() == 1){
 				addBinOp(Operator.MULTIPLY);
 			}
-			addUrinaryOp(Operator.PAREN);
+			addUnaryOp(Operator.PAREN);
 			break;
 		case ')':
 			matchedParens--;
@@ -257,13 +263,13 @@ public class ExpressionParser {
 		if (e.isContainerOp())
 		{
 			if (vals.size() == 1){
-				((UrinaryExpression)e).setChild(vals.get(0));
+				((UnaryExpression)e).setChild(vals.get(0));
 				vals = new ArrayList<Value>();
 				return;
 			}
-			else if (((UrinaryExpression)e).getChild() == null)
+			else if (((UnaryExpression)e).getChild() == null)
 			{
-				((UrinaryExpression)e).setChild(new Nothing());
+				((UnaryExpression)e).setChild(new Nothing());
 				return;
 			}
 		}
@@ -283,7 +289,7 @@ public class ExpressionParser {
 			}
 		}
 		if (numParensHit == 2)
-			e = (Expression) ((UrinaryExpression)e).getChild();
+			e = (Expression) ((UnaryExpression)e).getChild();
 	}
 
 	/**
@@ -340,7 +346,7 @@ public class ExpressionParser {
 		lengthLast = length;
 		double number = Double.parseDouble(s.substring(pos, pos + length));
 		Decimal newNum = new Decimal(number);
-		if (!hasPowOfTen && length < 9){
+		if (!hasPowOfTen && length < 9 && number % 1 == 0){
 			Value newFrac = Fraction.Dec2Frac(newNum);
 			addValue(newFrac);
 		}
@@ -391,63 +397,64 @@ public class ExpressionParser {
 		}
 		
 		if(varElm.equals("sin")){
-			addUrinaryOp(Operator.SIN);
+			addUnaryOp(Operator.SIN);
 			return;
 		}
 		else if(varElm.equals("cos")){
-			addUrinaryOp(Operator.COS);
+			addUnaryOp(Operator.COS);
 			return;
 		}
 		else if(varElm.equals("tan")){
-			addUrinaryOp(Operator.TAN);
+			addUnaryOp(Operator.TAN);
 			return;
 		}
 		else if(varElm.equals("sin-1")){
-			addUrinaryOp(Operator.INV_SIN);
+			addUnaryOp(Operator.INV_SIN);
 			return;
 		}
 		else if(varElm.equals("cos-1")){
-			addUrinaryOp(Operator.INV_COS);
+			addUnaryOp(Operator.INV_COS);
 			return;
 		}
 		else if(varElm.equals("tan-1")){
-			addUrinaryOp(Operator.INV_TAN);
+			addUnaryOp(Operator.INV_TAN);
 			return;
 		}
 		else if(varElm.equals("log")){
-			addUrinaryOp(Operator.LOG);
+			addUnaryOp(Operator.LOG);
 			return;
 		}
 		else if(varElm.equals("ln")){
-			addUrinaryOp(Operator.LN);
+			addUnaryOp(Operator.LN);
 			return;
 		}
 		else if(varElm.equals("int")){
-			addUrinaryOp(Operator.INT);
+			addUnaryOp(Operator.INT);
 			return;
 		}
-		else if(varElm.equals("integral")){
-			addUrinaryOp(Operator.INTEGRAL);
-			return;
-		}
+//		else if(varElm.equals("integral")){
+//			addUrinaryOp(Operator.INTEGRAL);
+//			return;
+//		}
 		else if(varElm.equals("floor")){
-			addUrinaryOp(Operator.FLOOR);
+			addUnaryOp(Operator.FLOOR);
 			return;
 		}
 		else if(varElm.equals("ceil")){
-			addUrinaryOp(Operator.CEILING);
+			addUnaryOp(Operator.CEILING);
 			return;
 		}
 		else if(varElm.equals("sqrt")){
-			addUrinaryOp(Operator.SQRT);
+			addUnaryOp(Operator.SQRT);
 			return;
 		}
 		else if(varElm.equals("abs")){
-			addUrinaryOp(Operator.ABS);
+			addUnaryOp(Operator.ABS);
 			return;
 		}
 		else if(varElm.equals("frac")){
-			//think of how to add things like this, functions with multiple inputs
+			//think of how to add things like this, functions/values with multiple inputs
+			//such as frac(2/3)
 		}
 		else if(varElm.equals("solve")){
 			//will be the evaluate algebraically function, not quite done yet...
@@ -481,19 +488,20 @@ public class ExpressionParser {
 				return;
 			}
 		}
-		else if(e instanceof UrinaryExpression){
-			if (vals.size() == 1 || ((UrinaryExpression)e).hasChild()){
+		else if(e instanceof UnaryExpression){
+			if (vals.size() == 1 || ((UnaryExpression)e).hasChild()){
 				addBinOp(Operator.MULTIPLY);
 				addValue(v);
+				vals = new ArrayList<Value>();
 				return;
 			}
 			else if (e.isContainerOp()){
 				vals.add(v);
-
+				System.out.println("add val to vals in unaryOp");
 				return;
 			}
-			else if(((UrinaryExpression)e).getChild() == null){
-				((UrinaryExpression)e).setChild(v);
+			else if(((UnaryExpression)e).getChild() == null){
+				((UnaryExpression)e).setChild(v);
 				return;
 			}
 			else{
@@ -509,11 +517,11 @@ public class ExpressionParser {
 	}
 
 	public void addBinOp(Operator o) throws ParseException{
-		BinExpression newEx;
+		BinExpression newEx = new BinExpression(o);
 		
 		if (e instanceof BinExpression  && ((BinExpression)e).getRightChild() == null){
 			if (o == Operator.SUBTRACT && vals.isEmpty()){
-				addUrinaryOp(Operator.NEG);
+				addUnaryOp(Operator.NEG);
 				return;
 			}
 			else
@@ -522,24 +530,28 @@ public class ExpressionParser {
 				addValue(new Nothing());
 			}
 		}
-		if (e instanceof UrinaryExpression && ((UrinaryExpression)e).getChild() == null){
+		if (e instanceof UnaryExpression && ((UnaryExpression)e).getChild() == null){
 			if (vals.size() == 1 && e.isContainerOp()){
-				newEx = new BinExpression(o);
 				newEx.setLeftChild(vals.remove(0));
-				((UrinaryExpression)e).setChild(newEx);
+				((UnaryExpression)e).setChild(newEx);
 				e = newEx;
 				vals = new ArrayList<Value>();
 				return;
 			}
 			else if (vals.size() == 0 && o == Operator.SUBTRACT)
 			{
-				addUrinaryOp(Operator.NEG);
+				addUnaryOp(Operator.NEG);
 				return;
 			}
 			else
 			{
-				addValue(new Nothing());
-				addBinOp(o);
+				
+				if (vals.size() == 0)
+				{
+					addValue(new Nothing());
+				}
+				((UnaryExpression)e).setChild(newEx);
+				newEx.setLeftChild(vals.get(0));
 				return;
 			}
 		}
@@ -547,7 +559,7 @@ public class ExpressionParser {
 			newEx = new BinExpression(o);
 			if(e == null){
 				if (o == Operator.SUBTRACT && vals.isEmpty()){
-					addUrinaryOp(Operator.NEG);
+					addUnaryOp(Operator.NEG);
 					return;
 				}
 				else if (o != Operator.ASSIGN){
@@ -601,7 +613,7 @@ public class ExpressionParser {
 						e = newEx;
 						return;
 					}
-					else if (e instanceof UrinaryExpression){
+					else if (e instanceof UnaryExpression){
 						newEx.setLeftChild(e);
 						e = newEx;
 						return;
@@ -629,8 +641,8 @@ public class ExpressionParser {
 								if (parent instanceof BinExpression){
 									((BinExpression) parent).setRightChild(newEx);
 								}
-								else if(parent instanceof UrinaryExpression){
-									((UrinaryExpression) parent).setChild(newEx);
+								else if(parent instanceof UnaryExpression){
+									((UnaryExpression) parent).setChild(newEx);
 								}
 							}
 							newEx.setLeftChild(e);
@@ -638,15 +650,15 @@ public class ExpressionParser {
 							return;
 						}
 					}
-					else if (e instanceof UrinaryExpression){
+					else if (e instanceof UnaryExpression){
 						if (e.hasParent())
 						{
 							Expression parent = e.getParent();
 							if (parent instanceof BinExpression){
 								((BinExpression) parent).setRightChild(newEx);
 							}
-							else if(parent instanceof UrinaryExpression){
-								((UrinaryExpression) parent).setChild(newEx);
+							else if(parent instanceof UnaryExpression){
+								((UnaryExpression) parent).setChild(newEx);
 							}
 						}
 						newEx.setLeftChild(e);
@@ -658,13 +670,20 @@ public class ExpressionParser {
 		}
 	}
 	
-	public void addUrinaryOp(Operator o) throws ParseException{
-		UrinaryExpression newEx = new UrinaryExpression(o);
+	public void addUnaryOp(Operator o) throws ParseException{
+		UnaryExpression newEx = new UnaryExpression(o);
 		
 		if (e == null){
+			System.out.println("e is null");
+			if (o.isUrinaryPost()){
+				newEx.setChild(vals.get(0));
+				vals = new ArrayList<Value>();
+				e = newEx;
+				return;
+			}
 			if (vals.size() == 1){
 				addBinOp(Operator.MULTIPLY);
-				addUrinaryOp(o);
+				addUnaryOp(o);
 				return;
 			}
 			e = newEx;
@@ -692,27 +711,39 @@ public class ExpressionParser {
 			e = newEx;
 			return;
 		}
-		else if (e instanceof UrinaryExpression && newEx.isContainerOp()){
-			((UrinaryExpression)e).setChild(newEx);
+		else if (e instanceof UnaryExpression && newEx.isContainerOp()){
+			if (vals.size() == 1){
+				addBinOp(Operator.MULTIPLY);
+				((BinExpression)e).setRightChild(newEx);
+				e = newEx;
+				return;
+			}
+			((UnaryExpression)e).setChild(newEx);
 			e = newEx;
 			return;
 		}
-		else if (e instanceof UrinaryExpression){
-			
-			if (o.isUrinaryPost()){
-				newEx.setChild(vals.get(0));
-				vals = new ArrayList<Value>();
-				((UrinaryExpression)e).setChild(newEx);
+		else if (e instanceof UnaryExpression){
+			System.out.println("e is unary");
+			if (vals.size() == 1){
+				addBinOp(Operator.MULTIPLY);
+				((BinExpression)e).setRightChild(newEx);
 				e = newEx;
 				return;
 			}
 			else{
-				((UrinaryExpression)e).setChild(newEx);
+				if (((UnaryExpression)e).hasChild() && o.isUrinaryPost()){
+					vals = new ArrayList<Value>();
+					((UnaryExpression)newEx).setChild(e);
+					e = newEx;
+					return;
+				}
+				((UnaryExpression)e).setChild(newEx);
 				e = newEx;
 				return;
 			}
+
 		}
-		else if (e instanceof UrinaryExpression && ((UrinaryExpression)e).getChild() == null){
+		else if (e instanceof UnaryExpression && ((UnaryExpression)e).getChild() == null){
 			throw new ParseException("urinary expression without a value");
 		}
 		else{
@@ -723,7 +754,7 @@ public class ExpressionParser {
 				}
 				else{ //there is a value before the UrinaryOp, such as with 4sin x
 					addBinOp(Operator.MULTIPLY);
-					addUrinaryOp(o);
+					addUnaryOp(o);
 					return;
 				}
 			}

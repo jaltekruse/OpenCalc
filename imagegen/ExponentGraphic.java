@@ -32,6 +32,15 @@ public class ExponentGraphic extends BinExpressionGraphic {
 	
 	public void draw(){
 		//no symbol to draw
+		if (isSelected()){
+			super.getCompExGraphic().getGraphics().setColor(getSelectedColor());
+			super.getCompExGraphic().getGraphics().fillRect(getX1(), getY1(), getX2() - getX1(), getY2() - getY1());
+			super.getCompExGraphic().getGraphics().setColor(Color.black);
+		}
+	}
+	
+	public void drawCursor(int pos){
+		
 	}
 
 	public int[] requestSize(Graphics g, Font f, int x1, int y1) throws Exception {
@@ -66,14 +75,38 @@ public class ExponentGraphic extends BinExpressionGraphic {
 			rightSize = rightValGraphic.requestSize(g, getCompExGraphic().getSmallFont(), x1, y1);
 			super.getCompExGraphic().getComponents().add(rightValGraphic);
 			
-			//set the west and east fields for inside an outside of the expression
+			//set the west and east fields for inside and outside of the expression
+			setMostInnerWest(leftValGraphic.getMostInnerWest());
+			leftValGraphic.getMostInnerEast().setEast(rightValGraphic.getMostInnerWest());
+			this.setWest(leftValGraphic.getMostInnerEast());
+			setMostInnerWest(leftValGraphic.getMostInnerWest());
+			setMostInnerSouth(this);
+			
+			setMostInnerEast(rightValGraphic.getMostInnerEast());
+			rightValGraphic.getMostInnerWest().setWest(leftValGraphic.getMostInnerEast());
+			this.setEast(rightValGraphic.getMostInnerWest());
+			this.setMostInnerEast(rightValGraphic.getMostInnerEast());
+			this.setMostInnerNorth(this);
+			
+//			//set the west and east fields for inside and outside of the expression
 //			setMostInnerWest(leftValGraphic.getMostInnerWest());
 //			leftValGraphic.getMostInnerEast().setEast(rightValGraphic.getMostInnerWest());
+//			leftValGraphic.getMostInnerNorth().setNorth(rightValGraphic.getMostInnerSouth());
 //			this.setWest(leftValGraphic.getMostInnerEast());
+//			this.setSouth(leftValGraphic.getMostInnerNorth());
+//			this.setMostInnerWest(leftValGraphic.getMostInnerWest());
+//			this.setMostInnerSouth(leftValGraphic.getMostInnerSouth());
+//			
+//			setMostInnerNorth(rightValGraphic.getMostInnerNorth());
+//			setMostInnerSouth(leftValGraphic.getMostInnerSouth());
 //			
 //			setMostInnerEast(rightValGraphic.getMostInnerEast());
+//			rightValGraphic.getMostInnerSouth().setSouth(leftValGraphic.getMostInnerEast());
 //			rightValGraphic.getMostInnerWest().setWest(leftValGraphic.getMostInnerEast());
+//			this.setNorth(rightValGraphic.getMostInnerSouth());
 //			this.setEast(rightValGraphic.getMostInnerWest());
+//			this.setMostInnerEast(rightValGraphic.getMostInnerEast());
+//			this.setMostInnerNorth(rightValGraphic.getMostInnerNorth());
 			
 			//do not mess up the order of these adds!!!, look at method getLeftGraphic to find out why
 			super.getComponents().setSize(2);

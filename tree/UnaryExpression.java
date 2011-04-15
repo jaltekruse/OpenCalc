@@ -1,10 +1,10 @@
 package tree;
 
-public class UrinaryExpression extends Expression {
+public class UnaryExpression extends Expression {
 	
 	private Value child;
 	
-	public UrinaryExpression(Operator o){
+	public UnaryExpression(Operator o){
 		super(o);
 	}
 	
@@ -50,13 +50,14 @@ public class UrinaryExpression extends Expression {
 	
 	public String toString(){
 		String result = new String();
+//		System.out.println("op:");
 		if (op != null)
 			if (op == Operator.PAREN){
 				result += "(";
 			}
 			else
 			{
-				result += op.name(); 
+				result += op.getSymbol(); 
 			}
 		if (child != null)
 			result += child.toString();

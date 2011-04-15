@@ -12,7 +12,7 @@ import tree.Operator;
 import tree.Value;
 import tree.Var;
 import tree.Nothing;
-import tree.UrinaryExpression;
+import tree.UnaryExpression;
 import tree.Decimal;
 
 public abstract class ValueGraphic<E extends Value> {
@@ -22,9 +22,14 @@ public abstract class ValueGraphic<E extends Value> {
 	private int upperHeight, lowerHeight;
 	
 	private int x1, y1, x2, y2;
+	
+	private int numCursorPositions;
+	
 	protected E value;
 	private ValueGraphic north, south, east, west;
 	private ValueGraphic mostInnerNorth, mostInnerSouth, mostInnerWest, mostInnerEast;
+	
+	//components that are children of this graphic
 	private Vector<ValueGraphic> components;
 	private CompleteExpressionGraphic compExGraphic;
 	private Font f;
@@ -34,6 +39,55 @@ public abstract class ValueGraphic<E extends Value> {
 		this.compExGraphic = compExGraphic;
 		components = new Vector<ValueGraphic>();
 		value = v;
+	}
+	
+	public void drawCursor(){}
+	
+	public void setCursorPos(int xPixelPos){}
+	
+	public void moveCursorWest(){}
+	
+	public void moveCursorEast(){}
+	
+	public void moveCursorNorth(){}
+	
+	public void moveCursorSouth(){}
+	
+	
+
+	/**
+	 * 	This value is assumed to be right up against its neighbor, so it jumps right
+	 * to the position one in from the end.    e.g.    3.23|+432.3
+	 * where the cursor was previously in the Addition, now it should move to
+	 * 3.2|3+432.3, which is one less than the last position in decimalGraphic
+	 * Therefore there are redundancies in the system, each end of each graphic has
+	 * to be able to hold a cursor
+	 * 
+	 * @param yPos
+	 */
+	public void sendCursorInFromEast(int yPos, ValueGraphic vg) {}
+	
+	public void sendCursorInFromWest(int yPos, ValueGraphic vg) {}
+
+	public void sendCursorInFromNorth(int xPos, ValueGraphic vg) {}
+	
+	public void sendCursorInFromSouth(int xPos, ValueGraphic vg) {}
+	
+	public int getMaxCursorPos() { return 0; }
+	
+	public boolean containedBelow(ValueGraphic vg){
+		for (ValueGraphic v : components){
+			if (v.equals( vg )){
+				return true;
+			}
+			else{
+				if (v.containedBelow(vg))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	ValueGraphic makeValueGraphic(Value v) throws RenderException{
@@ -64,28 +118,28 @@ public abstract class ValueGraphic<E extends Value> {
 			}
 			
 		}
-		else if (v instanceof UrinaryExpression){
-			if (((UrinaryExpression)v).getOp() == Operator.PAREN)
+		else if (v instanceof UnaryExpression){
+			if (((UnaryExpression)v).getOp() == Operator.PAREN)
 			{
-				return new ParenGraphic(((UrinaryExpression)v), getCompExGraphic());
+				return new ParenGraphic(((UnaryExpression)v), getCompExGraphic());
 			}
-			else if (((UrinaryExpression)v).getOp() == Operator.ABS)
+			else if (((UnaryExpression)v).getOp() == Operator.ABS)
 			{
-				return new AbsoluteValueGraphic(((UrinaryExpression)v), getCompExGraphic());
+				return new AbsoluteValueGraphic(((UnaryExpression)v), getCompExGraphic());
 			}
-			else if (((UrinaryExpression)v).getOp() == Operator.NEG)
+			else if (((UnaryExpression)v).getOp() == Operator.NEG)
 			{
-				return new NegationGraphic(((UrinaryExpression)v), getCompExGraphic());
+				return new NegationGraphic(((UnaryExpression)v), getCompExGraphic());
 			}
-			else if (((UrinaryExpression)v).getOp() == Operator.SQRT)
+			else if (((UnaryExpression)v).getOp() == Operator.SQRT)
 			{
-				return new RadicalGraphic(((UrinaryExpression)v), getCompExGraphic());
+				return new RadicalGraphic(((UnaryExpression)v), getCompExGraphic());
 			}
-			else if (((UrinaryExpression)v).getOp() == Operator.FACT)
+			else if (((UnaryExpression)v).getOp() == Operator.FACT)
 			{
-				return new UnaryPostGraphic(((UrinaryExpression)v), getCompExGraphic());
+				return new UnaryPostGraphic(((UnaryExpression)v), getCompExGraphic());
 			}
-			return new UnaryExpressionGraphic((UrinaryExpression)v, getCompExGraphic());
+			return new UnaryExpressionGraphic((UnaryExpression)v, getCompExGraphic());
 		}
 		System.out.println(v.toString());
 		throw new RenderException("unsupported Value");
@@ -162,6 +216,9 @@ public abstract class ValueGraphic<E extends Value> {
 
 	public void setNorth(ValueGraphic north) {
 		this.north = north;
+		for (ValueGraphic vg : components){
+			vg.setNorth(north);
+		}
 	}
 
 	public ValueGraphic getNorth() {
@@ -170,6 +227,11 @@ public abstract class ValueGraphic<E extends Value> {
 
 	public void setSouth(ValueGraphic south) {
 		this.south = south;
+		System.out.println("setSouth: " + getValue().toString());
+		for (ValueGraphic vg : components){
+			System.out.println("valGraphic class setChildSouth: " + vg.getValue().toString());
+			vg.setSouth(south);
+		}
 	}
 
 	public ValueGraphic getSouth() {
@@ -284,5 +346,13 @@ public abstract class ValueGraphic<E extends Value> {
 
 	public ValueGraphic getMostInnerEast() {
 		return mostInnerEast;
+	}
+
+	public void setNumCursorPositions(int numCursorPositions) {
+		this.numCursorPositions = numCursorPositions;
+	}
+
+	public int getNumCursorPositions() {
+		return numCursorPositions;
 	}
 }

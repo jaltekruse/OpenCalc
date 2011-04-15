@@ -55,13 +55,13 @@ public class GraphToolbar extends SubPanel{
 						if (graphWindow.getGraph().getSelection().getStart() != Selection.EMPTY &&
 								graphWindow.getGraph().getSelection().getEnd() == Selection.EMPTY ){
 							if (sg instanceof GraphedCartFunction){
-								System.out.println();
-								System.out.println("--------------------------------------");
-								System.out.println("Been having problems with derivatives");
-								System.out.println("drawing horizontal, going to be printing data from");
-								System.out.println("various involved classes, staritng with GraphToolbar:");
-								System.out.println("graph: " + ((GraphedCartFunction)sg).getExpression().toString());
-								System.out.println("selectionStart: " + graphWindow.getGraph().getSelection().getStart());
+//								System.out.println();
+//								System.out.println("--------------------------------------");
+//								System.out.println("Been having problems with derivatives");
+//								System.out.println("drawing horizontal, going to be printing data from");
+//								System.out.println("various involved classes, staritng with GraphToolbar:");
+//								System.out.println("graph: " + ((GraphedCartFunction)sg).getExpression().toString());
+//								System.out.println("selectionStart: " + graphWindow.getGraph().getSelection().getStart());
 								Vector<SingleGraph> tempList = new Vector<SingleGraph>();
 								tempList.add(sg);
 								graphWindow.getGraph().getGraphCalcGraphics().addDerivative(

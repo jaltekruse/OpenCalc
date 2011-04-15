@@ -1,4 +1,4 @@
-package gui;
+package gui.graph;
 
 /*
  OpenCalc is a Graphing Calculator for the web.
@@ -19,6 +19,13 @@ package gui;
  You should have received a copy of the GNU General Public License
  along with OpenCalc  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import gui.MainApplet;
+import gui.OCButton;
+import gui.OCTextField;
+import gui.OCTextWithValButton;
+import gui.SubPanel;
+import gui.TopLevelContainer;
 
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -42,10 +49,12 @@ public class GridPropsPanel extends SubPanel {
 	private SubPanel fields;
 	private JScrollPane scroll;
 	private ExpressionParser parser;
-
-	public GridPropsPanel(MainApplet currmainApp, TopLevelContainer topLevelComp) 
+	private GraphWindow graphWindow;
+	
+	public GridPropsPanel(MainApplet currmainApp, TopLevelContainer topLevelComp, GraphWindow gw) 
 			throws ParseException, ValueNotStoredException, EvalException {
 		super(topLevelComp);
+		graphWindow = gw;
 		this.setLayout(new GridBagLayout());
 		this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		mainApp = currmainApp;
@@ -71,60 +80,60 @@ public class GridPropsPanel extends SubPanel {
 
 		xMin = new OCTextWithValButton(getTopLevelContainer(), "xMin", true, 15, 3, 1, 0, 0, fields, mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		xMax = new OCTextWithValButton(getTopLevelContainer(), "xMax", true, 15, 3, 1, 0, 1, fields,
 				mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		yMin = new OCTextWithValButton(getTopLevelContainer(), "yMin", true, 15, 3, 1, 0, 2, fields,
 				mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		yMax = new OCTextWithValButton(getTopLevelContainer(), "yMax", true, 15, 3, 1, 0, 3, fields,
 				mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		
 		xStep = new OCTextWithValButton(getTopLevelContainer(), "xStep", true, 15, 3, 1, 0, 4, fields,
 				mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		
 		yStep = new OCTextWithValButton(getTopLevelContainer(), "yStep", true, 15, 3, 1, 0, 5, fields,
 				mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		
 		thetaMin = new OCTextWithValButton(getTopLevelContainer(), "thetaMin", true, 15, 3, 1, 0, 6, fields,
 				mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		
 		thetaMax = new OCTextWithValButton(getTopLevelContainer(), "thetaMax", true, 15, 3, 1, 0, 7, fields,
 				mainApp) {
 			public void associatedAction() {
-				graphAttributeAction(varName, field);
+				graphAttributeAction(getVarName(), getOCTextField());
 			}
 		};
 		
 		thetaStep = new OCTextWithValButton(getTopLevelContainer(), "thetaStep", true, 15, 3, 1, 0, 8, fields,
 				mainApp) {
 			public void associatedAction() {
-				String currText = field.getField().getText();
+				String currText = getOCTextField().getField().getText();
 				if (!currText.equals(null) && !currText.equals("") && mainApp != null)
 				{
 					try
@@ -132,13 +141,13 @@ public class GridPropsPanel extends SubPanel {
 						Value v = mainApp.evalCalc(currText);
 						//check here to make sure value isn't too small, will cause crashes
 						//Permanent solution will be multi-threading, and handling graphing better
-						field.getField().setText(v.toString());
-						mainApp.getParser().getVarList().setVarVal(varName, (Number) v);
+						getOCTextField().getField().setText(v.toString());
+						mainApp.getParser().getVarList().setVarVal(getVarName(), (Number) v);
 						mainApp.updateGraph();
 					}
 					catch(Exception e)
 					{
-						field.getField().setText("error");
+						getOCTextField().getField().setText("error");
 					}
 				}
 			}
@@ -248,7 +257,6 @@ public class GridPropsPanel extends SubPanel {
 			}
 		};
 		
-		defaultGrid.associatedAction();
 		this.revalidate();
 		refreshAttributes();
 		this.repaint();
@@ -264,7 +272,8 @@ public class GridPropsPanel extends SubPanel {
 			currField.setText("");
 			try
 			{
-				mainApp.getGraphObj().zoom(mainApp.evalCalc(currText).toDec().getValue());
+				graphWindow.getGraph().zoom(mainApp.getParser().ParseExpression(currText)
+						.eval().toDec().getValue());
 			} catch (EvalException e) {
 				// TODO Auto-generated catch block
 				//do something

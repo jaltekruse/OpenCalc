@@ -41,20 +41,15 @@ public abstract class Value {
 		eval();
 		lastY = parser.getVarList().getVarVal(depVar).toDec().getValue();
 		double xStep = (b - a) / numTraps;
-		int trapCount = 0;
 
 		for(int i = 0; i < numTraps; i++){
-			//System.out.println(currX);
-//			System.out.println(i);
 			parser.getVarList().updateVarVal(indVar, xStep);
 			eval();
 			currY = parser.getVarList().getVarVal(depVar).toDec().getValue();
 			aveY = (lastY + currY) / 2;
 			result += aveY * xStep;
-//			trapCount++;
 			lastY = currY;
 		}
-		//System.out.println("num trapizoids: " + trapCount);
 		return new Decimal(result);
 	}
 	
@@ -221,6 +216,7 @@ public abstract class Value {
 	}
 	
 	public Value divide(Value v) throws EvalException{
+		
 		if (v instanceof Decimal){
 			return divide((Decimal) v);
 		}
@@ -242,7 +238,7 @@ public abstract class Value {
 	}
 
 	public Value power(Value v) throws EvalException {
-		// TODO Auto-generated method stub
+		
 		if (v instanceof Decimal){
 			return power((Decimal) v);
 		}

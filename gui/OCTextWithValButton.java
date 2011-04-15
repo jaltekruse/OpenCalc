@@ -18,7 +18,7 @@ import tree.Number;
 public class OCTextWithValButton extends OCTextField{
 
 	MainApplet mainApp;
-	OCTextField field;
+	private OCTextField field;
 	OCButton button;
 	String varName;
 	JPanel box;
@@ -43,7 +43,7 @@ public class OCTextWithValButton extends OCTextField{
 		
 		comp.add(box, pCon);
 
-		field = new OCTextField(getTopLevelContainer(), editable, length, 2, gridHeight, 0, 0, box,
+		setOCTextField(new OCTextField(getTopLevelContainer(), editable, length, 2, gridHeight, 0, 0, box,
 				mainApp) {
 			public void associatedAction() {
 				String currText = field.getText();
@@ -70,8 +70,8 @@ public class OCTextWithValButton extends OCTextField{
 					mainApp.updateGraph();
 				}
 			}
-		};
-		field.setBorder(null);
+		});
+		getOCTextField().setBorder(null);
 		box.setBorder(BorderFactory.createLineBorder(Color.gray));
 		button = new OCButton(varName, 1, 1, 2, 0, box, currmainApp);
 	}
@@ -81,10 +81,18 @@ public class OCTextWithValButton extends OCTextField{
 	}
 
 	public void setText(String s) {
-		field.getField().setText(s);
+		getOCTextField().getField().setText(s);
 	}
 
 	public OCTextField getTextField() {
+		return getOCTextField();
+	}
+
+	public void setOCTextField(OCTextField field) {
+		this.field = field;
+	}
+
+	public OCTextField getOCTextField() {
 		return field;
 	}
 }

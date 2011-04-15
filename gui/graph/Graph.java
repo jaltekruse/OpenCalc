@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.util.Vector;
 
 import tree.EvalException;
+import tree.ParseException;
 import tree.VarStorage;
 
 public class Graph {
@@ -32,7 +33,7 @@ public class Graph {
 		Y_SIZE = graphWindow.getHeight();
 		//graphPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 		cartAxis = new CartAxis(this);
-		dragDisk = new DragDisk(this, new Color(0, 220, 220));
+		dragDisk = new DragDisk(this, Color.gray);
 		graphCalcGraphics = new GraphCalculationGraphics(this);
 		singleGraphs = new Vector<SingleGraph>();
 //		
@@ -89,7 +90,15 @@ public class Graph {
 			//graphCompPic = new BufferedImage(X_SIZE, Y_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 			//c.draw(graphCompPic.getGraphics());
 			if ( ! sg.hasFocus() ){
-				sg.draw(g);
+				try {
+					sg.draw(g);
+				} catch (EvalException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			//g.drawImage(c.getImage(), 0, 0, null);
 			//Graphics2D g2d = (Graphics2D) g;
@@ -100,13 +109,21 @@ public class Graph {
 			//g.drawImage(c.getImage(), 0, 0, new Color(250, 250, 250, 20), null);
 			//graphCompPic.flush();
 		}
-		graphCalcGraphics.drawIntegrals(g);
 		
+		graphCalcGraphics.drawIntegrals(g);
 		//this loop is to draw the graphs that currently have focus, so they appear over
 		//the integrals that are drawn with the line above
 		for (SingleGraph sg : singleGraphs){
 			if ( sg.hasFocus() ){
-				sg.draw(g);
+				try {
+					sg.draw(g);
+				} catch (EvalException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -150,6 +167,31 @@ public class Graph {
 		X_MAX = varList.getVarVal("xMax").toDec().getValue();
 		Y_MIN = varList.getVarVal("yMin").toDec().getValue();
 		Y_MAX = varList.getVarVal("yMax").toDec().getValue();
+		
+		//hacked solution to prevent drawing the grid, the auto-rescaling of the 
+		//grid stops working after the numbers get too big
+		if (X_MIN < -7E8 || X_MAX > 7E8 || Y_MIN < -7E8 || Y_MAX > 7E8){
+			if (rate < 100)
+			{//if the user is trying to zoom out farther, do nothing
+				return;
+			}
+		}
+		
+		varList.updateVarVal("xMin", -1 * (X_MAX-X_MIN)*(100-rate)/100);
+		varList.updateVarVal("xMax", (X_MAX-X_MIN)*(100-rate)/100);
+		varList.updateVarVal("yMin", -1 * (Y_MAX-Y_MIN)*(100-rate)/100);
+		varList.updateVarVal("yMax", (Y_MAX-Y_MIN)*(100-rate)/100);
+		
+		graphWindow.repaint();
+	}
+	
+	public void zoomMouseRelative(double rate, int mouseX, int mouseY) throws EvalException{
+		X_MIN = varList.getVarVal("xMin").toDec().getValue();
+		X_MAX = varList.getVarVal("xMax").toDec().getValue();
+		Y_MIN = varList.getVarVal("yMin").toDec().getValue();
+		Y_MAX = varList.getVarVal("yMax").toDec().getValue();
+		double xRatio = mouseX/X_SIZE;
+		double yRatio = mouseY/Y_SIZE;
 		
 		//hacked solution to prevent drawing the grid, the auto-rescaling of the 
 		//grid stops working after the numbers get too big

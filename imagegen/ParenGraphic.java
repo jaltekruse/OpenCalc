@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
-import tree.UrinaryExpression;
+import tree.UnaryExpression;
 import tree.Value;
 
 public class ParenGraphic extends UnaryExpressionGraphic {
@@ -13,7 +13,7 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 	private int overhang;
 	private int widthParens;
 	
-	public ParenGraphic(UrinaryExpression v, CompleteExpressionGraphic compExGraphic) {
+	public ParenGraphic(UnaryExpression v, CompleteExpressionGraphic compExGraphic) {
 		super(v, compExGraphic);
 		space = 2;
 		overhang = 3;
@@ -24,10 +24,11 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
-		
-//		super.getCompExGraphic().getGraphics().setColor(Color.gray);
-//		super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
-//		super.getCompExGraphic().getGraphics().setColor(Color.black);
+		if (isSelected()){
+			super.getCompExGraphic().getGraphics().setColor(getSelectedColor());
+			super.getCompExGraphic().getGraphics().fillRect(symbolX1, symbolY1, symbolX2 - symbolX1, symbolY2 - symbolY1);
+			super.getCompExGraphic().getGraphics().setColor(Color.black);
+		}
 		
 		super.getCompExGraphic().getGraphics().drawArc(getX1(), getY1(),
 				widthParens * 2, getY2() - getY1(), 90, 180);
@@ -53,7 +54,7 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		// The call to getChild() skips the first paren inside of the operator, the parens are needed to have
 		// an expression inside of a UrinaryOp, but they are not usually displayed
 		// if a user wants to show parens, the can use  two pairs of parens: sqrt((5/6))
-		Value tempChild = ((UrinaryExpression)super.getValue()).getChild();
+		Value tempChild = ((UnaryExpression)super.getValue()).getChild();
 		ValueGraphic childValGraphic = null;
 		
 		
@@ -62,18 +63,18 @@ public class ParenGraphic extends UnaryExpressionGraphic {
 		int[] totalSize = {0, 0};
 		
 		childValGraphic = makeValueGraphic(tempChild);
+		childSize = childValGraphic.requestSize(g, f, x1 + widthParens + space, y1 + overhang);
 		
 		//set the west and east fields for inside an outside of the expression
-//		setMostInnerWest(this);
-//		childValGraphic.getMostInnerEast().setEast(this);
-//		
-//		setMostInnerEast(this);
-//		childValGraphic.getMostInnerWest().setWest(this);
+		setMostInnerWest(this);
+		childValGraphic.getMostInnerEast().setEast(this);
+		
+		setMostInnerEast(this);
+		childValGraphic.getMostInnerWest().setWest(this);
 		
 		super.getComponents().add(childValGraphic);
 		super.getCompExGraphic().getComponents().add(childValGraphic);
 		
-		childSize = childValGraphic.requestSize(g, f, x1 + widthParens + space, y1 + overhang);
 		widthParens += (int) Math.round(childSize[1]/14.0);
 		childValGraphic.shiftToX1(x1 + widthParens + space);
 		

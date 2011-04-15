@@ -6,11 +6,13 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import tree.Decimal;
+import tree.EvalException;
 import tree.ExpressionParser;
 import tree.Number;
+import tree.ParseException;
 import tree.Value;
 
-public class GraphedCartFunction extends GraphWithFunction {
+public class GraphedCartFunction extends GraphWithExpression {
 
 	MainApplet mainApp;
 
@@ -32,11 +34,6 @@ public class GraphedCartFunction extends GraphWithFunction {
 	 * @param ind - string of independent var
 	 * @param dep - string of dependent var
 	 * @param connected - boolean for points to be connected when graphed
-	 * @param trace - boolean for tracing
-	 * @param tracePt - double for value to trace
-	 * @param integral - boolean for taking an integral
-	 * @param startInt - double for start of integral
-	 * @param endInt - double for end of integral
 	 * @param c - a color to display the function with
 	 */
 	public GraphedCartFunction(ExpressionParser exParser, Graph g, String eqtn, String ind, String dep, 
@@ -51,7 +48,7 @@ public class GraphedCartFunction extends GraphWithFunction {
 	}
 
 	@Override
-	public void draw(Graphics g) {
+	public void draw(Graphics g) throws EvalException, ParseException {
 		// TODO Auto-generated method stub
 		
 		//used to temporarily store the value stored in the independent and dependent vars,
@@ -73,7 +70,7 @@ public class GraphedCartFunction extends GraphWithFunction {
 		int tempLineSize = graph.LINE_SIZE;
 		
 		double lastX, lastY, currX, currY;
-		try{
+		
 			Value expression = getParser().ParseExpression(getFuncEqtn());
 			getIndependentVar().setValue(new Decimal(graph.X_MIN));
 			expression.eval();
@@ -90,6 +87,7 @@ public class GraphedCartFunction extends GraphWithFunction {
 				expression.eval();
 				currX = getIndependentVar().getValue().toDec().getValue();
 				currY = getDependentVar().getValue().toDec().getValue();
+				
 				
 				if (gridxToScreen(currX) <= graph.X_SIZE &&  gridxToScreen(currX) >= 0
 						&& gridyToScreen(currY) <= graph.Y_SIZE && gridyToScreen(currY) >= 0)
@@ -116,12 +114,6 @@ public class GraphedCartFunction extends GraphWithFunction {
 				lastX = currX;
 				lastY = currY;
 			}
-			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 		
 		graph.LINE_SIZE = 2;
 		

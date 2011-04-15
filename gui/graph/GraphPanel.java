@@ -92,4 +92,8 @@ public class GraphPanel extends SubPanel{
 	public GraphAndSelectionPanel getBottomToolbar(){
 		return graphAndSelection;
 	}
+	
+	public GraphNavigationPanel getNavigation(){
+		return navigation;
+	}
 }

@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import tree.EvalException;
+import tree.ParseException;
+
 public abstract class GraphComponent {
 
 	protected Graph graph;
@@ -67,9 +70,9 @@ public abstract class GraphComponent {
 		
 		double angle = Math.atan( Math.abs(m));
 		
-		System.out.println();
-		System.out.println("class graphComponent (drawTan):");
-		System.out.println("angle (radians): " + angle);
+//		System.out.println();
+//		System.out.println("class graphComponent (drawTan):");
+//		System.out.println("angle (radians): " + angle);
 		
 		xChange = (Math.cos(angle) * length);
 		yChange = (Math.sin(angle) * length);
@@ -91,6 +94,9 @@ public abstract class GraphComponent {
 		//right now this ignores the LINE_SIZE currently set, but it draws much faster than before
 		//I'll modify it to handle line thickness soon
 		g.setColor(color);
+		if (Double.isNaN(x1) || Double.isNaN(x2) || Double.isNaN(y1) || Double.isNaN(y2)){
+			return;
+		}
 		if (x1 > graph.X_MAX && x2 > graph.X_MAX){
 			return;
 		}
@@ -129,7 +135,7 @@ public abstract class GraphComponent {
 		g.drawLine(gridxToScreen(x1), gridyToScreen(y1), gridxToScreen(x2), gridyToScreen(y2));
 	}
 	
-	public abstract void draw(Graphics g);
+	public abstract void draw(Graphics g) throws EvalException, ParseException;
 	
 	public Graph getGraph(){
 		return graph;

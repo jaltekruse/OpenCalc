@@ -20,6 +20,10 @@ public abstract class ExpressionGraphic extends ValueGraphic<Expression> {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public void drawCursor(int pos){
+		
+	}
 
 	@Override
 	public int[] requestSize(Graphics g, Font f) {

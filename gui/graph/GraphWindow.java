@@ -23,6 +23,7 @@ import tree.ValueNotStoredException;
 import tree.VarStorage;
 
 import gui.MainApplet;
+import gui.OCFrame;
 import gui.SubPanel;
 import gui.TopLevelContainer;
 
@@ -51,6 +52,7 @@ public class GraphWindow extends SubPanel{
 	private Runnable current;
 	private Object currObj;
 	private GraphPanel graphPanel;
+	private GridPropsPanel gridProps;
 	
 	public GraphWindow(MainApplet mainApp, TopLevelContainer topLevelComp, GraphPanel gp, int xSize, int ySize){
 		super(topLevelComp);
@@ -62,6 +64,20 @@ public class GraphWindow extends SubPanel{
 		dragxSelectionRange = false;
 		movingSelectionEnd = false;
 		draggingInfoBox = false;
+		
+		try {
+			gridProps = new GridPropsPanel(mainApp, getTopLevelContainer(), this);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ValueNotStoredException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (EvalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		graph.setSelection(selectionGraphic);
 		buffer = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
 		repaint();
@@ -70,6 +86,9 @@ public class GraphWindow extends SubPanel{
 			
 			public void paint(Graphics g) {
 				graph.repaint(g);
+				if (gridProps != null){
+					gridProps.refreshAttributes();
+				}
 			}
 		};
 		
@@ -285,9 +304,6 @@ public class GraphWindow extends SubPanel{
 
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				graphPanel.getBottomToolbar().updateMouse(
-						graph.getSelection().screenxToGrid(e.getX()), graph.getSelection().screenyToGrid(e.getY()));
-				
 				try {
 					graph.zoom(100 - e.getWheelRotation() * 5);
 					Runnable timer = new Runnable(){
@@ -304,6 +320,9 @@ public class GraphWindow extends SubPanel{
 					//TODO Auto-generated catch block
 					//need to do something for errors
 				}
+				
+				graphPanel.getBottomToolbar().updateMouse(
+						graph.getSelection().screenxToGrid(e.getX()), graph.getSelection().screenyToGrid(e.getY()));
 			}
 			
 		});
@@ -322,6 +341,16 @@ public class GraphWindow extends SubPanel{
 	
 	public Graph getGraph(){
 		return graph;
+	}
+	
+	public void showGridPropsWindow(){
+		if (gridProps == null || !gridProps.isShowing()){
+			OCFrame grid = new OCFrame(mainApp, "Grid Properties");
+			grid.add(gridProps);
+			grid.setPreferredSize(new Dimension(350, 425));
+			grid.pack();
+			grid.setVisible(true);
+		}
 	}
 	
 	public boolean hasRangeSelection(){
@@ -393,7 +422,7 @@ public class GraphWindow extends SubPanel{
 				shortestDistToGraphs.set(graph.getGraphs().indexOf(sg), Double.MAX_VALUE);
 				Vector<Integer> xVals = sg.getxVals();
 				Vector<Integer> yVals = sg.getyVals();
-				if (sg instanceof GraphWithFunction && xVals.size() > 0 && yVals.size() > 0)
+				if (sg instanceof GraphWithExpression && xVals.size() > 0 && yVals.size() > 0)
 				{//if the current graph is associated with a function
 					//and if there are points used to draw the graph currently being displayed
 					//some graphs will not be showing any points if zooming in on parts of the screen

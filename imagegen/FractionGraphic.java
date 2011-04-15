@@ -27,12 +27,10 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 		setMostInnerEast(this);
 		setMostInnerNorth(this);
 		setMostInnerSouth(this);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void draw() {
-		// TODO Auto-generated method stub
 		Graphics g = super.getCompExGraphic().getGraphics();
 		g.setFont(getFont());
 		System.out.println(getFont().getName());
@@ -60,10 +58,15 @@ public class FractionGraphic extends ValueGraphic<Fraction>{
 					+ getX1(), getY1() + heightDenom);
 		}
 	}
+	
+	public void drawCursor(int pos){
+		
+	}
 
 	@Override
 	public int[] requestSize(Graphics g, Font f, int x1, int y1) throws Exception {
-		// TODO right now prints toString representation, need to make horizonal, and slash representations soon
+		// TODO right now prints toString and horizontal representation,
+			// need to implement slash representations soon
 		g.setFont(f);
 		setFont(f);
 		if (style == Style.SLASH){

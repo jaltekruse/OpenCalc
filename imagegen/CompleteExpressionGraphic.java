@@ -24,17 +24,19 @@ public class CompleteExpressionGraphic{
 	private Font bigFont, smallFont;
 	private Vector<ValueGraphic> selectedVals;
 	private Vector<ValueGraphic> components;
+	private Cursor cursor;
 	private ValueGraphic firstSel;
+	
+	//will be replaced by completeExpression later
+	Value v;
 	
 	public enum FontSize{
 		BIG_FONT, SMALL_FONT
 	};
 	
-	//will be replaced by completeExpression later
-	Value v;
-	
 	public CompleteExpressionGraphic(Value v){
 		this.v = v;
+		cursor = new Cursor();
 		bigFont =  new Font("SansSerif", 0, 16);
 		smallFont = new Font("SansSerif", 0, 10);
 	}
@@ -46,14 +48,19 @@ public class CompleteExpressionGraphic{
 //			graphics.setFont(vg.getFont());
 //			vg.draw();
 //		}
+		System.out.println("CEG drawCursor?");
+		if (cursor.getValueGraphic() != null){
+			cursor.getValueGraphic().drawCursor();
+			System.out.println("CEG drawCursor");
+		}
 	}
 	
 	public void draw(ValueGraphic v){
 		
 		graphics.setColor(Color.black);
 		graphics.setFont(v.getFont());
-		graphics.setColor(Color.white);
-		graphics.fillRect(v.getX1(), v.getY1(), v.getWidth(), v.getHeight());
+//		graphics.setColor(Color.white);
+//		graphics.fillRect(v.getX1(), v.getY1(), v.getWidth(), v.getHeight());
 		graphics.setColor(Color.black);
 		v.draw();
 		Vector<ValueGraphic> temp = v.getComponents(); 
@@ -64,7 +71,6 @@ public class CompleteExpressionGraphic{
 
 	public void generateExpressionGraphic(Graphics2D g, int x1, int y1) throws Exception{
 		
-		System.out.println(v.toString());
 		graphics = g;
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		int[] tempSize = {0, 0};
@@ -77,9 +83,9 @@ public class CompleteExpressionGraphic{
 		tempSize = temp.requestSize(g, bigFont, x1, y1);
 		root = temp;
 		
-		//temp.getMostInnerWest().setSelected(true);
-		//selectedVals.add(temp.getMostInnerWest());
-		//firstSel = selectedVals.get(0);
+		temp.getMostInnerWest().setSelected(true);
+		selectedVals.add(temp.getMostInnerWest());
+		firstSel = selectedVals.get(0);
 		xSize = tempSize[0];
 		ySize = tempSize[1];
 	}
@@ -139,5 +145,17 @@ public class CompleteExpressionGraphic{
 
 	public Vector<ValueGraphic> getComponents() {
 		return components;
+	}
+	
+	public ValueGraphic getRoot(){
+		return root;
+	}
+
+	public void setCursor(Cursor cursor) {
+		this.cursor = cursor;
+	}
+
+	public Cursor getCursor() {
+		return cursor;
 	}
 }
